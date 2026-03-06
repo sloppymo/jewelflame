@@ -9,55 +9,73 @@ const TERRAIN_BONUSES = {
 
 static func calculate_power(soldiers: int, commander_skill: int, terrain_bonus: float, is_defender: bool) -> float:
 	var base_power = float(soldiers) * (float(commander_skill) / 50.0)
-	var terrain_modifier = terrain_bonus
-	var defense_modifier = 1.1 if is_defender else 1.0
-	var random_factor = randf_range(0.8, 1.2)
 	
-	return base_power * terrain_modifier * defense_modifier * random_factor
+	# Use balanced terrain bonuses
+	terrain_bonus = GameBalanceConfig.get_terrain_bonus("plains") if terrain_bonus == 1.0 else terrain_bonus
+	
+	var defender_bonus = GameBalanceConfig.COMBAT_BALANCE.casualties.defender_bonus if is_defender else 1.0
+	var commander_bonus = GameBalanceConfig.get_commander_bonus(commander_skill)
+	var random_factor = 1.0 + (randf() - 0.5) * GameBalanceConfig.COMBAT_BALANCE.random_factor_range
+	
+	return base_power * terrain_bonus * defender_bonus * commander_bonus * random_factor
 
 static func resolve_province_attack(attacker_id: int, defender_id: int, attacking_soldiers: int) -> Dictionary:
-	var attacker_province = GameState.provinces[attacker_id]
-	var defender_province = GameState.provinces[defender_id]
+	# Validate inputs
+	if not SafeAccess.validate_province_id(attacker_id):
+		return ErrorHandler.handle_invalid_province(attacker_id, "resolve_province_attack")
+	if not SafeAccess.validate_province_id(defender_id):
+		return ErrorHandler.handle_invalid_province(defender_id, "resolve_province_attack")
+	if attacking_soldiers <= 0:
+		return ErrorHandler.handle_command_execution("resolve_province_attack", "Invalid attacking soldiers count")
 	
-	# Get commanders
-	var attacker_commander = GameState.get_character(attacker_province.governor_id)
-	var defender_commander = GameState.get_character(defender_province.governor_id)
+	var attacker_province = SafeAccess.get_enhanced_province_safe(attacker_id)
+	var defender_province = SafeAccess.get_enhanced_province_safe(defender_id)
 	
-	var attacker_command = attacker_commander.command if attacker_commander else 50
-	var defender_command = defender_commander.command if defender_commander else 50
+	if not attacker_province:
+		return ErrorHandler.handle_invalid_province(attacker_id, "resolve_province_attack")
 	
-	# Calculate terrain bonuses
-	var attacker_terrain_bonus = TERRAIN_BONUSES.get(attacker_province.terrain_type, 1.0)
-	var defender_terrain_bonus = TERRAIN_BONUSES.get(defender_province.terrain_type, 1.0)
+	if not defender_province:
+		return ErrorHandler.handle_invalid_province(defender_id, "resolve_province_attack")
+	
+	# Get commanders safely
+	var attacker_commander_id = SafeAccess.safe_get_governor_id(attacker_province)
+	var defender_commander_id = SafeAccess.safe_get_governor_id(defender_province)
+	
+	var attacker_commander = SafeAccess.get_enhanced_character_safe(attacker_commander_id) if not attacker_commander_id.is_empty() else null
+	var defender_commander = SafeAccess.get_enhanced_character_safe(defender_commander_id) if not defender_commander_id.is_empty() else null
+	
+	var attacker_command = SafeAccess.safe_get_character_command_rating(attacker_commander)
+	var defender_command = SafeAccess.safe_get_character_command_rating(defender_commander)
+	
+	# Calculate terrain bonuses safely
+	var attacker_terrain_bonus = TERRAIN_BONUSES.get(SafeAccess.safe_get_province_terrain(attacker_province), 1.0)
+	var defender_terrain_bonus = TERRAIN_BONUSES.get(SafeAccess.safe_get_province_terrain(defender_province), 1.0)
 	
 	# Calculate battle power
 	var attacker_power = calculate_power(
 		attacking_soldiers, attacker_command, attacker_terrain_bonus, false
 	)
 	var defender_power = calculate_power(
-		defender_province.soldiers, defender_command, defender_terrain_bonus, true
+		SafeAccess.safe_get_province_soldiers(defender_province), defender_command, defender_terrain_bonus, true
 	)
 	
 	# Determine winner
 	var attacker_won = attacker_power > defender_power
 	var power_ratio = min(attacker_power, defender_power) / max(attacker_power, defender_power)
 	
-	# Calculate casualties
-	var attacker_casualties: int
-	var defender_casualties: int
+	# Calculate casualties using balanced values
+	var dominance = attacker_power / (attacker_power + defender_power)
 	
-	if attacker_won:
-		# Attacker wins - fewer casualties
-		attacker_casualties = int(attacking_soldiers * (0.4 * (1.0 - power_ratio)))
-		defender_casualties = int(defender_province.soldiers * (0.6 + (0.2 * power_ratio)))
-	else:
-		# Defender wins - attacker takes heavier losses
-		attacker_casualties = int(attacking_soldiers * (0.7 + (0.1 * (1.0 - power_ratio))))
-		defender_casualties = int(defender_province.soldiers * (0.3 * power_ratio))
+	# Use balanced casualty calculations
+	var attacker_casualty_rate = GameBalanceConfig.calculate_casualties(attacker_won, dominance)
+	var defender_casualty_rate = GameBalanceConfig.calculate_casualties(!attacker_won, 1.0 - dominance)
+	
+	var attacker_casualties = int(attacking_soldiers * attacker_casualty_rate)
+	var defender_casualties = int(SafeAccess.safe_get_province_soldiers(defender_province) * defender_casualty_rate)
 	
 	# Apply casualties
 	var remaining_attackers = max(0, attacking_soldiers - attacker_casualties)
-	var remaining_defenders = max(0, defender_province.soldiers - defender_casualties)
+	var remaining_defenders = max(0, SafeAccess.safe_get_province_soldiers(defender_province) - defender_casualties)
 	
 	# Calculate loot if attacker wins
 	var loot_gold = 0
@@ -67,8 +85,8 @@ static func resolve_province_attack(attacker_id: int, defender_id: int, attackin
 	
 	if attacker_won and remaining_defenders == 0:
 		province_conquered = true
-		loot_gold = int(defender_province.gold * 0.3)
-		loot_food = int(defender_province.food * 0.3)
+		loot_gold = int(SafeAccess.safe_get_province_gold(defender_province) * 0.3)
+		loot_food = int(SafeAccess.safe_get_province_food(defender_province) * 0.3)
 		
 		# Chance to capture governor
 		if randf() < 0.2:  # 20% chance
@@ -98,8 +116,12 @@ static func resolve_province_attack(attacker_id: int, defender_id: int, attackin
 	return result
 
 static func _apply_battle_results(attacker_id: int, defender_id: int, result: Dictionary):
-	var attacker_province = GameState.provinces[attacker_id]
-	var defender_province = GameState.provinces[defender_id]
+	var attacker_province = SafeAccess.get_enhanced_province_safe(attacker_id)
+	var defender_province = SafeAccess.get_enhanced_province_safe(defender_id)
+	
+	if not attacker_province or not defender_province:
+		ErrorHandler.handle_null_reference("province data", "_apply_battle_results")
+		return
 	
 	# Apply casualties
 	attacker_province.soldiers = result.remaining_attackers
@@ -119,6 +141,18 @@ static func _apply_battle_results(attacker_id: int, defender_id: int, result: Di
 		# Handle prisoner
 		if result.prisoner_taken:
 			print("Governor captured in ", defender_province.name)
+			
+			# Add captured lord to battle result
+			var governor_id = SafeAccess.safe_get_governor_id(defender_province)
+			if not governor_id.is_empty():
+				result.captured_lords = [governor_id]
+				
+				# Mark lord as captured
+				var captured_lord = SafeAccess.get_enhanced_character_safe(governor_id)
+				if captured_lord and captured_lord.has_method("set") and captured_lord.get("is_captured") != null:
+					captured_lord.is_captured = true
+					captured_lord.capture_family_id = SafeAccess.safe_get_owner_id(attacker_province)
+					captured_lord.loyalty = 20  # Reduced loyalty when captured
 		
 		# Mark attacker exhausted
 		attacker_province.is_exhausted = true
@@ -132,3 +166,28 @@ static func _apply_battle_results(attacker_id: int, defender_id: int, result: Di
 	# Emit soldier count changes
 	EventBus.ProvinceDataChanged.emit(attacker_id, "soldiers", attacker_province.soldiers)
 	EventBus.ProvinceDataChanged.emit(defender_id, "soldiers", defender_province.soldiers)
+
+static func resolve_auto_battle(battle: BattleData) -> Dictionary:
+	# Use existing resolve_province_attack logic adapted for BattleData
+	var total_attacking_units = 0
+	for unit in battle.attacking_units:
+		total_attacking_units += unit.stack_size
+	
+	var result = resolve_province_attack(
+		battle.attacking_province_id,
+		battle.defending_province_id,
+		total_attacking_units
+	)
+	
+	# Add BattleData specific results
+	if result.has("province_conquered") and result.province_conquered:
+		battle.battle_state = "completed"
+		battle.winner = "attacker"
+		battle.loot_gold = result.get("loot_gold", 0)
+		battle.loot_food = result.get("loot_food", 0)
+		battle.captured_lords = result.get("captured_lords", [])
+	else:
+		battle.battle_state = "completed"
+		battle.winner = "defender" if not result.get("attacker_won", false) else "attacker"
+	
+	return result
