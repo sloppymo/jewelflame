@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://bqvx8y1x8nql6"]
+
+[ext_resource type="PackedScene" uid="uid://bqvx8y1x8nql5" path="res://strategic/map/strategic_map_minimal.tscn" id="1_0k8xr"]
+
+[node name="Main" type="Node2D"]
+
+[node name="StrategicMap" parent="." instance=ExtResource("1_0k8xr")]

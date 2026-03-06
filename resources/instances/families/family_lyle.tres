@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="FamilyData" load_steps=2 format=3 uid="uid://bqvx8y1x8nqkx"]
+
+[ext_resource type="Script" path="res://resources/data_classes/family_data.gd" id="1_k8xr0"]
+
+[resource]
+script = ExtResource("1_k8xr0")
+id = "lyle"
+name = "Lyle"
+color = Color(0.862745, 0.0784314, 0.235294, 1)
+ruler_id = "ander"
+owned_provinces = Array[int]([3, 4])
+ai_personality = "aggressive"

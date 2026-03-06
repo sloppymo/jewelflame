@@ -1,0 +1,25 @@
+# Godot ignores
+.godot/
+.import/
+*.tmp
+
+# OS ignores
+.DS_Store
+Thumbs.db
+
+# IDE ignores
+.vscode/
+.idea/
+
+# Build artifacts
+*.exe
+*.app
+
+# Debug files
+*.log
+*.trace
+
+# Temporary files
+test_*
+*_broken.*
+*_typo.*

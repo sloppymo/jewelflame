@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="CharacterData" load_steps=2 format=3 uid="uid://bqvx8y1x8nql1"]
+
+[ext_resource type="Script" path="res://resources/data_classes/character_data.gd" id="1_xrk80"]
+
+[resource]
+script = ExtResource("1_xrk80")
+id = "lars"
+name = "Lars"
+family_id = "coryll"
+leadership = 70
+command = 55
+charm = 65
+is_ruler = true

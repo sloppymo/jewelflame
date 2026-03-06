@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ProvinceData" load_steps=2 format=3 uid="uid://bqvx8y1x8nqkr"]
+
+[ext_resource type="Script" path="res://resources/data_classes/province_data.gd" id="1_0k8xr"]
+
+[resource]
+script = ExtResource("1_0k8xr")
+id = 1
+name = "Dunmoor"
+color_id = Color(1, 0, 0, 1)
+owner_id = "blanche"
+governor_id = "erin"
+neighbors = Array[int]([2, 3])
+gold = 150
+food = 120
+soldiers = 80
+loyalty = 60
+terrain_type = "plains"
+is_capital = true

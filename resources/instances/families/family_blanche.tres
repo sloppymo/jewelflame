@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="FamilyData" load_steps=2 format=3 uid="uid://bqvx8y1x8nqkw"]
+
+[ext_resource type="Script" path="res://resources/data_classes/family_data.gd" id="1_k8xr0"]
+
+[resource]
+script = ExtResource("1_k8xr0")
+id = "blanche"
+name = "Blanche"
+color = Color(0.254902, 0.411765, 0.882353, 1)
+ruler_id = "erin"
+owned_provinces = Array[int]([1, 2])
+is_player = true
+ai_personality = "defensive"

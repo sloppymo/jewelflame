@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=3 uid="uid://bqvx8y1x8nqb1"]
+
+[ext_resource type="Script" path="res://strategic/map/province_renderer.gd" id="1_0k8xr"]
+[ext_resource type="PackedScene" uid="uid://bqvx8y1x8nqa0" path="res://ui/province_panel_minimal.tscn" id="2_panel"]
+
+[node name="Main" type="Node2D"]
+script = ExtResource("1_0k8xr")
+
+[node name="ProvinceAreas" type="Node2D" parent="."]
+
+[node name="ProvinceLabels" type="Node2D" parent="."]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(600, 350)
+zoom = Vector2(0.8, 0.8)
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="ProvincePanel" parent="CanvasLayer" instance=ExtResource("2_panel")]

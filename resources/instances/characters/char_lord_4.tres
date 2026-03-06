@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="CharacterData" load_steps=2 format=3 uid="uid://bqvx8y1x8nql3"]
+
+[ext_resource type="Script" path="res://resources/data_classes/character_data.gd" id="1_xrk80"]
+
+[resource]
+script = ExtResource("1_xrk80")
+id = "lord_4"
+name = "Lord Banshea"
+family_id = "lyle"
+is_lord = true

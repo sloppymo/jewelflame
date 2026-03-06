@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ProvinceData" load_steps=2 format=3 uid="uid://bqvx8y1x8nqks"]
+
+[ext_resource type="Script" path="res://resources/data_classes/province_data.gd" id="1_0k8xr"]
+
+[resource]
+script = ExtResource("1_0k8xr")
+id = 2
+name = "Carveti"
+color_id = Color(0, 1, 0, 1)
+owner_id = "blanche"
+governor_id = "lord_2"
+neighbors = Array[int]([1, 4])
+terrain_type = "plains"

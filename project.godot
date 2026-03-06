@@ -1,0 +1,41 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="Jewelflame"
+run/main_scene="res://main_minimal.tscn"
+config/features=PackedStringArray("4.6")
+config/icon="res://icon.svg"
+
+[autoload]
+
+EventBus="*res://autoload/event_bus.gd"
+GameState="*res://autoload/game_state.gd"
+SaveManager="*res://autoload/save_manager.gd"
+CommandProcessor="*res://strategic/commands/command_processor.gd"
+MilitaryCommands="*res://strategic/commands/military_commands.gd"
+DomesticCommands="*res://strategic/commands/domestic_commands.gd"
+#AIController="*res://strategic/ai/ai_controller.gd"
+#BattleResolver="*res://battle/battle_resolver.gd"
+#HarvestSystem="*res://strategic/economy/harvest_system.gd"
+#EconomyManager="*res://strategic/economy/economy_manager.gd"
+#RandomEvents="*res://strategic/random_events.gd"
+
+[display]
+
+window/size/viewport_width=1920
+window/size/viewport_height=1080
+window/size/mode=2
+window/stretch/mode="canvas_items"
+
+[dotnet]
+
+project/assembly_name="Jewelflame"
