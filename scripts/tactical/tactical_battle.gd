@@ -364,11 +364,30 @@ func _on_retreat():
 		tactical_hud.show_message("Retreating from battle!")
 	
 	var retreating_lord = attacker_lord if current_phase == BattlePhase.PLAYER_TURN else defender_lord
+	
+	# Get province IDs and remaining soldiers
+	var attacker_province_id = attacker_data.get("province_id", 0)
+	var defender_province_id = defender_data.get("province_id", 0)
+	
+	var attacker_remaining = 0
+	for unit in attacker_units:
+		if unit.is_alive():
+			attacker_remaining += unit.count
+	
+	var defender_remaining = 0
+	for unit in defender_units:
+		if unit.is_alive():
+			defender_remaining += unit.count
+	
 	var result = {
 		"winner": "defender" if current_phase == BattlePhase.PLAYER_TURN else "attacker",
 		"retreat": true,
 		"retreating_lord": retreating_lord,
-		"lord_captured": false
+		"lord_captured": false,
+		"attacker_province_id": attacker_province_id,
+		"defender_province_id": defender_province_id,
+		"attacker_remaining": attacker_remaining,
+		"defender_remaining": defender_remaining
 	}
 	
 	_end_battle(result)
@@ -430,8 +449,20 @@ func _check_battle_end():
 	var attacker_alive = _has_alive_units(attacker_units)
 	var defender_alive = _has_alive_units(defender_units)
 	
-	# Get province_id from meta if available
-	var province_id = get_meta("province_id", 0)
+	# Get province IDs from battle data
+	var attacker_province_id = attacker_data.get("province_id", 0)
+	var defender_province_id = defender_data.get("province_id", 0)
+	
+	# Calculate remaining soldiers
+	var attacker_remaining = 0
+	for unit in attacker_units:
+		if unit.is_alive():
+			attacker_remaining += unit.count
+	
+	var defender_remaining = 0
+	for unit in defender_units:
+		if unit.is_alive():
+			defender_remaining += unit.count
 	
 	if not attacker_alive:
 		# Check for lord capture
@@ -444,8 +475,11 @@ func _check_battle_end():
 			"retreat": false,
 			"attacker_lost": true,
 			"lord_captured": false,
-			"province_id": province_id,
-			"province_captured": false
+			"attacker_province_id": attacker_province_id,
+			"defender_province_id": defender_province_id,
+			"province_captured": false,
+			"attacker_remaining": attacker_remaining,
+			"defender_remaining": defender_remaining
 		}
 		if tactical_hud:
 			tactical_hud.show_victory_message("defenders")
@@ -462,8 +496,11 @@ func _check_battle_end():
 			"retreat": false,
 			"attacker_won": true,
 			"lord_captured": false,
-			"province_id": province_id,
-			"province_captured": true
+			"attacker_province_id": attacker_province_id,
+			"defender_province_id": defender_province_id,
+			"province_captured": true,
+			"attacker_remaining": attacker_remaining,
+			"defender_remaining": defender_remaining
 		}
 		if tactical_hud:
 			tactical_hud.show_victory_message("attackers")
@@ -488,12 +525,18 @@ func _on_ransom_paid(captured_lord: CharacterData):
 	get_tree().paused = false
 	captured_lord.is_captured = false
 	
+	# Get province IDs
+	var attacker_province_id = attacker_data.get("province_id", 0)
+	var defender_province_id = defender_data.get("province_id", 0)
+	
 	var result = {
 		"winner": "ransom_resolved",
 		"retreat": false,
 		"lord_captured": false,
 		"ransom_paid": true,
-		"released_lord": captured_lord
+		"released_lord": captured_lord,
+		"attacker_province_id": attacker_province_id,
+		"defender_province_id": defender_province_id
 	}
 	_end_battle(result)
 
@@ -501,11 +544,17 @@ func _on_ransom_refused(captured_lord: CharacterData):
 	get_tree().paused = false
 	captured_lord.is_captured = true
 	
+	# Get province IDs
+	var attacker_province_id = attacker_data.get("province_id", 0)
+	var defender_province_id = defender_data.get("province_id", 0)
+	
 	var result = {
 		"winner": "ransom_resolved",
 		"retreat": false,
 		"lord_captured": true,
-		"captured_lord": captured_lord
+		"captured_lord": captured_lord,
+		"attacker_province_id": attacker_province_id,
+		"defender_province_id": defender_province_id
 	}
 	_end_battle(result)
 

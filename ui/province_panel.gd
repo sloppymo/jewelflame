@@ -123,11 +123,9 @@ func _on_attack_button_pressed():
 		if animation_controller:
 			animation_controller.show_attack_arrow(current_province_id, target_id)
 		
-		# Execute attack with 70% of forces
-		var attack_force = int(province.soldiers * 0.7)
-		# TODO: Re-enable when BattleResolver is fixed
-		# var result = BattleResolver.resolve_province_attack(current_province_id, target_id, attack_force)
-		print("Attack from %s to %s with %d soldiers (BattleResolver disabled)" % [province.name, GameState.provinces[target_id].name, attack_force])
+		# Launch tactical battle!
+		print("Launching tactical battle: %s vs %s" % [province.name, GameState.provinces[target_id].name])
+		BattleLauncher.launch_battle(current_province_id, target_id, 0.7, _on_battle_returned)
 
 func _on_battle_resolved(result: Dictionary):
 	# Show battle report dialog
@@ -147,6 +145,14 @@ func _on_battle_resolved(result: Dictionary):
 			defender_name = province.name
 	
 	battle_report.show_battle_report(result, attacker_name, defender_name)
+
+func _on_battle_returned(result: Dictionary) -> void:
+	"""Called when tactical battle ends and returns to strategic map."""
+	print("Battle returned! Winner: ", result.get("winner", "unknown"))
+	
+	# Refresh the panel to show updated stats
+	if current_province_id != -1:
+		update_panel(current_province_id)
 
 func can_attack(province_id: int, family_id: String) -> bool:
 	var province = GameState.provinces[province_id]
