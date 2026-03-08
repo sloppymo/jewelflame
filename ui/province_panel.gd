@@ -125,12 +125,12 @@ func _setup_panel_structure():
 	margin.add_theme_constant_override("margin_bottom", 16)
 	add_child(margin)
 	
-	# Vertical stack
+	# Vertical stack - tighter spacing for Gemfire layout
 	var vbox = VBoxContainer.new()
 	vbox.name = "VBox"
 	vbox.anchor_right = 1.0
 	vbox.anchor_bottom = 1.0
-	vbox.add_theme_constant_override("separation", 12)
+	vbox.add_theme_constant_override("separation", 4)  # Tighter spacing
 	margin.add_child(vbox)
 	
 	# 1. Header Section
@@ -154,11 +154,13 @@ func _setup_panel_structure():
 	title_label.add_theme_color_override("font_color", Color("#f4e4c1"))
 	crest_row.add_child(title_label)
 	
-	# Close button
+	# Close button - small, gold X on blue
 	close_button = Button.new()
 	close_button.name = "Close"
 	close_button.text = "X"
-	close_button.custom_minimum_size = Vector2(32, 32)
+	close_button.custom_minimum_size = Vector2(16, 16)
+	close_button.add_theme_font_size_override("font_size", 10)
+	close_button.add_theme_color_override("font_color", Color("#d4af37"))
 	close_button.pressed.connect(_on_close_pressed)
 	crest_row.add_child(close_button)
 	
@@ -176,29 +178,37 @@ func _setup_panel_structure():
 	divider_top = _create_divider()
 	vbox.add_child(divider_top)
 	
-	# 2. Portrait Section
+	# 2. Portrait Section - FIXED SIZE, not expanding
 	portrait_section = VBoxContainer.new()
 	portrait_section.name = "PortraitSection"
+	portrait_section.custom_minimum_size = Vector2(0, 180)  # Fixed height ~180px
+	portrait_section.size_flags_vertical = Control.SIZE_SHRINK_CENTER  # Don't expand
 	vbox.add_child(portrait_section)
 	
-	# Portrait container
+	# Portrait container - CenterContainer but with fixed size
 	portrait_container = CenterContainer.new()
 	portrait_container.name = "PortraitContainer"
+	portrait_container.custom_minimum_size = portrait_size  # 128x160
+	portrait_container.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	portrait_container.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	portrait_section.add_child(portrait_container)
 	
-	# Portrait texture
+	# Portrait texture - STRICT SIZE
 	portrait_texture = TextureRect.new()
 	portrait_texture.name = "Portrait"
-	portrait_texture.custom_minimum_size = portrait_size
+	portrait_texture.custom_minimum_size = portrait_size  # 128x160 ONLY
+	portrait_texture.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	portrait_texture.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	portrait_texture.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	portrait_texture.expand_mode = TextureRect.EXPAND_KEEP_SIZE
+	portrait_texture.expand_mode = TextureRect.EXPAND_FIT_SIZE_PROPORTIONALLY
 	portrait_texture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	portrait_container.add_child(portrait_texture)
 	
-	# Lord name
+	# Lord name - below portrait
 	lord_name_label = Label.new()
 	lord_name_label.name = "LordName"
 	lord_name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lord_name_label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	if font_header:
 		lord_name_label.add_theme_font_override("font", font_header)
 	lord_name_label.add_theme_font_size_override("font_size", 12)
@@ -209,23 +219,29 @@ func _setup_panel_structure():
 	var divider_mid = _create_divider()
 	vbox.add_child(divider_mid)
 	
-	# 3. Stats Grid
+	# 3. Stats Grid - FIXED SIZE
 	stats_grid = _create_stats_grid()
+	stats_grid.custom_minimum_size = Vector2(0, 120)  # Fixed height for 6 stats
+	stats_grid.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	vbox.add_child(stats_grid)
 	
 	# Bottom divider
 	divider_bottom = _create_divider()
 	vbox.add_child(divider_bottom)
 	
-	# 4. Action Buttons
+	# 4. Action Buttons - FIXED SIZE
 	action_buttons = _create_action_buttons()
+	action_buttons.custom_minimum_size = Vector2(0, 64)  # Fixed height for buttons
+	action_buttons.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	vbox.add_child(action_buttons)
 	
-	# 5. Command Prompt
+	# 5. Command Prompt - FIXED SIZE
 	command_prompt = Label.new()
 	command_prompt.name = "CommandPrompt"
 	command_prompt.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	command_prompt.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	command_prompt.custom_minimum_size = Vector2(0, 30)
+	command_prompt.size_flags_vertical = Control.SIZE_SHRINK_END  # Push to bottom
 	if font_header:
 		command_prompt.add_theme_font_override("font", font_header)
 	command_prompt.add_theme_font_size_override("font_size", 11)
