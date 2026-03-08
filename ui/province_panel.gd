@@ -1,134 +1,381 @@
 extends Panel
 
-# New UI Assets Integration - SNES Gemfire Style
+# Complete ProvincePanel Implementation - Gemfire SNES Style
+# Left 40% panel with stats grid, portrait, and action buttons
 
-@onready var title_label: Label = $VBox/Header/TitleLabel
-@onready var close_button: Button = $VBox/Header/CloseButton
-@onready var owner_label: Label = $VBox/OwnerLabel
-@onready var portrait_frame: TextureRect = $VBox/PortraitContainer/PortraitFrame
-@onready var portrait: TextureRect = $VBox/PortraitContainer/Portrait
-@onready var divider_top: TextureRect = $VBox/DividerTop
-@onready var stats_grid: GridContainer = $VBox/StatsGrid
-@onready var divider_bottom: TextureRect = $VBox/DividerBottom
-@onready var action_buttons: HBoxContainer = $VBox/ActionButtons
+# Export vars for designer tweaking
+@export var panel_width_percent: float = 0.4
+@export var portrait_size: Vector2 = Vector2(128, 160)
+@export var stat_icon_size: Vector2 = Vector2(32, 32)
+@export var button_size: Vector2 = Vector2(64, 64)
 
-# Stat icon textures (loaded on ready)
+# Node references (will be created in code for full control)
+var header_section: VBoxContainer
+var crest_row: HBoxContainer
+var title_label: Label
+var owner_label: Label
+var close_button: Button
+var divider_top: TextureRect
+
+var portrait_section: VBoxContainer
+var portrait_container: CenterContainer
+var portrait_texture: TextureRect
+var lord_name_label: Label
+
+var stats_grid: GridContainer
+
+var divider_bottom: TextureRect
+
+var action_buttons: HBoxContainer
+var move_button: Button
+
+var command_prompt: Label
+
+# Stat icon textures
 var icon_gold: Texture2D
 var icon_food: Texture2D
 var icon_troops: Texture2D
+var icon_flags: Texture2D
+var icon_swords: Texture2D
+var icon_castle: Texture2D
 
-# Portrait textures by lord (pre-framed pixel art with ornate borders)
-var portrait_textures: Dictionary = {
-	"erin": preload("res://assets/portraits/house_blanche/sister.png"),      # Lady Elara - 680x1013
-	"ander": preload("res://assets/portraits/house_blanche/son.png"),       # Lord Roland - 784x1168
-	"lars": preload("res://assets/portraits/house_blanche/son.png"),        # Placeholder - use son for now
-	"char_erin": preload("res://assets/portraits/house_blanche/sister.png"),
-	"char_ander": preload("res://assets/portraits/house_blanche/son.png"),
-	"char_lars": preload("res://assets/portraits/house_blanche/son.png"),
-	"char_lord_2": preload("res://assets/portraits/house_blanche/sister.png"),  # Lord Carveti
-	"char_lord_4": preload("res://assets/portraits/house_blanche/son.png")       # Lord Banshea
-}
+# Button textures
+var button_frame_normal: Texture2D
+var button_frame_hover: Texture2D
+var button_frame_pressed: Texture2D
+
+# Portrait textures
+var portrait_textures: Dictionary
 
 var current_province_id: int = -1
 var animation_controller: Node2D
 
+# Fonts (will be loaded if available)
+var font_header: Font
+var font_numbers: Font
+
 func _ready():
-	EventBus.ProvinceSelected.connect(update_panel)
+	EventBus.ProvinceSelected.connect(_on_province_selected)
 	EventBus.BattleResolved.connect(_on_battle_resolved)
 	EventBus.ProvinceDataChanged.connect(_on_province_data_changed)
 	
-	# Get animation controller reference
 	animation_controller = get_tree().get_first_node_in_group("animation_controller")
 	
-	# Connect close button
-	if close_button:
-		close_button.pressed.connect(_on_close_pressed)
-	
-	# Load icon textures
-	_load_icons()
-	
-	# Setup UI with proper pixel art filtering
-	_setup_pixel_art_ui()
+	_load_assets()
+	_setup_panel_structure()
+	_setup_panel_style()
 	
 	hide()
 
-func _load_icons():
-	"""Load stat icons with error handling."""
+func _load_assets():
+	"""Load all textures and fonts."""
+	# Stat icons
 	icon_gold = load("res://assets/icons/icon_gold.png")
 	icon_food = load("res://assets/icons/icon_food.png")
 	icon_troops = load("res://assets/icons/icon_troops.png")
+	icon_flags = load("res://assets/icons/icon_flags.png")
+	icon_swords = load("res://assets/icons/icon_swords.png")
+	icon_castle = load("res://assets/icons/icon_castle.png")
 	
-	# Fallback to generated icons if not found
-	if not icon_gold:
-		icon_gold = load("res://assets/generated/ui/icon_gold.png")
-	if not icon_food:
-		icon_food = load("res://assets/generated/ui/icon_gold.png")  # Fallback
-	if not icon_troops:
-		icon_troops = load("res://assets/generated/ui/icon_gold.png")  # Fallback
-
-func _setup_pixel_art_ui():
-	"""Configure all textures for pixel-perfect rendering."""
-	# Set texture filter to NEAREST for all pixel art
-	if portrait_frame:
-		portrait_frame.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	if portrait:
-		portrait.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	if divider_top:
-		divider_top.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	if divider_bottom:
-		divider_bottom.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	# Button frames
+	button_frame_normal = load("res://assets/ui/button_frame.png")
+	button_frame_hover = load("res://assets/ui/button_frame_hover.png")
+	button_frame_pressed = load("res://assets/ui/button_frame_pressed.png")
 	
-	# Setup stat icons with nearest neighbor
-	_setup_stat_icons()
+	# Portrait textures
+	portrait_textures = {
+		"erin": load("res://assets/portraits/house_blanche/sister.png"),
+		"ander": load("res://assets/portraits/house_blanche/son.png"),
+		"lars": load("res://assets/portraits/house_blanche/son.png"),
+		"char_erin": load("res://assets/portraits/house_blanche/sister.png"),
+		"char_ander": load("res://assets/portraits/house_blanche/son.png"),
+		"char_lars": load("res://assets/portraits/house_blanche/son.png"),
+		"char_lord_2": load("res://assets/portraits/house_blanche/sister.png"),
+		"char_lord_4": load("res://assets/portraits/house_blanche/son.png")
+	}
+	
+	# Try to load fonts
+	if ResourceLoader.exists("res://assets/fonts/PressStart2P.ttf"):
+		font_header = load("res://assets/fonts/PressStart2P.ttf")
+	if ResourceLoader.exists("res://assets/fonts/VT323.ttf"):
+		font_numbers = load("res://assets/fonts/VT323.ttf")
 
-func _setup_stat_icons():
-	"""Create stat rows with icons and values."""
-	# Clear existing children
-	for child in stats_grid.get_children():
+func _setup_panel_structure():
+	"""Build the complete panel hierarchy."""
+	# Clear existing
+	for child in get_children():
 		child.queue_free()
 	
-	# Create stat rows: Gold, Food, Troops, Loyalty, Cultivation, Protection
-	# Layout: [Icon] [Value] [Icon] [Value] in a 2-column grid
+	# Set panel anchors (left 40%)
+	anchors_preset = Control.PRESET_LEFT_WIDE
+	anchor_right = panel_width_percent
+	offset_left = 20
+	offset_top = 20
+	offset_right = -20
+	offset_bottom = -20
 	
-	# Row 1: Gold | Food
-	_create_stat_row(icon_gold, "gold", Color.GOLD)
-	_create_stat_row(icon_food, "food", Color.FOREST_GREEN)
+	# Main container with margin
+	var margin = MarginContainer.new()
+	margin.name = "Margin"
+	margin.anchor_right = 1.0
+	margin.anchor_bottom = 1.0
+	margin.add_theme_constant_override("margin_left", 16)
+	margin.add_theme_constant_override("margin_right", 16)
+	margin.add_theme_constant_override("margin_top", 16)
+	margin.add_theme_constant_override("margin_bottom", 16)
+	add_child(margin)
 	
-	# Row 2: Troops | Loyalty
-	_create_stat_row(icon_troops, "soldiers", Color.CRIMSON)
-	# Loyalty icon - reuse gold temporarily or create new
-	_create_stat_row(icon_gold, "loyalty", Color.CORAL)
+	# Vertical stack
+	var vbox = VBoxContainer.new()
+	vbox.name = "VBox"
+	vbox.anchor_right = 1.0
+	vbox.anchor_bottom = 1.0
+	vbox.add_theme_constant_override("separation", 12)
+	margin.add_child(vbox)
 	
-	# Row 3: Cultivation | Protection
-	_create_stat_row(icon_food, "cultivation", Color.YELLOW_GREEN)
-	_create_stat_row(icon_troops, "protection", Color.STEEL_BLUE)
+	# 1. Header Section
+	header_section = VBoxContainer.new()
+	header_section.name = "Header"
+	vbox.add_child(header_section)
+	
+	# Crest row
+	crest_row = HBoxContainer.new()
+	crest_row.name = "CrestRow"
+	crest_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	header_section.add_child(crest_row)
+	
+	# Title label
+	title_label = Label.new()
+	title_label.name = "Title"
+	title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	if font_header:
+		title_label.add_theme_font_override("font", font_header)
+	title_label.add_theme_font_size_override("font_size", 16)
+	title_label.add_theme_color_override("font_color", Color("#f4e4c1"))
+	crest_row.add_child(title_label)
+	
+	# Close button
+	close_button = Button.new()
+	close_button.name = "Close"
+	close_button.text = "X"
+	close_button.custom_minimum_size = Vector2(32, 32)
+	close_button.pressed.connect(_on_close_pressed)
+	crest_row.add_child(close_button)
+	
+	# Owner label
+	owner_label = Label.new()
+	owner_label.name = "Owner"
+	owner_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	if font_header:
+		owner_label.add_theme_font_override("font", font_header)
+	owner_label.add_theme_font_size_override("font_size", 14)
+	owner_label.add_theme_color_override("font_color", Color("#d4af37"))
+	header_section.add_child(owner_label)
+	
+	# Top divider
+	divider_top = _create_divider()
+	vbox.add_child(divider_top)
+	
+	# 2. Portrait Section
+	portrait_section = VBoxContainer.new()
+	portrait_section.name = "PortraitSection"
+	vbox.add_child(portrait_section)
+	
+	# Portrait container
+	portrait_container = CenterContainer.new()
+	portrait_container.name = "PortraitContainer"
+	portrait_section.add_child(portrait_container)
+	
+	# Portrait texture
+	portrait_texture = TextureRect.new()
+	portrait_texture.name = "Portrait"
+	portrait_texture.custom_minimum_size = portrait_size
+	portrait_texture.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	portrait_texture.expand_mode = TextureRect.EXPAND_KEEP_SIZE
+	portrait_texture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	portrait_container.add_child(portrait_texture)
+	
+	# Lord name
+	lord_name_label = Label.new()
+	lord_name_label.name = "LordName"
+	lord_name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	if font_header:
+		lord_name_label.add_theme_font_override("font", font_header)
+	lord_name_label.add_theme_font_size_override("font_size", 12)
+	lord_name_label.add_theme_color_override("font_color", Color("#f4e4c1"))
+	portrait_section.add_child(lord_name_label)
+	
+	# Middle divider
+	var divider_mid = _create_divider()
+	vbox.add_child(divider_mid)
+	
+	# 3. Stats Grid
+	stats_grid = _create_stats_grid()
+	vbox.add_child(stats_grid)
+	
+	# Bottom divider
+	divider_bottom = _create_divider()
+	vbox.add_child(divider_bottom)
+	
+	# 4. Action Buttons
+	action_buttons = _create_action_buttons()
+	vbox.add_child(action_buttons)
+	
+	# 5. Command Prompt
+	command_prompt = Label.new()
+	command_prompt.name = "CommandPrompt"
+	command_prompt.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	command_prompt.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	if font_header:
+		command_prompt.add_theme_font_override("font", font_header)
+	command_prompt.add_theme_font_size_override("font_size", 11)
+	command_prompt.add_theme_color_override("font_color", Color("#f4e4c1"))
+	vbox.add_child(command_prompt)
 
-func _create_stat_row(icon_texture: Texture2D, stat_name: String, color: Color):
-	"""Create a stat display with icon and label."""
+func _create_divider() -> TextureRect:
+	var divider = TextureRect.new()
+	divider.texture = load("res://assets/ui/divider_gold.png")
+	divider.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	divider.stretch_mode = TextureRect.STRETCH_TILE
+	divider.custom_minimum_size = Vector2(256, 24)
+	return divider
+
+func _create_stats_grid() -> GridContainer:
+	"""Create 2-column, 3-row stats grid."""
+	var grid = GridContainer.new()
+	grid.name = "StatsGrid"
+	grid.columns = 2
+	grid.add_theme_constant_override("h_separation", 24)
+	grid.add_theme_constant_override("v_separation", 8)
+	
+	# Left column stats (Gold, Food, Troops)
+	var gold_row = _create_stat_row(icon_gold, "gold", "Gold")
+	var food_row = _create_stat_row(icon_food, "food", "Food")
+	var troops_row = _create_stat_row(icon_troops, "soldiers", "Troops")
+	
+	# Right column stats (Flags, Swords, Castle)
+	var flags_row = _create_stat_row(icon_flags, "loyalty", "Loyalty")
+	var swords_row = _create_stat_row(icon_swords, "cultivation", "Cultivation")
+	var castle_row = _create_stat_row(icon_castle, "protection", "Defense")
+	
+	# Add in grid order (row by row, left to right)
+	grid.add_child(gold_row)
+	grid.add_child(flags_row)
+	grid.add_child(food_row)
+	grid.add_child(swords_row)
+	grid.add_child(troops_row)
+	grid.add_child(castle_row)
+	
+	return grid
+
+func _create_stat_row(icon_texture: Texture2D, stat_name: String, label_text: String) -> HBoxContainer:
+	var row = HBoxContainer.new()
+	row.name = stat_name.capitalize() + "Row"
+	row.alignment = BoxContainer.ALIGNMENT_BEGIN
+	
 	# Icon
 	var icon = TextureRect.new()
+	icon.name = "Icon"
 	icon.texture = icon_texture
 	icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	icon.custom_minimum_size = Vector2(32, 32)
+	icon.custom_minimum_size = stat_icon_size
 	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	icon.name = "Icon" + stat_name.capitalize()
-	stats_grid.add_child(icon)
+	row.add_child(icon)
+	
+	# Spacer
+	var spacer = Control.new()
+	spacer.custom_minimum_size = Vector2(8, 0)
+	row.add_child(spacer)
 	
 	# Value label
-	var label = Label.new()
-	label.name = "Label" + stat_name.capitalize()
-	label.add_theme_font_size_override("font_size", 20)
-	label.add_theme_color_override("font_color", Color("#f4e4c1"))  # Cream color
-	stats_grid.add_child(label)
+	var value_label = Label.new()
+	value_label.name = "Value"
+	if font_numbers:
+		value_label.add_theme_font_override("font", font_numbers)
+	value_label.add_theme_font_size_override("font_size", 24)
+	value_label.add_theme_color_override("font_color", Color("#f4e4c1"))
+	row.add_child(value_label)
+	
+	return row
 
-func _on_close_pressed():
-	hide()
-	current_province_id = -1
+func _create_action_buttons() -> HBoxContainer:
+	var container = HBoxContainer.new()
+	container.name = "ActionButtons"
+	container.alignment = BoxContainer.ALIGNMENT_CENTER
+	container.add_theme_constant_override("separation", 12)
+	
+	var buttons = [
+		{"name": "Attack", "callback": _on_attack_button_pressed},
+		{"name": "Develop", "callback": _on_develop_button_pressed},
+		{"name": "Move", "callback": _on_move_button_pressed},
+		{"name": "Recruit", "callback": _on_recruit_button_pressed}
+	]
+	
+	for btn_data in buttons:
+		var button = Button.new()
+		button.name = btn_data.name + "Button"
+		button.text = btn_data.name
+		button.custom_minimum_size = button_size
+		button.pressed.connect(btn_data.callback)
+		
+		# Apply button styles
+		_apply_button_style(button)
+		
+		if btn_data.name == "Move":
+			move_button = button
+		
+		container.add_child(button)
+	
+	return container
 
-func _on_province_data_changed(province_id: int, field: String, value: Variant):
-	# Refresh panel if current province's data changed
-	if province_id == current_province_id and visible:
-		update_panel(province_id)
+func _apply_button_style(button: Button):
+	"""Apply SNES-style button frame with states."""
+	if button_frame_normal:
+		var style_normal = StyleBoxTexture.new()
+		style_normal.texture = button_frame_normal
+		style_normal.texture_margin_left = 4
+		style_normal.texture_margin_right = 4
+		style_normal.texture_margin_top = 4
+		style_normal.texture_margin_bottom = 4
+		button.add_theme_stylebox_override("normal", style_normal)
+	
+	if button_frame_hover:
+		var style_hover = StyleBoxTexture.new()
+		style_hover.texture = button_frame_hover
+		style_hover.texture_margin_left = 4
+		style_hover.texture_margin_right = 4
+		style_hover.texture_margin_top = 4
+		style_hover.texture_margin_bottom = 4
+		button.add_theme_stylebox_override("hover", style_hover)
+	
+	if button_frame_pressed:
+		var style_pressed = StyleBoxTexture.new()
+		style_pressed.texture = button_frame_pressed
+		style_pressed.texture_margin_left = 4
+		style_pressed.texture_margin_right = 4
+		style_pressed.texture_margin_top = 4
+		style_pressed.texture_margin_bottom = 4
+		button.add_theme_stylebox_override("pressed", style_pressed)
+	
+	# Font
+	if font_header:
+		button.add_theme_font_override("font", font_header)
+	button.add_theme_font_size_override("font_size", 11)
+	button.add_theme_color_override("font_color", Color("#f4e4c1"))
+
+func _setup_panel_style():
+	"""Apply panel background and styling."""
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color("#1a3a7a")  # Deep blue
+	style.border_color = Color("#d4af37")  # Gold
+	style.border_width_left = 4
+	style.border_width_top = 4
+	style.border_width_right = 4
+	style.border_width_bottom = 4
+	add_theme_stylebox_override("panel", style)
+
+func _on_province_selected(province_id: int):
+	update_panel(province_id)
 
 func update_panel(province_id: int):
 	current_province_id = province_id
@@ -140,92 +387,53 @@ func update_panel(province_id: int):
 	var player_family = GameState.get_player_family()
 	var is_owned = (province.owner_id == player_family.id)
 	
-	# Update title with province ID
+	# Update header
 	title_label.text = "%d: %s" % [province_id, province.name]
-	
-	# Update owner with capital indicator
 	owner_label.text = province.owner_id.capitalize()
 	if province.is_capital:
 		owner_label.text += " ♚"
-	
-	# Update portrait
-	_update_portrait(province)
-	
-	# Update stat values
-	_update_stat_values(province)
-	
-	# Show exhaustion indicator
 	if province.is_exhausted:
-		owner_label.text += " [EXHAUSTED]"
+		owner_label.text += " [Exhausted]"
 		owner_label.add_theme_color_override("font_color", Color.GRAY)
 	else:
 		owner_label.remove_theme_color_override("font_color")
 	
-	# Update action buttons
-	_update_action_buttons(is_owned, province)
+	# Update portrait
+	_update_portrait(province)
+	
+	# Update stats
+	_update_stats(province)
+	
+	# Update buttons
+	_update_buttons(is_owned, province)
+	
+	# Update command prompt
+	var lord = _get_province_lord(province)
+	if lord:
+		command_prompt.text = "Lord %s, what is your command?" % lord.name
+	else:
+		command_prompt.text = "What is your command?"
 	
 	show()
 
 func _update_portrait(province):
-	"""Update the lord portrait based on province governor.
-	
-	Uses pre-framed pixel art portraits (680x1013 and 784x1168).
-	These already have ornate gold borders built-in."""
 	var lord = _get_province_lord(province)
 	
-	if lord and portrait:
-		# Try to load portrait by lord ID
+	if lord:
+		lord_name_label.text = lord.name
 		var tex = portrait_textures.get(lord.id)
 		if tex:
-			portrait.texture = tex
-			portrait.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-			# Pre-framed portraits: hide the separate frame
-			if portrait_frame:
-				portrait_frame.visible = false
+			portrait_texture.texture = tex
+			portrait_texture.custom_minimum_size = portrait_size
 		else:
-			# Use colored placeholder and show frame
-			portrait.texture = _create_placeholder_portrait(lord.id)
-			if portrait_frame:
-				portrait_frame.visible = true
+			portrait_texture.texture = null
 	else:
-		# No lord - show empty frame
-		if portrait:
-			portrait.texture = null
-		if portrait_frame:
-			portrait_frame.visible = true
+		lord_name_label.text = "No Governor"
+		portrait_texture.texture = null
 
-func _create_placeholder_portrait(lord_id: String) -> ImageTexture:
-	"""Create a colored placeholder for missing portraits."""
-	var img = Image.create(80, 120, false, Image.FORMAT_RGBA8)
-	
-	# Color based on lord
-	var color = Color.DIM_GRAY
-	if "erin" in lord_id:
-		color = Color.TEAL
-	elif "ander" in lord_id:
-		color = Color.BROWN
-	elif "lars" in lord_id:
-		color = Color.FOREST_GREEN
-	
-	img.fill(color)
-	return ImageTexture.create_from_image(img)
-
-func _get_province_lord(province) -> CharacterData:
-	"""Get the lord governing a province."""
-	if province.get("governor_id") and not province.governor_id.is_empty():
-		return GameState.characters.get(province.governor_id)
-	
-	# Fallback: find any character from this family
-	for char_id in GameState.characters:
-		var character = GameState.characters[char_id]
-		if character.family_id == province.owner_id:
-			return character
-	
-	return null
-
-func _update_stat_values(province):
-	"""Update all stat labels with current values."""
-	var stat_values = {
+func _update_stats(province):
+	# Update all stat labels
+	var stats = {
 		"gold": province.gold,
 		"food": province.food,
 		"soldiers": province.soldiers,
@@ -234,13 +442,14 @@ func _update_stat_values(province):
 		"protection": province.protection
 	}
 	
-	for stat_name in stat_values:
-		var label = stats_grid.get_node_or_null("Label" + stat_name.capitalize())
-		if label:
-			label.text = str(stat_values[stat_name])
+	for stat_name in stats:
+		var row = stats_grid.get_node_or_null(stat_name.capitalize() + "Row")
+		if row:
+			var value_label = row.get_node_or_null("Value")
+			if value_label:
+				value_label.text = str(stats[stat_name])
 
-func _update_action_buttons(is_owned: bool, province):
-	"""Enable/disable action buttons based on ownership and state."""
+func _update_buttons(is_owned: bool, province):
 	for button in action_buttons.get_children():
 		if button is Button:
 			button.disabled = !is_owned or province.is_exhausted
@@ -249,12 +458,28 @@ func _update_action_buttons(is_owned: bool, province):
 				if not is_owned:
 					button.tooltip_text = "Not your province"
 				elif province.is_exhausted:
-					button.tooltip_text = "Province already acted this turn"
+					button.tooltip_text = "Province already acted"
+			else:
+				button.tooltip_text = ""
+
+func _get_province_lord(province) -> CharacterData:
+	if province.get("governor_id") and not province.governor_id.is_empty():
+		return GameState.characters.get(province.governor_id)
 	
-	# Special handling for attack button
-	var attack_button = action_buttons.get_node_or_null("AttackButton")
-	if attack_button:
-		attack_button.disabled = !can_attack(province.id, GameState.get_player_family().id)
+	for char_id in GameState.characters:
+		var character = GameState.characters[char_id]
+		if character.family_id == province.owner_id:
+			return character
+	
+	return null
+
+func _on_close_pressed():
+	hide()
+	current_province_id = -1
+
+func _on_province_data_changed(province_id: int, field: String, value: Variant):
+	if province_id == current_province_id and visible:
+		update_panel(province_id)
 
 func _on_recruit_button_pressed():
 	if current_province_id != -1:
@@ -273,7 +498,6 @@ func _on_attack_button_pressed():
 		var province = GameState.provinces[current_province_id]
 		var player_family = GameState.get_player_family()
 		
-		# Get adjacent enemy provinces
 		var enemy_targets = []
 		for neighbor_id in province.neighbors:
 			var neighbor = GameState.provinces[neighbor_id]
@@ -281,68 +505,65 @@ func _on_attack_button_pressed():
 				enemy_targets.append(neighbor_id)
 		
 		if enemy_targets.is_empty():
-			print("No attack targets available")
+			print("No attack targets")
 			return
 		
-		# For now, attack the first available target
 		var target_id = enemy_targets[0]
 		
-		# Show attack animation
 		if animation_controller:
 			animation_controller.show_attack_arrow(current_province_id, target_id)
 		
-		# Launch tactical battle!
-		print("Launching tactical battle: %s vs %s" % [province.name, GameState.provinces[target_id].name])
 		BattleLauncher.launch_battle(current_province_id, target_id, 0.7, _on_battle_returned)
 
+func _on_move_button_pressed():
+	"""Move troops between owned provinces."""
+	if current_province_id == -1:
+		return
+	
+	var province = GameState.provinces[current_province_id]
+	var player_family = GameState.get_player_family()
+	
+	# Get friendly neighbors
+	var friendly_targets = []
+	for neighbor_id in province.neighbors:
+		var neighbor = GameState.provinces[neighbor_id]
+		if neighbor.owner_id == player_family.id and neighbor_id != current_province_id:
+			friendly_targets.append(neighbor_id)
+	
+	if friendly_targets.is_empty():
+		print("No friendly provinces to move to")
+		return
+	
+	# For now, move to first friendly province
+	# TODO: Add province selection dialog
+	var target_id = friendly_targets[0]
+	var move_amount = int(province.soldiers * 0.5)  # Move 50% of troops
+	
+	if move_amount > 0:
+		province.soldiers -= move_amount
+		GameState.provinces[target_id].soldiers += move_amount
+		province.is_exhausted = true
+		EventBus.ProvinceExhausted.emit(current_province_id, true)
+		update_panel(current_province_id)
+		print("Moved %d troops to %s" % [move_amount, GameState.provinces[target_id].name])
+
 func _on_battle_resolved(result: Dictionary):
-	# Show battle report dialog
 	var battle_report = preload("res://ui/battle_report.gd").new()
 	get_tree().current_scene.add_child(battle_report)
 	
-	# Get attacker and defender names
 	var attacker_name = "Unknown"
 	var defender_name = "Unknown"
 	
-	# Find the provinces involved in this battle
-	for province_id in GameState.provinces:
-		var province = GameState.provinces[province_id]
-		if province_id in result.get("attacker_provinces", []):
-			attacker_name = province.name
-		if province_id in result.get("defender_provinces", []):
-			defender_name = province.name
+	for pid in GameState.provinces:
+		var p = GameState.provinces[pid]
+		if pid in result.get("attacker_provinces", []):
+			attacker_name = p.name
+		if pid in result.get("defender_provinces", []):
+			defender_name = p.name
 	
 	battle_report.show_battle_report(result, attacker_name, defender_name)
 
-func _on_battle_returned(result: Dictionary) -> void:
-	"""Called when tactical battle ends and returns to strategic map."""
-	print("Battle returned! Winner: ", result.get("winner", "unknown"))
-	
-	# Refresh the panel to show updated stats
+func _on_battle_returned(result: Dictionary):
+	print("Battle complete! Winner: ", result.get("winner", "unknown"))
 	if current_province_id != -1:
 		update_panel(current_province_id)
-
-func can_attack(province_id: int, family_id: String) -> bool:
-	var province = GameState.provinces[province_id]
-	
-	# Must own the province
-	if province.owner_id != family_id:
-		return false
-	
-	# Must not be exhausted
-	if province.is_exhausted:
-		return false
-	
-	# Must have adjacent enemies
-	return has_adjacent_enemies(province_id)
-
-func has_adjacent_enemies(province_id: int) -> bool:
-	var province = GameState.provinces[province_id]
-	var player_family = GameState.get_player_family()
-	
-	for neighbor_id in province.neighbors:
-		var neighbor = GameState.provinces[neighbor_id]
-		if neighbor.owner_id != player_family.id:
-			return true
-	
-	return false
