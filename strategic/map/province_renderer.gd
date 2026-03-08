@@ -3,20 +3,26 @@ extends Node2D
 @onready var areas: Node2D = $ProvinceAreas
 @onready var labels: Node2D = $ProvinceLabels
 
-# Terrain sprites
-const TERRAIN_SPRITES = {
-	"plains": preload("res://assets/terrain/plains.png"),
-	"forest": preload("assets/terrain/forest.png"),
-	"mountain": preload("res://assets/terrain/mountain.png"),
-	"water": preload("res://assets/terrain/water.png"),
-	"coast": preload("res://assets/terrain/coast.png"),
-}
+# Terrain sprites (loaded at runtime to avoid import issues)
+var terrain_sprites: Dictionary = {}
 
-# Selection highlight
-var selection_highlight: Texture2D = preload("res://assets/effects/selection.png")
+# Selection highlight (loaded at runtime)
+var selection_highlight: Texture2D
 var selected_province_id: int = -1
 
 func _ready():
+	# Load terrain sprites
+	terrain_sprites = {
+		"plains": load("res://assets/terrain/plains.png"),
+		"forest": load("res://assets/terrain/forest.png"),
+		"mountain": load("res://assets/terrain/mountain.png"),
+		"water": load("res://assets/terrain/water.png"),
+		"coast": load("res://assets/terrain/coast.png"),
+	}
+	
+	# Load selection highlight
+	selection_highlight = load("res://assets/effects/selection.png")
+	
 	EventBus.ProvinceSelected.connect(_on_province_selected)
 	EventBus.GameLoaded.connect(_on_game_loaded)
 	EventBus.ProvinceExhausted.connect(_on_province_exhausted)
@@ -48,7 +54,7 @@ func create_province_area(province_id: int):
 	
 	# Terrain texture (under faction color)
 	var terrain_type = province.terrain_type if province.get("terrain_type") else "plains"
-	var terrain_tex = TERRAIN_SPRITES.get(terrain_type, TERRAIN_SPRITES["plains"])
+	var terrain_tex = terrain_sprites.get(terrain_type, terrain_sprites.get("plains"))
 	
 	var terrain_sprite = Sprite2D.new()
 	terrain_sprite.name = "Terrain"
