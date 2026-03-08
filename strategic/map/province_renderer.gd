@@ -3,6 +3,19 @@ extends Node2D
 @onready var areas: Node2D = $ProvinceAreas
 @onready var labels: Node2D = $ProvinceLabels
 
+# Terrain sprites
+const TERRAIN_SPRITES = {
+	"plains": preload("res://assets/terrain/plains.png"),
+	"forest": preload("assets/terrain/forest.png"),
+	"mountain": preload("res://assets/terrain/mountain.png"),
+	"water": preload("res://assets/terrain/water.png"),
+	"coast": preload("res://assets/terrain/coast.png"),
+}
+
+# Selection highlight
+var selection_highlight: Texture2D = preload("res://assets/effects/selection.png")
+var selected_province_id: int = -1
+
 func _ready():
 	EventBus.ProvinceSelected.connect(_on_province_selected)
 	EventBus.GameLoaded.connect(_on_game_loaded)
@@ -25,26 +38,50 @@ func create_province_area(province_id: int):
 	var area = Area2D.new()
 	area.name = "Province_%d" % province_id
 	area.position = get_province_position(province_id)
-	area.input_pickable = true  # Ensure mouse input is captured
+	area.input_pickable = true
 	
+	# Collision
 	var collision = CollisionPolygon2D.new()
 	collision.polygon = get_province_shape(province_id)
 	collision.build_mode = CollisionPolygon2D.BUILD_SOLIDS
 	area.add_child(collision)
 	
+	# Terrain texture (under faction color)
+	var terrain_type = province.terrain_type if province.get("terrain_type") else "plains"
+	var terrain_tex = TERRAIN_SPRITES.get(terrain_type, TERRAIN_SPRITES["plains"])
+	
+	var terrain_sprite = Sprite2D.new()
+	terrain_sprite.name = "Terrain"
+	terrain_sprite.texture = terrain_tex
+	terrain_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	terrain_sprite.scale = Vector2(1.5, 1.5)  # Scale up 64x64 to fit hex
+	area.add_child(terrain_sprite)
+	
+	# Faction color overlay
 	var polygon = Polygon2D.new()
 	polygon.name = "Visual"
 	polygon.polygon = get_province_shape(province_id)
 	polygon.color = family.color if family else Color.GRAY
-	polygon.color.a = 0.6
+	polygon.color.a = 0.4  # Slightly more transparent to show terrain
 	area.add_child(polygon)
 	
+	# Border
 	var border = Line2D.new()
+	border.name = "Border"
 	border.points = get_province_shape(province_id)
 	border.closed = true
 	border.width = 3
 	border.default_color = Color.WHITE
 	area.add_child(border)
+	
+	# Selection highlight (hidden by default)
+	var highlight = Sprite2D.new()
+	highlight.name = "SelectionHighlight"
+	highlight.texture = selection_highlight
+	highlight.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	highlight.visible = false
+	highlight.scale = Vector2(0.8, 0.8)
+	area.add_child(highlight)
 	
 	if province.is_exhausted:
 		var dark = Polygon2D.new()
@@ -92,13 +129,21 @@ func _on_province_input(viewport, event, shape_idx, province_id: int):
 		EventBus.ProvinceSelected.emit(province_id)
 
 func _on_province_selected(province_id: int):
+	selected_province_id = province_id
 	for child in areas.get_children():
 		var visual = child.get_node_or_null("Visual")
-		if visual:
-			if child.name == "Province_%d" % province_id:
+		var highlight = child.get_node_or_null("SelectionHighlight")
+		
+		if child.name == "Province_%d" % province_id:
+			if visual:
 				visual.modulate = Color(1.5, 1.5, 1.5)
-			else:
+			if highlight:
+				highlight.visible = true
+		else:
+			if visual:
 				visual.modulate = Color.WHITE
+			if highlight:
+				highlight.visible = false
 
 func _on_province_exhausted(id: int, exhausted: bool):
 	var area = areas.get_node_or_null("Province_%d" % id)
