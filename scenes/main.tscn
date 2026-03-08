@@ -1,0 +1,15 @@
+[gd_scene load_steps=4 format=3 uid="uid://main_scene_jewelflame"]
+
+[ext_resource type="PackedScene" uid="uid://bqvx8y1x8nql7" path="res://scenes/strategic_map.tscn" id="1_strategic"]
+[ext_resource type="PackedScene" uid="uid://c8n2m4k6p9qr" path="res://scenes/tactical_battle.tscn" id="2_tactical"]
+[ext_resource type="Script" path="res://autoload/scene_manager_integration.gd" id="3_scene_manager"]
+
+[node name="Main" type="Node"]
+process_mode = 3
+script = ExtResource("3_scene_manager")
+
+[node name="StrategicMap" parent="." instance=ExtResource("1_strategic")]
+visible = true
+
+[node name="TacticalBattle" parent="." instance=ExtResource("2_tactical")]
+visible = false

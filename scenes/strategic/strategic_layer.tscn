@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3 uid="uid://strategic_layer_001"]
+
+[ext_resource type="Script" path="res://scenes/strategic/strategic_layer.gd" id="1_strategic_layer"]
+[ext_resource type="PackedScene" uid="uid://strategic_hud_001" path="res://scenes/ui/strategic_hud.tscn" id="2_strategic_hud"]
+
+[node name="StrategicLayer" type="Node"]
+script = ExtResource("1_strategic_layer")
+
+[node name="HexGridContainer" type="Node" parent="."]
+
+# The existing HexForge hex grid would be added here as a child
+# or loaded dynamically
+
+[node name="StrategicHUD" parent="." instance=ExtResource("2_strategic_hud")]

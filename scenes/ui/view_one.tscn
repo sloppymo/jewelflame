@@ -1,0 +1,62 @@
+[gd_scene load_steps=2 format=3 uid="uid://view_one_001"]
+
+[ext_resource type="Script" path="res://scenes/ui/view_one.gd" id="1_view_one"]
+
+[node name="ViewOne" type="Window"]
+initial_position = 2
+size = Vector2i(400, 500)
+unresizable = true
+script = ExtResource("1_view_one")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Lord Information"
+horizontal_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="PortraitPanel" type="PanelContainer" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 2
+
+[node name="Portrait" type="TextureRect" parent="MarginContainer/VBoxContainer/HBoxContainer/PortraitPanel"]
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="StatsPanel" type="PanelContainer" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="EquipmentGrid" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="FifthUnitPanel" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="CloseBtn" type="Button" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Close"

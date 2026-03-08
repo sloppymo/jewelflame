@@ -1,22 +1,37 @@
 extends Panel
 
-@onready var title_label: Label = $VBox/TitleLabel
+@onready var title_label: Label = $VBox/Header/TitleLabel
+@onready var close_button: Button = $VBox/Header/CloseButton
 @onready var owner_label: Label = $VBox/OwnerLabel
 @onready var stats_label: Label = $VBox/StatsLabel
 @onready var action_buttons: VBoxContainer = $VBox/ActionButtons
 
 var current_province_id: int = -1
-var intel_system: IntelSystem = IntelSystem.new()
+# var intel_system: IntelSystem = IntelSystem.new() # Disabled - IntelSystem removed
 var animation_controller: Node2D
 
 func _ready():
 	EventBus.ProvinceSelected.connect(update_panel)
 	EventBus.BattleResolved.connect(_on_battle_resolved)
+	EventBus.ProvinceDataChanged.connect(_on_province_data_changed)
 	
 	# Get animation controller reference
 	animation_controller = get_tree().get_first_node_in_group("animation_controller")
 	
+	# Connect close button
+	if close_button:
+		close_button.pressed.connect(_on_close_pressed)
+	
 	hide()
+
+func _on_close_pressed():
+	hide()
+	current_province_id = -1
+
+func _on_province_data_changed(province_id: int, field: String, value: Variant):
+	# Refresh panel if current province's data changed
+	if province_id == current_province_id and visible:
+		update_panel(province_id)
 
 func update_panel(province_id: int):
 	current_province_id = province_id
@@ -33,7 +48,8 @@ func update_panel(province_id: int):
 	if province.is_capital:
 		owner_label.text += " ♚"
 	
-	var soldier_text = intel_system.get_intel_description(province_id, player_family.id)
+	# var soldier_text = intel_system.get_intel_description(province_id, player_family.id)
+	var soldier_text = str(province.soldiers) # Simple fallback without IntelSystem
 	var stats = "Gold: %d\nFood: %d\nSoldiers: %s\nLoyalty: %d\nCultivation: %d\nProtection: %d" % [
 		province.gold, province.food, soldier_text,
 		province.loyalty, province.cultivation, province.protection
@@ -43,6 +59,9 @@ func update_panel(province_id: int):
 		stats += "\n[EXHAUSTED]"
 	
 	stats_label.text = stats
+	
+	# Show the panel
+	show()
 	
 	for button in action_buttons.get_children():
 		button.disabled = !is_owned or province.is_exhausted
@@ -106,9 +125,9 @@ func _on_attack_button_pressed():
 		
 		# Execute attack with 70% of forces
 		var attack_force = int(province.soldiers * 0.7)
-		var result = BattleResolver.resolve_province_attack(current_province_id, target_id, attack_force)
-		
-		print("Player attacked from %s to %s" % [province.name, GameState.provinces[target_id].name])
+		# TODO: Re-enable when BattleResolver is fixed
+		# var result = BattleResolver.resolve_province_attack(current_province_id, target_id, attack_force)
+		print("Attack from %s to %s with %d soldiers (BattleResolver disabled)" % [province.name, GameState.provinces[target_id].name, attack_force])
 
 func _on_battle_resolved(result: Dictionary):
 	# Show battle report dialog

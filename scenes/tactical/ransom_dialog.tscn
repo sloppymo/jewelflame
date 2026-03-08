@@ -1,0 +1,110 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/tactical/ransom_dialog.gd" id="1_ransom_dialog"]
+
+[node name="RansomDialog" type="Window"]
+initial_position = 2
+size = Vector2i(400, 500)
+unresizable = true
+script = ExtResource("1_ransom_dialog")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 15
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_bottom = 15
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="PortraitPanel" type="Panel" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+
+[node name="Portrait" type="TextureRect" parent="MarginContainer/VBoxContainer/HBoxContainer/PortraitPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="NameLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Prince Erin"
+horizontal_alignment = 1
+
+[node name="MessageLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "We can hold Prince Erin for ransom.
+What shall we demand?"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="DemandContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="GoldLabel" type="Label" parent="MarginContainer/VBoxContainer/DemandContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "28 gold"
+horizontal_alignment = 1
+
+[node name="GoldSlider" type="HSlider" parent="MarginContainer/VBoxContainer/DemandContainer"]
+layout_mode = 2
+min_value = 0.0
+max_value = 100.0
+value = 28.0
+
+[node name="FoodLabel" type="Label" parent="MarginContainer/VBoxContainer/DemandContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "40 food"
+horizontal_alignment = 1
+
+[node name="FoodSlider" type="HSlider" parent="MarginContainer/VBoxContainer/DemandContainer"]
+layout_mode = 2
+min_value = 0.0
+max_value = 100.0
+value = 40.0
+
+[node name="HSeparator2" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="ButtonContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="ReleaseBtn" type="Button" parent="MarginContainer/VBoxContainer/ButtonContainer"]
+custom_minimum_size = Vector2(100, 40)
+layout_mode = 2
+text = "Release"
+
+[node name="ExecuteBtn" type="Button" parent="MarginContainer/VBoxContainer/ButtonContainer"]
+custom_minimum_size = Vector2(100, 40)
+layout_mode = 2
+text = "Execute"
+
+[node name="DemandBtn" type="Button" parent="MarginContainer/VBoxContainer/ButtonContainer"]
+custom_minimum_size = Vector2(100, 40)
+layout_mode = 2
+text = "Demand"

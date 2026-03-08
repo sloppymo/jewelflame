@@ -1,12 +1,5 @@
 class_name AIPersonalities
 
-enum PersonalityType {
-	AGGRESSIVE,
-	DEFENSIVE,
-	OPPORTUNISTIC,
-	TACTICAL
-}
-
 const WEIGHTS = {
 	"aggressive": {
 		"attack_threshold": 0.8,

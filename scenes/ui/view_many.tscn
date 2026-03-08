@@ -1,0 +1,63 @@
+[gd_scene load_steps=2 format=3 uid="uid://view_many_001"]
+
+[ext_resource type="Script" path="res://scenes/ui/view_many.gd" id="1_view_many"]
+
+[node name="ViewMany" type="Window"]
+initial_position = 2
+size = Vector2i(450, 350)
+unresizable = true
+script = ExtResource("1_view_many")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Family Roster"
+horizontal_alignment = 1
+
+[node name="PageLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Page 1/1"
+horizontal_alignment = 1
+
+[node name="LordList" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="PrevBtn" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(60, 0)
+layout_mode = 2
+text = "<"
+
+[node name="CloseBtn" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+text = "Close"
+
+[node name="NextBtn" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(60, 0)
+layout_mode = 2
+text = ">"

@@ -1,0 +1,22 @@
+[gd_scene load_steps=3 format=3 uid="uid://strategic_test_001"]
+
+[ext_resource type="Script" path="res://scenes/ui/strategic_layer_test.gd" id="1_strategic_test"]
+[ext_resource type="PackedScene" uid="uid://strategic_hud_001" path="res://scenes/ui/strategic_hud.tscn" id="2_strategic_hud"]
+
+[node name="StrategicLayerTest" type="Node2D"]
+script = ExtResource("1_strategic_test")
+
+[node name="StrategicHUD" parent="." instance=ExtResource("2_strategic_hud")]
+
+[node name="TestInstructions" type="Label" parent="."]
+offset_left = 350.0
+offset_top = 10.0
+offset_right = 600.0
+offset_bottom = 200.0
+text = "Test Controls:
+1 - Open View Many (Family Roster)
+2 - Open View Land (Province Data)
+3 - Open View Fifth (Monster Inventory)
+4 - Test Search System
+5 - Trigger Random Event
+ESC - Quit"

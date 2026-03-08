@@ -1,0 +1,133 @@
+extends Node
+class_name VassalSystem
+
+# Vassal System for lord loyalty and management
+static func process_monthly_loyalty_changes():
+	print("Processing monthly loyalty changes")
+	
+	# Process each character who is a lord
+	for character in GameState.characters.values():
+		if character.is_lord and character is LordData:
+			process_lord_loyalty(character)
+
+static func process_lord_loyalty(lord: LordData):
+	# Skip if lord is captured
+	if lord.is_captured:
+		return
+	
+	# Base loyalty drift
+	var loyalty_change = lord.monthly_loyalty_drift
+	
+	# Factors affecting loyalty
+	var family = GameState.get_family(lord.family_id)
+	if not family:
+		return
+	
+	# Gold in lord's province affects loyalty
+	var province = get_lord_province(lord)
+	if province:
+		if province.gold > 100:
+			loyalty_change += 2  # Well-funded lords are happier
+		elif province.gold < 50:
+			loyalty_change -= 3  # Poor lords are unhappy
+		
+		# Military strength affects loyalty
+		if province.soldiers < 20:
+			loyalty_change -= 2  # Weak military position
+	
+	# Apply loyalty change
+	lord.loyalty = max(0, min(100, lord.loyalty + loyalty_change))
+	
+	# Check for rebellion risk
+	if lord.loyalty < 30:
+		check_rebellion_risk(lord)
+
+static func get_lord_province(lord: LordData) -> ProvinceData:
+	for province in GameState.provinces.values():
+		if province.governor_id == lord.id:
+			return province
+	return null
+
+static func check_rebellion_risk(lord: LordData):
+	if lord.loyalty < 20:
+		var rebellion_chance = (20 - lord.loyalty) / 20.0
+		if randf() < rebellion_chance * 0.1:  # 10% base chance modified by loyalty
+			trigger_rebellion(lord)
+
+static func trigger_rebellion(lord: LordData):
+	print("REBELLION: Lord ", lord.name, " has rebelled!")
+	
+	# Lord becomes independent or switches sides
+	var province = get_lord_province(lord)
+	if province:
+		# Option 1: Become independent (simplified)
+		province.owner_id = "independent_" + lord.id
+		
+		# Emit rebellion event
+		EventBus.ProvinceDataChanged.emit(province.id, "owner_id", province.owner_id)
+
+static func recruit_vassal(lord_id: String, new_family: String) -> bool:
+	var lord = GameState.get_character(lord_id)
+	if not lord or not lord is LordData:
+		return false
+	
+	# Check if lord can be recruited
+	if lord.loyalty > 60:
+		return false  # Too loyal to current family
+	
+	# Recruitment cost based on lord's power
+	var recruitment_cost = calculate_recruitment_cost(lord)
+	var recruiter_family = GameState.get_family(new_family)
+	
+	if not recruiter_family:
+		return false
+	
+	# Check if family can afford recruitment
+	if recruiter_family.treasury < recruitment_cost:
+		return false
+	
+	# Successful recruitment
+	lord.family_id = new_family
+	lord.loyalty = 70  # Start with decent loyalty to new family
+	recruiter_family.treasury -= recruitment_cost
+	
+	# Update province ownership
+	var province = get_lord_province(lord)
+	if province:
+		province.owner_id = new_family
+	
+	# Emit recruitment event
+	EventBus.VassalRecruited.emit(lord_id, new_family)
+	
+	return true
+
+static func calculate_recruitment_cost(lord: LordData) -> int:
+	var base_cost = 100
+	
+	# Modify by lord's military power
+	var province = get_lord_province(lord)
+	if province:
+		base_cost += province.soldiers * 2
+	
+	# Modify by lord's skills
+	base_cost += lord.command_rating * 5
+	base_cost += lord.diplomacy_rating * 3
+	
+	return base_cost
+
+static func get_lord_loyalty_status(lord: LordData) -> String:
+	if lord.loyalty >= 80:
+		return "Very Loyal"
+	elif lord.loyalty >= 60:
+		return "Loyal"
+	elif lord.loyalty >= 40:
+		return "Neutral"
+	elif lord.loyalty >= 20:
+		return "Unhappy"
+	else:
+		return "Rebellious"
+
+static func improve_lord_loyalty(lord_id: String, amount: int):
+	var lord = GameState.get_character(lord_id)
+	if lord and lord is LordData:
+		lord.loyalty = min(100, lord.loyalty + amount)

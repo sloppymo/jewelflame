@@ -1,0 +1,44 @@
+[gd_scene load_steps=2 format=3 uid="uid://command_bar_001"]
+
+[ext_resource type="Script" path="res://scenes/ui/command_bar.gd" id="1_command_bar"]
+
+[node name="CommandBar" type="HBoxContainer"]
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_top = -14.0
+offset_bottom = 14.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+script = ExtResource("1_command_bar")
+
+[node name="BattleBtn" type="Button" parent="."]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+size_flags_horizontal = 3
+tooltip_text = "Battle - Invade enemy territories"
+text = "⚔️"
+
+[node name="DevelopBtn" type="Button" parent="."]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+size_flags_horizontal = 3
+tooltip_text = "Develop - Tax, construction, upgrades"
+text = "🏛️"
+
+[node name="SearchBtn" type="Button" parent="."]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+size_flags_horizontal = 3
+tooltip_text = "Search - Find items and monsters"
+text = "🚩"
+
+[node name="MilitaryBtn" type="Button" parent="."]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+size_flags_horizontal = 3
+tooltip_text = "Military - Recruitment and unit management"
+text = "🪖"

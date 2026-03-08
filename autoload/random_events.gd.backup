@@ -1,0 +1,143 @@
+extends Node
+
+# Random Events System for monthly events
+static func trigger_monthly_events():
+	print("Triggering monthly random events")
+	
+	# Generate and process events
+	var event = generate_monthly_event()
+	if not event.is_empty():
+		process_event(event)
+
+static func generate_monthly_event() -> Dictionary:
+	var events = [
+		{
+			"type": "bandit_raid",
+			"name": "Bandit Raid",
+			"description": "Bandits have been sighted in the region!",
+			"probability": 0.15
+		},
+		{
+			"type": "merchant_caravan",
+			"name": "Merchant Caravan",
+			"description": "A wealthy merchant caravan is passing through.",
+			"probability": 0.20
+		},
+		{
+			"type": "plague",
+			"name": "Plague Outbreak",
+			"description": "A mysterious illness is spreading.",
+			"probability": 0.05
+		},
+		{
+			"type": "good_harvest",
+			"name": "Bountiful Harvest",
+			"description": "The harvest this season looks exceptional!",
+			"probability": 0.10
+		},
+		{
+			"type": "discovery",
+			"name": "Resource Discovery",
+			"description": "New resources have been discovered in the mines.",
+			"probability": 0.08
+		}
+	]
+	
+	# Select event based on probability
+	for event in events:
+		if randf() < event.probability:
+			return event
+	
+	return {}
+
+static func process_event(event: Dictionary):
+	if event.is_empty():
+		return
+	
+	print("Processing event: ", event.name)
+	
+	# Select random province to affect
+	var province_ids = GameState.provinces.keys()
+	if province_ids.is_empty():
+		return
+	
+	var target_province_id = province_ids[randi() % province_ids.size()]
+	var province = GameState.provinces[target_province_id]
+	
+	match event.type:
+		"bandit_raid":
+			process_bandit_raid(province)
+		"merchant_caravan":
+			process_merchant_caravan(province)
+		"plague":
+			process_plague(province)
+		"good_harvest":
+			process_good_harvest(province)
+		"discovery":
+			process_discovery(province)
+
+static func process_bandit_raid(province: ProvinceData):
+	print("Bandit raid in ", province.name)
+	
+	# Damage to soldiers
+	var casualties = min(province.soldiers, int(province.soldiers * 0.1))
+	province.soldiers -= casualties
+	
+	# Steal some resources
+	var gold_stolen = min(province.gold, int(province.gold * 0.2))
+	var food_stolen = min(province.food, int(province.food * 0.15))
+	
+	province.gold -= gold_stolen
+	province.food -= food_stolen
+	
+	# Reduce morale
+	province.morale = max(0, province.morale - 5)
+
+static func process_merchant_caravan(province: ProvinceData):
+	print("Merchant caravan visiting ", province.name)
+	
+	# Trade bonus
+	var gold_bonus = int(50 + randf() * 100)  # 50-150 gold
+	province.gold += gold_bonus
+	
+	# Small morale boost
+	province.morale = min(100, province.morale + 3)
+
+static func process_plague(province: ProvinceData):
+	print("Plague outbreak in ", province.name)
+	
+	# Population and soldier losses
+	var casualties = min(province.soldiers, int(province.soldiers * 0.15))
+	province.soldiers -= casualties
+	
+	# Significant morale penalty
+	province.morale = max(0, province.morale - 15)
+	
+	# Reduced productivity for next month
+	province.cultivation = max(0, province.cultivation - 10)
+
+static func process_good_harvest(province: ProvinceData):
+	print("Good harvest in ", province.name)
+	
+	# Bonus food and gold
+	var food_bonus = int(100 + randf() * 200)  # 100-300 food
+	var gold_bonus = int(50 + randf() * 100)   # 50-150 gold
+	
+	province.food += food_bonus
+	province.gold += gold_bonus
+	
+	# Morale boost
+	province.morale = min(100, province.morale + 10)
+
+static func process_discovery(province: ProvinceData):
+	print("Resource discovery in ", province.name)
+	
+	# Gold bonus from new resources
+	var gold_bonus = int(200 + randf() * 300)  # 200-500 gold
+	province.gold += gold_bonus
+	
+	# Small morale boost
+	province.morale = min(100, province.morale + 5)
+
+static func get_event_description(event: Dictionary) -> String:
+	return event.get("description", "An event has occurred.")

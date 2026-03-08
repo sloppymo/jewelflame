@@ -9,12 +9,13 @@ func process_monthly_upkeep():
 		# Calculate food requirement: 1 food per 10 soldiers
 		var food_required = int(province.soldiers / 10)
 		var food_deficit = 0
+		var deserters = 0
 		
 		if province.food < food_required:
 			food_deficit = food_required - province.food
 			
 			# Soldiers desert due to starvation
-			var deserters = min(province.soldiers, food_deficit * 2)
+			deserters = min(province.soldiers, food_deficit * 2)
 			province.soldiers -= deserters
 			
 			# Loyalty drops due to supply issues

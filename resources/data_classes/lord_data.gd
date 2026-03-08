@@ -1,8 +1,7 @@
-class_name LordData extends CharacterData
+extends "res://resources/data_classes/character_data.gd"
+class_name LordData
 @export var age: int = 25
-@export var loyalty: int = 100
-@export var is_captured: bool = false
-@export var capture_family_id: String = ""
+# is_captured, capture_family_id, loyalty inherited from CharacterData
 @export var desertion_chance: float = 0.1
 @export var monthly_loyalty_drift: int = 0
 

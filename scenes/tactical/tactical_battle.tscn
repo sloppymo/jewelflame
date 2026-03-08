@@ -1,0 +1,223 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/tactical/tactical_battle.gd" id="1_tactical_battle"]
+[ext_resource type="Script" path="res://scripts/tactical/tactical_hud.gd" id="2_tactical_hud"]
+[ext_resource type="Script" path="res://scripts/tactical/magic_effects.gd" id="3_magic_effects"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_battle"]
+bg_color = Color(0.294, 0.294, 0.62, 1)
+border_color = Color(0.769, 0.627, 0, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+
+[node name="TacticalBattle" type="Node2D"]
+script = ExtResource("1_tactical_battle")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(640, 360)
+
+[node name="Background" type="ParallaxBackground" parent="."]
+
+[node name="SkyLayer" type="ParallaxLayer" parent="Background"]
+motion_scale = Vector2(0.1, 0.1)
+
+[node name="Sky" type="ColorRect" parent="Background/SkyLayer"]
+offset_right = 1280.0
+offset_bottom = 720.0
+color = Color(0.4, 0.7, 1, 1)
+
+[node name="GroundLayer" type="ParallaxLayer" parent="Background"]
+motion_scale = Vector2(0.5, 0.5)
+
+[node name="Ground" type="ColorRect" parent="Background/GroundLayer"]
+offset_top = 480.0
+offset_right = 1280.0
+offset_bottom = 720.0
+color = Color(0.2, 0.6, 0.2, 1)
+
+[node name="MagicEffects" type="Node2D" parent="."]
+script = ExtResource("3_magic_effects")
+
+[node name="AttackerUnits" type="Node2D" parent="."]
+
+[node name="DefenderUnits" type="Node2D" parent="."]
+
+[node name="TacticalHUD" type="CanvasLayer" parent="."]
+script = ExtResource("2_tactical_hud")
+
+[node name="TopBanner" type="Panel" parent="TacticalHUD"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 60.0
+grow_horizontal = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_battle")
+
+[node name="AttackerPortrait" type="TextureRect" parent="TacticalHUD/TopBanner"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 5.0
+offset_right = 55.0
+offset_bottom = 55.0
+expand_mode = 1
+stretch_mode = 5
+texture_filter = 0
+
+[node name="DefenderPortrait" type="TextureRect" parent="TacticalHUD/TopBanner"]
+layout_mode = 0
+offset_left = 1225.0
+offset_top = 5.0
+offset_right = 1260.0
+offset_bottom = 55.0
+expand_mode = 1
+stretch_mode = 5
+texture_filter = 0
+
+[node name="BannerLabel" type="Label" parent="TacticalHUD/TopBanner"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 20
+text = "⚔️ vs 🛡️"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CommandMenu" type="Panel" parent="TacticalHUD"]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -70.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_battle")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="TacticalHUD/CommandMenu"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="AttackBtn" type="Button" parent="TacticalHUD/CommandMenu/HBoxContainer"]
+custom_minimum_size = Vector2(100, 50)
+layout_mode = 2
+text = "Attack"
+
+[node name="WaitBtn" type="Button" parent="TacticalHUD/CommandMenu/HBoxContainer"]
+custom_minimum_size = Vector2(100, 50)
+layout_mode = 2
+text = "Wait"
+
+[node name="FenceBtn" type="Button" parent="TacticalHUD/CommandMenu/HBoxContainer"]
+custom_minimum_size = Vector2(100, 50)
+layout_mode = 2
+text = "Fence"
+
+[node name="BreakBtn" type="Button" parent="TacticalHUD/CommandMenu/HBoxContainer"]
+custom_minimum_size = Vector2(100, 50)
+layout_mode = 2
+text = "Break"
+
+[node name="RetreatBtn" type="Button" parent="TacticalHUD/CommandMenu/HBoxContainer"]
+custom_minimum_size = Vector2(100, 50)
+layout_mode = 2
+text = "Retreat"
+
+[node name="MessageLabel" type="Label" parent="TacticalHUD"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -100.0
+offset_right = 200.0
+offset_bottom = 100.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 24
+text = "Message"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="VictoryPanel" type="Panel" parent="TacticalHUD"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -80.0
+offset_right = 200.0
+offset_bottom = 80.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_battle")
+
+[node name="Label" type="Label" parent="TacticalHUD/VictoryPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 28
+text = "The attackers won!"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="FormationPopup" type="Window" parent="TacticalHUD"]
+initial_position = 2
+size = Vector2i(300, 200)
+visible = false
+
+[node name="Panel" type="Panel" parent="TacticalHUD/FormationPopup"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_battle")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TacticalHUD/FormationPopup/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 10
+
+[node name="Label" type="Label" parent="TacticalHUD/FormationPopup/Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Select Formation"
+horizontal_alignment = 1
+
+[node name="NormalBtn" type="Button" parent="TacticalHUD/FormationPopup/Panel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+text = "Normal (1.0x)"
+
+[node name="FlankBtn" type="Button" parent="TacticalHUD/FormationPopup/Panel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+text = "Flank (1.2x damage)"
+
+[node name="RearBtn" type="Button" parent="TacticalHUD/FormationPopup/Panel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+text = "Rear Assault (1.3x damage)"

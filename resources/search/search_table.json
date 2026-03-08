@@ -1,0 +1,107 @@
+{
+  "search_cost": 5,
+  "outcomes": [
+    {
+      "id": "nothing",
+      "weight": 40,
+      "message": "No unit found in {province_name}",
+      "type": "nothing"
+    },
+    {
+      "id": "silver_sword",
+      "weight": 10,
+      "message": "You found the Silver Sword!",
+      "type": "equipment",
+      "item": {
+        "name": "Silver Sword",
+        "attack_bonus": 5,
+        "defense_bonus": 0,
+        "slot": "weapon"
+      }
+    },
+    {
+      "id": "sword_of_fire",
+      "weight": 5,
+      "message": "You found the Sword of Fire!",
+      "type": "equipment",
+      "item": {
+        "name": "Sword of Fire",
+        "attack_bonus": 10,
+        "defense_bonus": 2,
+        "slot": "weapon"
+      }
+    },
+    {
+      "id": "sword_of_victory",
+      "weight": 3,
+      "message": "You found the Sword of Victory!",
+      "type": "equipment",
+      "item": {
+        "name": "Sword of Victory",
+        "attack_bonus": 15,
+        "defense_bonus": 5,
+        "slot": "weapon"
+      }
+    },
+    {
+      "id": "scroll_sages",
+      "weight": 8,
+      "message": "You found the Scroll of the Sages!",
+      "type": "scroll",
+      "item": {
+        "name": "Scroll of the Sages",
+        "effect": "wisdom",
+        "value": 10
+      }
+    },
+    {
+      "id": "scroll_knowledge",
+      "weight": 8,
+      "message": "You found the Scroll of Knowledge!",
+      "type": "scroll",
+      "item": {
+        "name": "Scroll of Knowledge",
+        "effect": "intelligence",
+        "value": 10
+      }
+    },
+    {
+      "id": "monster_wing",
+      "weight": 8,
+      "message": "You found a Wing!",
+      "type": "monster",
+      "monster": {
+        "name": "Wing",
+        "attack": 25,
+        "defense": 15,
+        "type": "flying"
+      }
+    },
+    {
+      "id": "monster_gargoyle",
+      "weight": 6,
+      "message": "You found a Gargoyle!",
+      "type": "monster",
+      "monster": {
+        "name": "Gargoyle",
+        "attack": 30,
+        "defense": 25,
+        "type": "earth"
+      }
+    },
+    {
+      "id": "max_monsters",
+      "weight": 4,
+      "message": "You found Max Monsters!",
+      "type": "capacity",
+      "bonus": 2
+    },
+    {
+      "id": "gold_cache",
+      "weight": 8,
+      "message": "You found a cache of gold!",
+      "type": "gold",
+      "amount": 50
+    }
+  ]
+}

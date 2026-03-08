@@ -25,9 +25,11 @@ func create_province_area(province_id: int):
 	var area = Area2D.new()
 	area.name = "Province_%d" % province_id
 	area.position = get_province_position(province_id)
+	area.input_pickable = true  # Ensure mouse input is captured
 	
 	var collision = CollisionPolygon2D.new()
 	collision.polygon = get_province_shape(province_id)
+	collision.build_mode = CollisionPolygon2D.BUILD_SOLIDS
 	area.add_child(collision)
 	
 	var polygon = Polygon2D.new()
@@ -86,6 +88,7 @@ func get_province_shape(id: int) -> PackedVector2Array:
 
 func _on_province_input(viewport, event, shape_idx, province_id: int):
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		print("Province clicked: ", province_id)
 		EventBus.ProvinceSelected.emit(province_id)
 
 func _on_province_selected(province_id: int):

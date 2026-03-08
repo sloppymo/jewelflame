@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="CharacterData" load_steps=2 format=3 uid="uid://lyra_blanche"]
+
+[ext_resource type="Script" path="res://resources/data_classes/character_data.gd" id="1_xrk80"]
+
+[resource]
+script = ExtResource("1_xrk80")
+id = "lyra"
+name = "Lyra"
+family_id = "blanche"
+portrait_path = "res://assets/portraits/house_blanche/sister.png"
+leadership = 50
+command_rating = 48
+charm = 75
+loyalty = 100
+is_ruler = false
+is_lord = true

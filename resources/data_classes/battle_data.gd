@@ -1,4 +1,8 @@
 class_name BattleData extends Resource
+# Preload dependencies
+const UnitData = preload("res://resources/data_classes/unit_data.gd")
+const LordData = preload("res://resources/data_classes/lord_data.gd")
+
 @export var battle_id: String = ""
 @export var attacking_province_id: int = -1
 @export var defending_province_id: int = -1

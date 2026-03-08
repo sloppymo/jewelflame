@@ -21,20 +21,16 @@ func get_description() -> String:
 	return command_name
 
 func save_state() -> Dictionary:
-	# Save current state for undo
-	try:
-		execution_data = EnhancedGameState.get_save_data()
-		return ErrorHandler.create_success()
-	except:
-		return ErrorHandler.handle_save_load_error("save_state", "execution_data", "Failed to save game state")
+	if not is_instance_valid(EnhancedGameState):
+		return ErrorHandler.create_error(ErrorHandler.ErrorType.INVALID_STATE, "EnhancedGameState not available")
+	execution_data = EnhancedGameState.get_save_data()
+	return ErrorHandler.create_success()
 
 func restore_state() -> Dictionary:
-	# Restore saved state for undo
-	try:
-		EnhancedGameState.load_save_data(execution_data)
-		return ErrorHandler.create_success()
-	except:
-		return ErrorHandler.handle_save_load_error("restore_state", "execution_data", "Failed to restore game state")
+	if execution_data.is_empty():
+		return ErrorHandler.create_error(ErrorHandler.ErrorType.INVALID_STATE, "No execution data")
+	EnhancedGameState.load_save_data(execution_data)
+	return ErrorHandler.create_success()
 
 func redo() -> Dictionary:
 	return execute()

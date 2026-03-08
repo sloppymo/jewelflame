@@ -1,0 +1,57 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="Jewelflame"
+run/main_scene="res://scenes/main.tscn"
+config/features=PackedStringArray("4.6")
+config/icon="res://icon.svg"
+
+[autoload]
+
+EventBus="*res://autoload/event_bus.gd"
+GameState="*res://autoload/game_state.gd"
+TurnManager="*res://autoload/turn_manager.gd"
+SaveManager="*res://autoload/save_manager.gd"
+EnhancedGameState="*res://autoload/enhanced_game_state.gd"
+AIController="*res://autoload/ai_controller.gd"
+EconomyManager="*res://autoload/economy_manager.gd"
+HarvestSystem="*res://autoload/harvest_system.gd"
+RandomEvents="*res://autoload/random_events.gd"
+WeatherSystem="*res://autoload/weather_system.gd"
+VassalSystem="*res://autoload/vassal_system.gd"
+CommandHistory="*res://strategic/commands/command_history.gd"
+CommandProcessor="*res://strategic/commands/command_processor.gd"
+MilitaryCommands="*res://strategic/commands/military_commands.gd"
+DomesticCommands="*res://strategic/commands/domestic_commands.gd"
+EnhancedAIController="*res://strategic/ai/enhanced_ai_controller.gd"
+BattleResolver="*res://battle/battle_resolver.gd"
+VassalSystemIntegration="*res://autoload/vassal_system_integration.gd"
+GameBalanceConfig="*res://resources/game_balance_config.gd"
+PerformanceOptimizer="*res://autoload/performance_optimizer.gd"
+UIEnhancer="*res://autoload/ui_enhancer.gd"
+ContentPolisher="*res://autoload/content_polisher.gd"
+SafeAccess="*res://autoload/safe_access.gd"
+ErrorHandler="*res://autoload/error_handler.gd"
+ServiceContainer="*res://autoload/service_container.gd"
+InputValidator="*res://autoload/input_validator.gd"
+SceneManager="*res://autoload/scene_manager.gd"
+
+[display]
+
+window/size/viewport_width=1920
+window/size/viewport_height=1080
+window/size/mode=2
+window/stretch/mode="canvas_items"
+
+[dotnet]
+
+project/assembly_name="Jewelflame"

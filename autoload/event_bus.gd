@@ -1,42 +1,31 @@
 extends Node
 
-# Wave 1 Signals
+# Signal bus for cross-system communication
+# These signals are emitted and connected by other systems, not by EventBus itself
+
+@warning_ignore("unused_signal")
 signal ProvinceSelected(id: int)
+
+@warning_ignore("unused_signal")
 signal GameSaved(slot: int)
+
+@warning_ignore("unused_signal")
 signal GameLoaded(slot: int)
+
+@warning_ignore("unused_signal")
 signal ProvinceDataChanged(id: int, field: String, value: Variant)
+
+@warning_ignore("unused_signal")
 signal ProvinceExhausted(id: int, exhausted: bool)
 
-# Reserved for Part 2 (define now to prevent signature conflicts)
+@warning_ignore("unused_signal")
 signal TurnEnded(month: int, year: int)
-signal BattleInitiated(battle_data: Dictionary)
+
+@warning_ignore("unused_signal")
 signal BattleResolved(result: Dictionary)
+
+@warning_ignore("unused_signal")
 signal TroopsMoved(from_id: int, to_id: int, count: int)
+
+@warning_ignore("unused_signal")
 signal HarvestReportReady(province_yields: Dictionary)
-
-# Additional signals for complete game
-signal CommandExecuted(command: Dictionary)
-signal SelectionCleared()
-signal LordSelected(lord_id: String)
-signal SceneTransitionStarted()
-signal SceneTransitionCompleted()
-signal VictoryAchieved(winner_family: String)
-signal GameOver(loser_family: String)
-signal VassalRecruited(lord_id: String, new_family: String)
-signal TurnAdvanced(family_id: String)
-signal PhaseChanged(phase_name: String)
-signal BattleCancelled(command_id: String)
-signal BattleCompleted(result: Dictionary)
-signal LordCommandCompleted(lord_id: String, command_type: String)
-
-# Missing signals for command system
-signal CommandUndone(command: Dictionary)
-signal CommandRedone(command: Dictionary)
-
-# Missing signals for turn management
-signal FamilyTurnStarted(family_id: String)
-signal LordTurnStarted(lord_id: String)
-signal LordCommandPhase(lord_id: String, commands_remaining: int)
-
-# Additional missing signals for complete system
-signal TurnCompleted(month: int, year: int)

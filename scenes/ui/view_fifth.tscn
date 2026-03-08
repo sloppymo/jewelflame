@@ -1,0 +1,53 @@
+[gd_scene load_steps=2 format=3 uid="uid://view_fifth_001"]
+
+[ext_resource type="Script" path="res://scenes/ui/view_fifth.gd" id="1_view_fifth"]
+
+[node name="ViewFifth" type="Window"]
+initial_position = 2
+size = Vector2i(350, 400)
+unresizable = true
+script = ExtResource("1_view_fifth")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "5th Unit Inventory"
+horizontal_alignment = 1
+
+[node name="CapacityLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Monsters: 0/5"
+horizontal_alignment = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="MonsterGrid" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="CloseBtn" type="Button" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Close"

@@ -1,0 +1,47 @@
+[gd_scene load_steps=2 format=3 uid="uid://view_menu_001"]
+
+[ext_resource type="Script" path="res://scenes/ui/view_menu.gd" id="1_view_menu"]
+
+[node name="ViewMenu" type="Window"]
+initial_position = 2
+size = Vector2i(200, 220)
+unresizable = true
+script = ExtResource("1_view_menu")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="OneBtn" type="Button" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "One - Individual Lord"
+
+[node name="ManyBtn" type="Button" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Many - Family Roster"
+
+[node name="LandBtn" type="Button" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Land - Province Data"
+
+[node name="FifthBtn" type="Button" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "5th Unit - Monster Inventory"
+
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="CloseBtn" type="Button" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Close"

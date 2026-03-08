@@ -1,7 +1,8 @@
 extends Node
 
 # AI Personality System for Gemfire
-class_name AIPersonalities
+# Note: class_name AIPersonalities is defined in ai_personalities.gd
+# This file provides additional AI functionality without conflicting class names
 
 enum PersonalityType {
 	AGGRESSIVE,      # Lyle - High attack threshold, low risk tolerance
@@ -60,12 +61,11 @@ class StrategicAI extends Node:
 	var personality_type: PersonalityType = PersonalityType.AGGRESSIVE
 	var config: Dictionary = {}
 	
-	# Use balanced configuration from GameBalanceConfig
-func _init(family: String, personality: PersonalityType):
-	family_id = family
-	personality_type = personality
-	config = GameBalanceConfig.get_ai_config(family)
-	
+	func _init(family: String, personality: PersonalityType):
+		family_id = family
+		personality_type = personality
+		config = GameBalanceConfig.get_ai_config(family)
+		
 	# Main strategic decision function
 	func make_strategic_decision() -> Dictionary:
 		var decisions = {
@@ -91,7 +91,7 @@ func _init(family: String, personality: PersonalityType):
 		
 		return decisions
 	
-	func evaluate_province_actions(province: ProvinceData) -> Array[Dictionary]:
+	func evaluate_province_actions(province) -> Array[Dictionary]:
 		var actions = []
 		
 		# Evaluate attack opportunities
@@ -112,11 +112,11 @@ func _init(family: String, personality: PersonalityType):
 		
 		return actions
 	
-	func evaluate_attack_opportunities(province: ProvinceData) -> Array[Dictionary]:
+	func evaluate_attack_opportunities(province) -> Array[Dictionary]:
 		var attacks = []
 		
 		for neighbor_id in province.neighbors:
-			var neighbor = GameState.get_province(neighbor_id)
+			var neighbor = EnhancedGameState.get_province(neighbor_id)
 			if not neighbor or neighbor.owner_id == family_id:
 				continue
 			
@@ -140,7 +140,7 @@ func _init(family: String, personality: PersonalityType):
 		
 		return attacks
 	
-	func evaluate_recruitment_needs(province: ProvinceData) -> Array[Dictionary]:
+	func evaluate_recruitment_needs(province) -> Array[Dictionary]:
 		var recruitments = []
 		
 		var current_strength = calculate_province_strength(province)
@@ -163,7 +163,7 @@ func _init(family: String, personality: PersonalityType):
 		
 		return recruitments
 	
-	func evaluate_development_opportunities(province: ProvinceData) -> Array[Dictionary]:
+	func evaluate_development_opportunities(province) -> Array[Dictionary]:
 		var developments = []
 		
 		# Evaluate cultivation vs protection based on personality
@@ -189,19 +189,19 @@ func _init(family: String, personality: PersonalityType):
 		
 		return developments
 	
-	func prioritize_actions(actions: Array[Dictionary], province: ProvinceData) -> Array[Dictionary]:
+	func prioritize_actions(actions: Array[Dictionary], province) -> Array[Dictionary]:
 		# Sort by utility (descending)
 		var sort_func = func(a, b): return a.get("utility", 0) > b.get("utility", 0)
 		actions.sort_custom(sort_func)
 		return actions
 	
-	func execute_province_action(action: Dictionary, province: ProvinceData, decisions: Dictionary):
+	func execute_province_action(action: Dictionary, province, decisions: Dictionary):
 		match action.type:
 			"attack":
 				decisions.attacks.append({
 					"province_id": province.id,
 					"target_province": action.target_province,
-					"forces": calculate_attack_forces(province)
+					"forces": calculate_attack_forces(province, action.target_province)
 				})
 			"recruit":
 				decisions.recruitments.append({
@@ -216,11 +216,11 @@ func _init(family: String, personality: PersonalityType):
 
 # Tactical AI Decision Making
 class TacticalAI extends Node:
-	var battle_data: BattleData = null
-	var personality_type: PersonalityType = PersonalityType.AGGRESSIVE
+	var battle_data = null
+	var personality_type = PersonalityType.AGGRESSIVE
 	var config: Dictionary = {}
 	
-	func _init(battle: BattleData, personality: PersonalityType):
+	func _init(battle, personality: PersonalityType):
 		battle_data = battle
 		personality_type = personality
 		config = PERSONALITY_CONFIGS[personality_type]
@@ -272,8 +272,8 @@ class TacticalAI extends Node:
 		var abilities = {}
 		
 		# Check if commander has special abilities
-		var commander = GameState.get_character(battle_data.attacking_commander_id)
-		if commander and commander is LordData:
+		var commander = EnhancedGameState.get_character(battle_data.attacking_commander_id)
+		if commander and commander.is_lord:
 			match commander.special_ability:
 				"rally":
 					abilities["rally"] = should_use_rally()
@@ -291,15 +291,27 @@ class TacticalAI extends Node:
 		
 		return strength_ratio < config.retreat_threshold
 
-# Helper Functions
-func get_family_provinces() -> Array[ProvinceData]:
+# Helper Functions - these need to be in the main AIPersonalities class
+# But the original code had them at wrong indentation level
+# Moving them to be instance methods of AIPersonalities
+
+var family_id: String = ""
+var personality_type: PersonalityType = PersonalityType.AGGRESSIVE
+var config: Dictionary = {}
+
+func setup(family: String, personality: PersonalityType):
+	family_id = family
+	personality_type = personality
+	config = PERSONALITY_CONFIGS[personality_type]
+
+func get_family_provinces() -> Array:
 	var provinces = []
-	for province in GameState.provinces.values():
+	for province in EnhancedGameState.provinces.values():
 		if province.owner_id == family_id:
 			provinces.append(province)
 	return provinces
 
-func calculate_province_strength(province: ProvinceData) -> int:
+func calculate_province_strength(province) -> int:
 	var strength = province.soldiers
 	
 	# Add unit strength
@@ -308,13 +320,13 @@ func calculate_province_strength(province: ProvinceData) -> int:
 	
 	# Add commander bonus
 	if province.stationed_lord_id != "":
-		var lord = GameState.get_character(province.stationed_lord_id)
-		if lord and lord is LordData:
+		var lord = EnhancedGameState.get_character(province.stationed_lord_id)
+		if lord and lord.is_lord:
 			strength = int(strength * (1.0 + lord.command_rating / 100.0))
 	
 	return strength
 
-func calculate_attack_utility(attacker: ProvinceData, defender: ProvinceData, strength_ratio: float) -> float:
+func calculate_attack_utility(attacker, defender, strength_ratio: float) -> float:
 	var base_utility = strength_ratio
 	
 	# Strategic value modifiers
@@ -330,7 +342,7 @@ func calculate_attack_utility(attacker: ProvinceData, defender: ProvinceData, st
 	
 	return base_utility
 
-func calculate_attack_risk(attacker: ProvinceData, defender: ProvinceData) -> float:
+func calculate_attack_risk(attacker, defender) -> float:
 	var risk = 0.0
 	
 	# Terrain risk
@@ -347,14 +359,20 @@ func calculate_attack_risk(attacker: ProvinceData, defender: ProvinceData) -> fl
 	
 	return min(risk, 1.0)
 
-# Missing helper methods for AI decision pipeline
-func calculate_attack_forces(province: ProvinceData) -> int:
-	return min(province.soldiers, 100)  # Limit attack force
+func calculate_attack_forces(province, target_province_id: int) -> Dictionary:
+	var attacker_strength = min(province.soldiers, 100)
+	var target_province = EnhancedGameState.get_province(target_province_id)
+	var defender_strength = target_province.soldiers if target_province else 50
+	return {
+		"attacker_strength": attacker_strength,
+		"defender_strength": defender_strength,
+		"units": []  # Empty units array for now
+	}
 
-func calculate_recruitment_cost(province: ProvinceData) -> int:
+func calculate_recruitment_cost(province) -> int:
 	return GameBalanceConfig.ECONOMY_BALANCE.recruit_cost_per_troop * 50
 
-func execute_ai_lord_command(lord: LordData, family: FamilyData):
+func execute_ai_lord_command(lord, family):
 	# Process AI lord commands through command system
 	print("Executing AI command for lord: ", lord.name)
 	
@@ -381,17 +399,17 @@ func execute_ai_lord_command(lord: LordData, family: FamilyData):
 		var development = decisions.developments[0]
 		DomesticCommands.execute_develop(development.province_id, development.type)
 
-func get_lord_province(lord_id: String) -> ProvinceData:
-	for province in GameState.provinces.values():
+func get_lord_province(lord_id: String):
+	for province in EnhancedGameState.provinces.values():
 		if province.governor_id == lord_id:
 			return province
 	return null
 
-func evaluate_lord_movements(province: ProvinceData) -> Array[Dictionary]:
+func evaluate_lord_movements(province) -> Array[Dictionary]:
 	var movements = []
 	
 	# Simple movement evaluation - move lords to strengthen borders
-	var lord = GameState.get_character(province.governor_id)
+	var lord = EnhancedGameState.get_character(province.governor_id)
 	if not lord or not lord.is_lord:
 		return movements
 	
@@ -399,7 +417,7 @@ func evaluate_lord_movements(province: ProvinceData) -> Array[Dictionary]:
 	if province.soldiers < 30:
 		# Look for nearby friendly provinces with excess troops
 		for neighbor_id in province.neighbors:
-			var neighbor = GameState.get_province(neighbor_id)
+			var neighbor = EnhancedGameState.get_province(neighbor_id)
 			if neighbor and neighbor.owner_id == family_id and neighbor.soldiers > 80:
 				movements.append({
 					"type": "movement",
@@ -409,3 +427,29 @@ func evaluate_lord_movements(province: ProvinceData) -> Array[Dictionary]:
 				})
 	
 	return movements
+
+# Stub functions for tactical AI
+func calculate_enemy_strength() -> int:
+	return 100
+
+func calculate_our_strength() -> int:
+	return 100
+
+func should_use_rally() -> bool:
+	return false
+
+func should_use_tactics() -> bool:
+	return false
+
+func should_use_inspire() -> bool:
+	return false
+
+# Main strategic decision function - needs to be here for the class
+func make_strategic_decision() -> Dictionary:
+	var decisions = {
+		"attacks": [],
+		"recruitments": [],
+		"developments": [],
+		"movements": []
+	}
+	return decisions

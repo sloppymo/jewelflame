@@ -1,13 +1,12 @@
 extends Node
 
 # Command History Management
-class_name CommandHistory
 
-var command_stack: Array[BaseCommand] = []
-var undo_stack: Array[BaseCommand] = []
+var command_stack: Array = []
+var undo_stack: Array = []
 var max_history_size: int = 50
 
-func execute_command(command: BaseCommand) -> bool:
+func execute_command(command) -> bool:
 	if not command.can_execute():
 		print("Command cannot be executed: ", command.get_description())
 		return false
@@ -59,21 +58,3 @@ func get_command_history() -> Array[String]:
 func clear_history():
 	command_stack.clear()
 	undo_stack.clear()
-
-# Command Factory
-class CommandFactory:
-	
-	static func create_move_command(lord_id: String, from_province: int, to_province: int) -> MoveLordCommand:
-		return MoveLordCommand.new(lord_id, from_province, to_province)
-
-	static func create_attack_command(attacker_province: int, defender_province: int, units: Array, lord_id: String = "") -> AttackProvinceCommand:
-		return AttackProvinceCommand.new(attacker_province, defender_province, units, lord_id)
-
-	static func create_recruit_command(province_id: int, lord_id: String, action: String = "recruit") -> RecruitVassalCommand:
-		return RecruitVassalCommand.new(province_id, lord_id, action)
-
-	static func create_develop_command(province_id: int, development_type: String) -> DevelopCommand:
-		return DevelopCommand.new(province_id, development_type)
-
-	static func create_transport_command(from_province: int, to_province: int, resource_type: String, amount: int) -> TransportCommand:
-		return TransportCommand.new(from_province, to_province, resource_type, amount)

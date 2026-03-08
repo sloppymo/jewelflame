@@ -1,0 +1,132 @@
+[gd_scene load_steps=3 format=3 uid="uid://c8n2m4k6p9qr"]
+
+[ext_resource type="Script" path="res://tactical/battlefield/battlefield_controller.gd" id="1_battle_ctrl"]
+
+[sub_resource type="Theme" id="Theme_tactical"]
+
+[node name="TacticalBattle" type="Node2D"]
+script = ExtResource("1_battle_ctrl")
+groups = ["tactical_battle"]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(960, 390)
+
+[node name="UI_Layer" type="CanvasLayer" parent="."]
+
+[node name="TopBar" type="HBoxContainer" parent="UI_Layer"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 100.0
+theme = SubResource("Theme_tactical")
+
+[node name="BattleStatus" type="Label" parent="UI_Layer/TopBar"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Battle in Progress"
+vertical_alignment = 1
+
+[node name="RoundCounter" type="Label" parent="UI_Layer/TopBar"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Round 1 of 10"
+vertical_alignment = 1
+
+[node name="AutoResolveButton" type="Button" parent="UI_Layer/TopBar"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Auto Resolve"
+flat = false
+
+[node name="BottomPanel" type="HBoxContainer" parent="UI_Layer"]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -200.0
+offset_right = -20.0
+offset_bottom = -20.0
+theme = SubResource("Theme_tactical")
+
+[node name="FormationPanel" type="Panel" parent="UI_Layer/BottomPanel"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="UnitStatus" type="Panel" parent="UI_Layer/BottomPanel"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="BattleLog" type="ScrollContainer" parent="UI_Layer/BottomPanel"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="BattleLogText" type="RichTextLabel" parent="UI_Layer/BottomPanel/BattleLog"]
+layout_mode = 2
+size_flags_horizontal = 3
+bbcode_enabled = true
+text = "Battle started..."
+
+[node name="ModalLayer" type="CanvasLayer" parent="."]
+
+[node name="BattleResults" type="Panel" parent="UI_Layer/ModalLayer"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -200.0
+offset_right = 300.0
+offset_bottom = 200.0
+visible = false
+
+[node name="VassalCaptureDialog" type="Panel" parent="UI_Layer/ModalLayer"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -250.0
+offset_top = -150.0
+offset_right = 250.0
+offset_bottom = 150.0
+visible = false
+
+[node name="Battlefield_Layer" type="Node2D" parent="."]
+
+[node name="Background" type="Sprite2D" parent="Battlefield_Layer"]
+position = Vector2(960, 390)
+scale = Vector2(2, 2)
+
+[node name="TerrainFeatures" type="Node2D" parent="Battlefield_Layer"]
+
+[node name="Hills" type="Sprite2D" parent="Battlefield_Layer/TerrainFeatures"]
+position = Vector2(300, 500)
+
+[node name="Trees" type="Sprite2D" parent="Battlefield_Layer/TerrainFeatures"]
+position = Vector2(1200, 450)
+
+[node name="Rivers" type="Sprite2D" parent="Battlefield_Layer/TerrainFeatures"]
+position = Vector2(600, 400)
+
+[node name="WeatherEffects" type="Node2D" parent="Battlefield_Layer"]
+
+[node name="LightingEffects" type="Node2D" parent="Battlefield_Layer"]
+
+[node name="Unit_Layer" type="Node2D" parent="."]
+
+[node name="AttackerUnits" type="Node2D" parent="Unit_Layer"]
+
+[node name="DefenderUnits" type="Node2D" parent="Unit_Layer"]
+
+[node name="UnitMarkers" type="Node2D" parent="Unit_Layer"]
+
+[node name="Animation_Layer" type="Node2D" parent="."]
+
+[node name="CombatAnimations" type="Node2D" parent="Animation_Layer"]
+
+[node name="ProjectileEffects" type="Node2D" parent="Animation_Layer"]
+
+[node name="ExplosionEffects" type="Node2D" parent="Animation_Layer"]
+
+[node name="SpellEffects" type="GPUParticles2D" parent="Animation_Layer"]
+position = Vector2(960, 390)

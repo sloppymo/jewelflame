@@ -1,0 +1,123 @@
+[gd_scene load_steps=3 format=3 uid="uid://bqvx8y1x8nql7"]
+
+[ext_resource type="Script" path="res://strategic/map/strategic_map_controller.gd" id="1_0k8xr"]
+
+[sub_resource type="Theme" id="Theme_1xr2y"]
+
+[node name="StrategicMap" type="Node2D"]
+script = ExtResource("1_0k8xr")
+groups = ["strategic_map"]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(600, 350)
+zoom = Vector2(0.8, 0.8)
+
+[node name="UI_Layer" type="CanvasLayer" parent="."]
+
+[node name="TopBar" type="HBoxContainer" parent="UI_Layer"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 80.0
+theme = SubResource("Theme_1xr2y")
+
+[node name="TurnIndicator" type="Label" parent="UI_Layer/TopBar"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Blanche Turn - Month 1, Year 1"
+vertical_alignment = 1
+
+[node name="DateDisplay" type="Label" parent="UI_Layer/TopBar"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Spring, Year 1"
+vertical_alignment = 1
+
+[node name="EndTurnButton" type="Button" parent="UI_Layer/TopBar"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Plotting Strategy"
+flat = false
+
+[node name="LeftPanel" type="VBoxContainer" parent="UI_Layer"]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = -400.0
+offset_right = 320.0
+offset_bottom = -20.0
+theme = SubResource("Theme_1xr2y")
+
+[node name="LordRoster" type="ScrollContainer" parent="UI_Layer/LeftPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="LordList" type="VBoxContainer" parent="UI_Layer/LeftPanel/LordRoster"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CommandCategories" type="TabContainer" parent="UI_Layer/LeftPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="DomesticCommands" type="VBoxContainer" parent="UI_Layer/LeftPanel/CommandCategories"]
+layout_mode = 2
+
+[node name="DiplomaticCommands" type="VBoxContainer" parent="UI_Layer/LeftPanel/CommandCategories"]
+visible = false
+layout_mode = 2
+
+[node name="MilitaryCommands" type="VBoxContainer" parent="UI_Layer/LeftPanel/CommandCategories"]
+visible = false
+layout_mode = 2
+
+[node name="RightPanel" type="VBoxContainer" parent="UI_Layer"]
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -420.0
+offset_right = -20.0
+theme = SubResource("Theme_1xr2y")
+
+[node name="ProvinceInfo" type="Panel" parent="UI_Layer/RightPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="IntelligencePanel" type="TabContainer" parent="UI_Layer/RightPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ViewOne" type="Panel" parent="UI_Layer/RightPanel/IntelligencePanel"]
+layout_mode = 2
+
+[node name="ViewMany" type="Panel" parent="UI_Layer/RightPanel/IntelligencePanel"]
+visible = false
+layout_mode = 2
+
+[node name="ViewLand" type="Panel" parent="UI_Layer/RightPanel/IntelligencePanel"]
+visible = false
+layout_mode = 2
+
+[node name="View5thUnit" type="Panel" parent="UI_Layer/RightPanel/IntelligencePanel"]
+visible = false
+layout_mode = 2
+
+[node name="Map_Layer" type="Node2D" parent="."]
+
+[node name="ProvinceAreas" type="Node2D" parent="Map_Layer"]
+
+[node name="ProvinceLabels" type="Node2D" parent="Map_Layer"]
+
+[node name="FogOfWar" type="Node2D" parent="Map_Layer"]
+
+[node name="WeatherEffects" type="Node2D" parent="Map_Layer"]
+
+[node name="Animation_Layer" type="Node2D" parent="."]
+
+[node name="AttackArrows" type="Node2D" parent="Animation_Layer"]
+
+[node name="ProvinceCaptureEffects" type="Node2D" parent="Animation_Layer"]
+
+[node name="WeatherAnimations" type="Node2D" parent="Animation_Layer"]

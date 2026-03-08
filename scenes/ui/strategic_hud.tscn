@@ -1,0 +1,254 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/ui/strategic_hud.gd" id="1_strategic_hud"]
+[ext_resource type="Script" path="res://scenes/ui/view_menu.gd" id="1_view_menu"]
+
+[node name="StrategicHUD" type="CanvasLayer"]
+script = ExtResource("1_strategic_hud")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="MainHBox" type="HBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 4
+
+[node name="LeftPanel" type="PanelContainer" parent="MarginContainer/MainHBox"]
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/MainHBox/LeftPanel"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="TopSection" type="VBoxContainer" parent="MarginContainer/MainHBox/LeftPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="YearMonthLabel" type="Label" parent="MarginContainer/MainHBox/LeftPanel/VBoxContainer/TopSection"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Year 1 Jan"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/MainHBox/LeftPanel/VBoxContainer/TopSection"]
+layout_mode = 2
+
+[node name="FamilyShield" type="ColorRect" parent="MarginContainer/MainHBox/LeftPanel/VBoxContainer/TopSection"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+size_flags_horizontal = 4
+color = Color(0.29, 0.29, 0.62, 1)
+
+[node name="FamilyNameLabel" type="Label" parent="MarginContainer/MainHBox/LeftPanel/VBoxContainer/TopSection"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Blanche"
+horizontal_alignment = 1
+
+[node name="ProvinceLabel" type="Label" parent="MarginContainer/MainHBox/LeftPanel/VBoxContainer/TopSection"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "5:Petaria"
+horizontal_alignment = 1
+
+[node name="LordSection" type="VBoxContainer" parent="MarginContainer/MainHBox/LeftPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="LordPortrait" type="TextureRect" parent="MarginContainer/MainHBox/LeftPanel/VBoxContainer/LordSection"]
+custom_minimum_size = Vector2(100, 140)
+layout_mode = 2
+size_flags_horizontal = 4
+expand_mode = 1
+stretch_mode = 5
+texture_filter = 0
+
+[node name="LordNameLabel" type="Label" parent="MarginContainer/MainHBox/LeftPanel/VBoxContainer/LordSection"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Lord Karl"
+horizontal_alignment = 1
+
+[node name="StatsSection" type="PanelContainer" parent="MarginContainer/MainHBox/LeftPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="StatGrid" type="GridContainer" parent="MarginContainer/MainHBox/LeftPanel/VBoxContainer/StatsSection"]
+layout_mode = 2
+columns = 2
+
+[node name="CommandBar" type="HBoxContainer" parent="MarginContainer/MainHBox/LeftPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="BattleBtn" type="Button" parent="MarginContainer/MainHBox/LeftPanel/VBoxContainer/CommandBar"]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+size_flags_horizontal = 3
+tooltip_text = "Battle - Invade enemy territories"
+text = "⚔️"
+
+[node name="DevelopBtn" type="Button" parent="MarginContainer/MainHBox/LeftPanel/VBoxContainer/CommandBar"]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+size_flags_horizontal = 3
+tooltip_text = "Develop - Tax, construction, upgrades"
+text = "🏛️"
+
+[node name="SearchBtn" type="Button" parent="MarginContainer/MainHBox/LeftPanel/VBoxContainer/CommandBar"]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+size_flags_horizontal = 3
+tooltip_text = "Search - Find items and monsters"
+text = "🚩"
+
+[node name="MilitaryBtn" type="Button" parent="MarginContainer/MainHBox/LeftPanel/VBoxContainer/CommandBar"]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+size_flags_horizontal = 3
+tooltip_text = "Military - Recruitment and unit management"
+text = "🪖"
+
+[node name="PromptSection" type="PanelContainer" parent="MarginContainer/MainHBox/LeftPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="PromptLabel" type="Label" parent="MarginContainer/MainHBox/LeftPanel/VBoxContainer/PromptSection"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "Lord Karl, what is your command?"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="MapContainer" type="PanelContainer" parent="MarginContainer/MainHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="MapPlaceholder" type="Label" parent="MarginContainer/MainHBox/MapContainer"]
+layout_mode = 2
+text = "Province Map\n(30 Regions)"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ViewMenu" type="Window" parent="."]
+initial_position = 2
+size = Vector2i(200, 220)
+unresizable = true
+script = ExtResource("1_view_menu")
+
+[node name="MarginContainer" type="MarginContainer" parent="ViewMenu"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ViewMenu/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="OneBtn" type="Button" parent="ViewMenu/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "One - Individual Lord"
+
+[node name="ManyBtn" type="Button" parent="ViewMenu/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Many - Family Roster"
+
+[node name="LandBtn" type="Button" parent="ViewMenu/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Land - Province Data"
+
+[node name="FifthBtn" type="Button" parent="ViewMenu/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "5th Unit - Monster Inventory"
+
+[node name="HSeparator" type="HSeparator" parent="ViewMenu/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="CloseBtn" type="Button" parent="ViewMenu/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Close"
+
+[node name="EventBanner" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 40.0
+grow_horizontal = 2
+
+[node name="Panel" type="Panel" parent="EventBanner"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="EventBanner/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="IconLabel" type="Label" parent="EventBanner/Panel/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "📢"
+vertical_alignment = 1
+
+[node name="TextLabel" type="Label" parent="EventBanner/Panel/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Event message goes here"
+vertical_alignment = 1
+
+[node name="AINotification" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -30.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="Panel" type="Panel" parent="AINotification"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextLabel" type="Label" parent="AINotification/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 12
+text = "AI notification message"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
