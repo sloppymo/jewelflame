@@ -200,7 +200,7 @@ func _setup_panel_structure():
 	portrait_texture.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	portrait_texture.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	portrait_texture.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	portrait_texture.expand_mode = TextureRect.EXPAND_FIT_SIZE_PROPORTIONALLY
+	portrait_texture.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	portrait_texture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	portrait_container.add_child(portrait_texture)
 	
