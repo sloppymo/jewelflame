@@ -1,35 +1,46 @@
-[gd_scene load_steps=4 format=3 uid="uid://bqvx8y1x8nql4"]
+[gd_scene load_steps=7 format=3 uid="uid://bqvx8y1x8nql4"]
 
 [ext_resource type="Script" path="res://ui/province_panel.gd" id="1_8xr0k"]
+[ext_resource type="Texture2D" path="res://assets/ui/divider_gold.png" id="2_divider"]
+[ext_resource type="Texture2D" path="res://assets/ui/portrait_frame.png" id="3_portrait_frame"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1k8xr"]
-bg_color = Color(0.2, 0.2, 0.2, 0.9)
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.102, 0.227, 0.478, 0.95)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.831, 0.682, 0.216, 1)
+corner_radius_top_left = 0
+corner_radius_top_right = 0
+corner_radius_bottom_right = 0
+corner_radius_bottom_left = 0
+
+[sub_resource type="Theme" id="Theme_panel"]
+Panel/styles/panel = SubResource("StyleBoxFlat_panel")
+Label/colors/font_color = Color(0.957, 0.894, 0.757, 1)
+Button/colors/font_color = Color(0.957, 0.894, 0.757, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button"]
+bg_color = Color(0.2, 0.35, 0.6, 1)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(0.6, 0.6, 0.6, 1)
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
-
-[sub_resource type="Theme" id="Theme_1k8xr"]
-Panel/styles/panel = SubResource("StyleBoxFlat_1k8xr")
-Label/colors/font_color = Color(1, 1, 1, 1)
-Button/colors/font_color = Color(1, 1, 1, 1)
+border_color = Color(0.831, 0.682, 0.216, 1)
 
 [node name="ProvincePanel" type="Panel"]
 anchors_preset = 9
 anchor_top = 0.0
-anchor_bottom = 0.0
+anchor_bottom = 1.0
 anchor_right = 0.0
 offset_left = 20.0
 offset_top = 20.0
-offset_right = 320.0
-offset_bottom = 400.0
+offset_right = 420.0
+offset_bottom = -20.0
+grow_vertical = 2
 mouse_filter = 1
-theme = SubResource("Theme_1k8xr")
+theme = SubResource("Theme_panel")
 script = ExtResource("1_8xr0k")
 
 [node name="VBox" type="VBoxContainer" parent="."]
@@ -37,10 +48,13 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 15.0
-offset_top = 15.0
-offset_right = -15.0
-offset_bottom = -15.0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 12
 
 [node name="Header" type="HBoxContainer" parent="VBox"]
 layout_mode = 2
@@ -48,46 +62,80 @@ layout_mode = 2
 [node name="TitleLabel" type="Label" parent="VBox/Header"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 20
-text = "Province Name"
+theme_override_font_sizes/font_size = 24
+text = "5: Petaria"
 horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="CloseButton" type="Button" parent="VBox/Header"]
+custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
 text = "X"
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 20
 
 [node name="OwnerLabel" type="Label" parent="VBox"]
 layout_mode = 2
-theme_override_fonts/font = null
-theme_override_font_sizes/font_size = 16
-text = "Owner: Family"
+theme_override_font_sizes/font_size = 18
+text = "Blanche ♚"
 horizontal_alignment = 1
 
-[node name="StatsLabel" type="Label" parent="VBox"]
+[node name="DividerTop" type="TextureRect" parent="VBox"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 14
-text = "Stats"
-autowrap_mode = 3
+texture = ExtResource("2_divider")
+texture_filter = 0
+stretch_mode = 1
 
-[node name="Spacer" type="Control" parent="VBox"]
+[node name="PortraitContainer" type="CenterContainer" parent="VBox"]
 layout_mode = 2
-size_flags_vertical = 3
 
-[node name="ActionButtons" type="VBoxContainer" parent="VBox"]
+[node name="PortraitFrame" type="TextureRect" parent="VBox/PortraitContainer"]
 layout_mode = 2
+texture = ExtResource("3_portrait_frame")
+texture_filter = 0
+
+[node name="Portrait" type="TextureRect" parent="VBox/PortraitContainer"]
+layout_mode = 2
+offset_left = -40.0
+offset_top = -60.0
+offset_right = 40.0
+offset_bottom = 60.0
+texture_filter = 0
+stretch_mode = 5
+
+[node name="StatsGrid" type="GridContainer" parent="VBox"]
+layout_mode = 2
+columns = 4
+
+[node name="DividerBottom" type="TextureRect" parent="VBox"]
+layout_mode = 2
+texture = ExtResource("2_divider")
+texture_filter = 0
+stretch_mode = 1
+
+[node name="ActionButtons" type="HBoxContainer" parent="VBox"]
+layout_mode = 2
+alignment = 1
 
 [node name="RecruitButton" type="Button" parent="VBox/ActionButtons"]
+custom_minimum_size = Vector2(80, 40)
 layout_mode = 2
-text = "Recruit Troops (100g)"
+text = "Recruit"
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxFlat_button")
 
 [node name="DevelopButton" type="Button" parent="VBox/ActionButtons"]
+custom_minimum_size = Vector2(80, 40)
 layout_mode = 2
-text = "Develop Land (10g)"
+text = "Develop"
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxFlat_button")
 
 [node name="AttackButton" type="Button" parent="VBox/ActionButtons"]
+custom_minimum_size = Vector2(80, 40)
 layout_mode = 2
 text = "Attack"
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxFlat_button")
 
 [connection signal="pressed" from="VBox/ActionButtons/RecruitButton" to="." method="_on_recruit_button_pressed"]
 [connection signal="pressed" from="VBox/ActionButtons/DevelopButton" to="." method="_on_develop_button_pressed"]
