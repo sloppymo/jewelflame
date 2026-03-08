@@ -5,7 +5,7 @@ extends Panel
 
 # Export vars for designer tweaking
 @export var panel_width_percent: float = 0.4
-@export var portrait_size: Vector2 = Vector2(128, 160)
+@export var portrait_size: Vector2 = Vector2(80, 120)  # Gemfire accurate size
 @export var stat_icon_size: Vector2 = Vector2(32, 32)
 @export var button_size: Vector2 = Vector2(64, 64)
 
@@ -181,7 +181,7 @@ func _setup_panel_structure():
 	# 2. Portrait Section - FIXED SIZE, not expanding
 	portrait_section = VBoxContainer.new()
 	portrait_section.name = "PortraitSection"
-	portrait_section.custom_minimum_size = Vector2(0, 180)  # Fixed height ~180px
+	portrait_section.custom_minimum_size = Vector2(0, 140)  # Fixed height for 80x120 portrait
 	portrait_section.size_flags_vertical = Control.SIZE_SHRINK_CENTER  # Don't expand
 	vbox.add_child(portrait_section)
 	
