@@ -29,3 +29,10 @@ signal TroopsMoved(from_id: int, to_id: int, count: int)
 
 @warning_ignore("unused_signal")
 signal HarvestReportReady(province_yields: Dictionary)
+
+# Strategic to Tactical bridge signals
+@warning_ignore("unused_signal")
+signal RequestTacticalBattle(battle_data: Dictionary)
+
+@warning_ignore("unused_signal")
+signal TacticalBattleCompleted(result: Dictionary)

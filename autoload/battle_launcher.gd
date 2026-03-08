@@ -61,21 +61,20 @@ func launch_battle(attacker_province_id: int, defender_province_id: int,
 		"personality": _get_ai_personality(defender_province.owner_id)
 	}
 	
-	# Store return info
-	previous_scene_path = get_tree().current_scene.scene_file_path
-	
 	# Create battle instance
 	var battle = TacticalBattleScene.instantiate()
 	battle.attacker_data = attacker_data
 	battle.defender_data = defender_data
 	battle.battle_ended.connect(_on_battle_ended)
 	
-	# Change to battle scene
-	get_tree().root.add_child(battle)
-	get_tree().current_scene.queue_free()
-	get_tree().current_scene = battle
-	
+	# Change to battle scene using safe transition
 	print("BattleLauncher: Started battle - %s vs %s" % [attacker_province.name, defender_province.name])
+	
+	# Store current scene for return
+	previous_scene_path = get_tree().current_scene.scene_file_path
+	
+	# Use safe scene change
+	_safe_scene_change(battle)
 
 func _on_battle_ended(result: Dictionary) -> void:
 	"""Handle battle completion and return to strategic map."""
@@ -97,14 +96,23 @@ func _on_battle_ended(result: Dictionary) -> void:
 	if callback_callable.is_valid():
 		callback_callable.call(result)
 
+func _safe_scene_change(new_scene: Node) -> void:
+	"""Safely change scenes to avoid race conditions.
+	
+	Adds new scene first, sets it as current, then queues old scene for deletion.
+	This prevents dangling references and race conditions."""
+	var old_scene = get_tree().current_scene
+	get_tree().root.add_child(new_scene)
+	get_tree().current_scene = new_scene
+	# Queue free after current frame processing
+	if old_scene:
+		old_scene.queue_free()
+
 func _return_to_strategic_map() -> void:
 	"""Return to the strategic map scene."""
 	
 	var strategic_scene = load("res://main_with_ui.tscn").instantiate()
-	
-	get_tree().root.add_child(strategic_scene)
-	get_tree().current_scene.queue_free()
-	get_tree().current_scene = strategic_scene
+	_safe_scene_change(strategic_scene)
 	
 	print("BattleLauncher: Returned to strategic map")
 
