@@ -17,13 +17,16 @@ var icon_gold: Texture2D
 var icon_food: Texture2D
 var icon_troops: Texture2D
 
-# Portrait textures by lord
+# Portrait textures by lord (pre-framed pixel art with ornate borders)
 var portrait_textures: Dictionary = {
-	"erin": preload("res://assets/portraits/house_blanche/sister.png"),
-	"ander": preload("res://assets/portraits/house_blanche/son.png"),
-	"lars": null,  # Add when available
-	"lord_carveti": null,
-	"lord_banshea": null
+	"erin": preload("res://assets/portraits/house_blanche/sister.png"),      # Lady Elara - 680x1013
+	"ander": preload("res://assets/portraits/house_blanche/son.png"),       # Lord Roland - 784x1168
+	"lars": preload("res://assets/portraits/house_blanche/son.png"),        # Placeholder - use son for now
+	"char_erin": preload("res://assets/portraits/house_blanche/sister.png"),
+	"char_ander": preload("res://assets/portraits/house_blanche/son.png"),
+	"char_lars": preload("res://assets/portraits/house_blanche/son.png"),
+	"char_lord_2": preload("res://assets/portraits/house_blanche/sister.png"),  # Lord Carveti
+	"char_lord_4": preload("res://assets/portraits/house_blanche/son.png")       # Lord Banshea
 }
 
 var current_province_id: int = -1
@@ -164,7 +167,10 @@ func update_panel(province_id: int):
 	show()
 
 func _update_portrait(province):
-	"""Update the lord portrait based on province governor."""
+	"""Update the lord portrait based on province governor.
+	
+	Uses pre-framed pixel art portraits (680x1013 and 784x1168).
+	These already have ornate gold borders built-in."""
 	var lord = _get_province_lord(province)
 	
 	if lord and portrait:
@@ -173,13 +179,20 @@ func _update_portrait(province):
 		if tex:
 			portrait.texture = tex
 			portrait.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+			# Pre-framed portraits: hide the separate frame
+			if portrait_frame:
+				portrait_frame.visible = false
 		else:
-			# Use colored placeholder
+			# Use colored placeholder and show frame
 			portrait.texture = _create_placeholder_portrait(lord.id)
+			if portrait_frame:
+				portrait_frame.visible = true
 	else:
 		# No lord - show empty frame
 		if portrait:
 			portrait.texture = null
+		if portrait_frame:
+			portrait_frame.visible = true
 
 func _create_placeholder_portrait(lord_id: String) -> ImageTexture:
 	"""Create a colored placeholder for missing portraits."""

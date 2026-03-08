@@ -89,18 +89,21 @@ stretch_mode = 1
 layout_mode = 2
 
 [node name="PortraitFrame" type="TextureRect" parent="VBox/PortraitContainer"]
+visible = false
 layout_mode = 2
 texture = ExtResource("3_portrait_frame")
 texture_filter = 0
 
 [node name="Portrait" type="TextureRect" parent="VBox/PortraitContainer"]
 layout_mode = 2
-offset_left = -40.0
-offset_top = -60.0
-offset_right = 40.0
-offset_bottom = 60.0
+custom_minimum_size = Vector2(120, 180)
+offset_left = -60.0
+offset_top = -90.0
+offset_right = 60.0
+offset_bottom = 90.0
 texture_filter = 0
-stretch_mode = 5
+expand_mode = 3
+stretch_mode = 4
 
 [node name="StatsGrid" type="GridContainer" parent="VBox"]
 layout_mode = 2
