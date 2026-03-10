@@ -1,0 +1,426 @@
+[gd_scene load_steps=14 format=3 uid="uid://strategic_panel"]
+
+[ext_resource type="Script" path="res://ui/strategic_panel.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://dmciy24fnm8cw" path="res://assets/ui/panels/panel_border.png" id="2_panel"]
+[ext_resource type="Texture2D" uid="uid://bfd31jq5650wo" path="res://assets/crests/crest_blanche.png" id="3_crest"]
+[ext_resource type="Texture2D" uid="uid://bmsbxrehd6fek" path="res://assets/ui/divider_gold.png" id="4_divider"]
+[ext_resource type="Texture2D" uid="uid://c8avt0bfe43ke" path="res://assets/ui/portrait_frame.png" id="5_portrait_frame"]
+[ext_resource type="Texture2D" uid="uid://crk3clpnarf4a" path="res://assets/portraits/house_blanche/lord_blanche.png" id="6_portrait"]
+[ext_resource type="Texture2D" uid="uid://cwluvyt0vys26" path="res://assets/icons/icon_swords.png" id="7_swords"]
+[ext_resource type="Texture2D" uid="uid://bjp87gwr3fatm" path="res://assets/icons/icon_gold.png" id="8_gold"]
+[ext_resource type="Texture2D" uid="uid://b5unwcyy7rpn7" path="res://assets/icons/icon_flags.png" id="9_flags"]
+[ext_resource type="Texture2D" uid="uid://jykltbxixlk0" path="res://assets/icons/icon_food.png" id="10_food"]
+[ext_resource type="Texture2D" uid="uid://cs58thj4pbfcy" path="res://assets/icons/icon_troops.png" id="11_troops"]
+[ext_resource type="Texture2D" uid="uid://b6ndnhhentdg0" path="res://assets/icons/icon_castle.png" id="12_castle"]
+[ext_resource type="FontFile" uid="uid://balhubgx82ol0" path="res://assets/fonts/Ishmeria.ttf" id="13_font"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_PanelBg"]
+bg_color = Color(0.18, 0.15, 0.35, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_Title"]
+font = ExtResource("13_font")
+font_size = 20
+font_color = Color(1, 1, 1, 1)
+shadow_size = 1
+shadow_color = Color(0, 0, 0, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_Subtitle"]
+font = ExtResource("13_font")
+font_size = 14
+font_color = Color(0.9, 0.9, 0.9, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_Name"]
+font = ExtResource("13_font")
+font_size = 18
+font_color = Color(1, 1, 1, 1)
+shadow_size = 1
+shadow_color = Color(0, 0, 0, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_Resource"]
+font = ExtResource("13_font")
+font_size = 16
+font_color = Color(1, 1, 1, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_Dialogue"]
+font = ExtResource("13_font")
+font_size = 14
+font_color = Color(1, 0.95, 0.8, 1)
+
+[node name="StrategicPanel" type="Control"]
+custom_minimum_size = Vector2(320, 600)
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_right = 320.0
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="PanelBackground" type="NinePatchRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_panel")
+draw_center = true
+patch_margin_left = 16
+patch_margin_top = 16
+patch_margin_right = 16
+patch_margin_bottom = 16
+axis_stretch_horizontal = 0
+axis_stretch_vertical = 0
+
+[node name="InnerBg" type="ColorRect" parent="PanelBackground"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.25, 0.2, 0.45, 1)
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelBackground"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MainVBox" type="VBoxContainer" parent="PanelBackground/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="FactionHeader" type="HBoxContainer" parent="PanelBackground/MarginContainer/MainVBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="BannerIcon" type="TextureRect" parent="PanelBackground/MarginContainer/MainVBox/FactionHeader"]
+custom_minimum_size = Vector2(48, 64)
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("3_crest")
+expand_mode = 1
+stretch_mode = 5
+texture_filter = 1
+
+[node name="FactionLabels" type="VBoxContainer" parent="PanelBackground/MarginContainer/MainVBox/FactionHeader"]
+layout_mode = 2
+size_flags_horizontal = 3
+alignment = 1
+
+[node name="FactionName" type="Label" parent="PanelBackground/MarginContainer/MainVBox/FactionHeader/FactionLabels"]
+layout_mode = 2
+text = "Blanche"
+label_settings = SubResource("LabelSettings_Title")
+
+[node name="ProvinceName" type="Label" parent="PanelBackground/MarginContainer/MainVBox/FactionHeader/FactionLabels"]
+layout_mode = 2
+text = "5: Petaria"
+label_settings = SubResource("LabelSettings_Subtitle")
+
+[node name="Border1" type="TextureRect" parent="PanelBackground/MarginContainer/MainVBox"]
+custom_minimum_size = Vector2(0, 12)
+layout_mode = 2
+texture = ExtResource("4_divider")
+expand_mode = 1
+stretch_mode = 1
+texture_filter = 1
+
+[node name="CharacterSection" type="HBoxContainer" parent="PanelBackground/MarginContainer/MainVBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="PortraitFrame" type="NinePatchRect" parent="PanelBackground/MarginContainer/MainVBox/CharacterSection"]
+custom_minimum_size = Vector2(80, 104)
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("5_portrait_frame")
+patch_margin_left = 12
+patch_margin_top = 12
+patch_margin_right = 12
+patch_margin_bottom = 12
+axis_stretch_horizontal = 0
+axis_stretch_vertical = 0
+
+[node name="Portrait" type="TextureRect" parent="PanelBackground/MarginContainer/MainVBox/CharacterSection/PortraitFrame"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -32.0
+offset_top = -40.0
+offset_right = 32.0
+offset_bottom = 40.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("6_portrait")
+expand_mode = 1
+stretch_mode = 5
+texture_filter = 1
+
+[node name="NameSection" type="VBoxContainer" parent="PanelBackground/MarginContainer/MainVBox/CharacterSection"]
+layout_mode = 2
+size_flags_horizontal = 3
+alignment = 1
+
+[node name="NameLabel" type="Label" parent="PanelBackground/MarginContainer/MainVBox/CharacterSection/NameSection"]
+layout_mode = 2
+text = "Lord Karl"
+label_settings = SubResource("LabelSettings_Name")
+
+[node name="ClassIcon" type="TextureRect" parent="PanelBackground/MarginContainer/MainVBox/CharacterSection/NameSection"]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+size_flags_horizontal = 4
+texture = ExtResource("7_swords")
+expand_mode = 1
+stretch_mode = 5
+texture_filter = 1
+
+[node name="Border2" type="TextureRect" parent="PanelBackground/MarginContainer/MainVBox"]
+custom_minimum_size = Vector2(0, 12)
+layout_mode = 2
+texture = ExtResource("4_divider")
+expand_mode = 1
+stretch_mode = 1
+texture_filter = 1
+
+[node name="ResourceGrid" type="GridContainer" parent="PanelBackground/MarginContainer/MainVBox"]
+layout_mode = 2
+columns = 2
+theme_override_constants/h_separation = 16
+theme_override_constants/v_separation = 4
+
+[node name="Resource0" type="HBoxContainer" parent="PanelBackground/MarginContainer/MainVBox/ResourceGrid"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Icon" type="TextureRect" parent="PanelBackground/MarginContainer/MainVBox/ResourceGrid/Resource0"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+texture = ExtResource("8_gold")
+expand_mode = 1
+stretch_mode = 5
+texture_filter = 1
+
+[node name="Value" type="Label" parent="PanelBackground/MarginContainer/MainVBox/ResourceGrid/Resource0"]
+layout_mode = 2
+text = "497"
+label_settings = SubResource("LabelSettings_Resource")
+horizontal_alignment = 2
+
+[node name="Resource1" type="HBoxContainer" parent="PanelBackground/MarginContainer/MainVBox/ResourceGrid"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Icon" type="TextureRect" parent="PanelBackground/MarginContainer/MainVBox/ResourceGrid/Resource1"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+texture = ExtResource("9_flags")
+expand_mode = 1
+stretch_mode = 5
+texture_filter = 1
+
+[node name="Value" type="Label" parent="PanelBackground/MarginContainer/MainVBox/ResourceGrid/Resource1"]
+layout_mode = 2
+text = "56"
+label_settings = SubResource("LabelSettings_Resource")
+horizontal_alignment = 2
+
+[node name="Resource2" type="HBoxContainer" parent="PanelBackground/MarginContainer/MainVBox/ResourceGrid"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Icon" type="TextureRect" parent="PanelBackground/MarginContainer/MainVBox/ResourceGrid/Resource2"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+texture = ExtResource("10_food")
+expand_mode = 1
+stretch_mode = 5
+texture_filter = 1
+
+[node name="Value" type="Label" parent="PanelBackground/MarginContainer/MainVBox/ResourceGrid/Resource2"]
+layout_mode = 2
+text = "391"
+label_settings = SubResource("LabelSettings_Resource")
+horizontal_alignment = 2
+
+[node name="Resource3" type="HBoxContainer" parent="PanelBackground/MarginContainer/MainVBox/ResourceGrid"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Icon" type="TextureRect" parent="PanelBackground/MarginContainer/MainVBox/ResourceGrid/Resource3"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+texture = ExtResource("7_swords")
+expand_mode = 1
+stretch_mode = 5
+texture_filter = 1
+
+[node name="Value" type="Label" parent="PanelBackground/MarginContainer/MainVBox/ResourceGrid/Resource3"]
+layout_mode = 2
+text = "38"
+label_settings = SubResource("LabelSettings_Resource")
+horizontal_alignment = 2
+
+[node name="Resource4" type="HBoxContainer" parent="PanelBackground/MarginContainer/MainVBox/ResourceGrid"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Icon" type="TextureRect" parent="PanelBackground/MarginContainer/MainVBox/ResourceGrid/Resource4"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+texture = ExtResource("11_troops")
+expand_mode = 1
+stretch_mode = 5
+texture_filter = 1
+
+[node name="Value" type="Label" parent="PanelBackground/MarginContainer/MainVBox/ResourceGrid/Resource4"]
+layout_mode = 2
+text = "0"
+label_settings = SubResource("LabelSettings_Resource")
+horizontal_alignment = 2
+
+[node name="Resource5" type="HBoxContainer" parent="PanelBackground/MarginContainer/MainVBox/ResourceGrid"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Icon" type="TextureRect" parent="PanelBackground/MarginContainer/MainVBox/ResourceGrid/Resource5"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+texture = ExtResource("12_castle")
+expand_mode = 1
+stretch_mode = 5
+texture_filter = 1
+
+[node name="Value" type="Label" parent="PanelBackground/MarginContainer/MainVBox/ResourceGrid/Resource5"]
+layout_mode = 2
+text = "45"
+label_settings = SubResource("LabelSettings_Resource")
+horizontal_alignment = 2
+
+[node name="Border3" type="TextureRect" parent="PanelBackground/MarginContainer/MainVBox"]
+custom_minimum_size = Vector2(0, 12)
+layout_mode = 2
+texture = ExtResource("4_divider")
+expand_mode = 1
+stretch_mode = 1
+texture_filter = 1
+
+[node name="UnitRow" type="HBoxContainer" parent="PanelBackground/MarginContainer/MainVBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+alignment = 1
+
+[node name="UnitBtn0" type="TextureButton" parent="PanelBackground/MarginContainer/MainVBox/UnitRow"]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+toggle_mode = true
+
+[node name="UnitIcon" type="TextureRect" parent="PanelBackground/MarginContainer/MainVBox/UnitRow/UnitBtn0"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -16.0
+offset_top = -16.0
+offset_right = 16.0
+offset_bottom = 16.0
+grow_horizontal = 2
+grow_vertical = 2
+custom_minimum_size = Vector2(32, 32)
+texture = ExtResource("7_swords")
+expand_mode = 1
+stretch_mode = 5
+texture_filter = 1
+
+[node name="UnitBtn1" type="TextureButton" parent="PanelBackground/MarginContainer/MainVBox/UnitRow"]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+toggle_mode = true
+
+[node name="UnitIcon" type="TextureRect" parent="PanelBackground/MarginContainer/MainVBox/UnitRow/UnitBtn1"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -16.0
+offset_top = -16.0
+offset_right = 16.0
+offset_bottom = 16.0
+grow_horizontal = 2
+grow_vertical = 2
+custom_minimum_size = Vector2(32, 32)
+texture = ExtResource("10_food")
+expand_mode = 1
+stretch_mode = 5
+texture_filter = 1
+
+[node name="UnitBtn2" type="TextureButton" parent="PanelBackground/MarginContainer/MainVBox/UnitRow"]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+toggle_mode = true
+
+[node name="UnitIcon" type="TextureRect" parent="PanelBackground/MarginContainer/MainVBox/UnitRow/UnitBtn2"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -16.0
+offset_top = -16.0
+offset_right = 16.0
+offset_bottom = 16.0
+grow_horizontal = 2
+grow_vertical = 2
+custom_minimum_size = Vector2(32, 32)
+texture = ExtResource("9_flags")
+expand_mode = 1
+stretch_mode = 5
+texture_filter = 1
+
+[node name="UnitBtn3" type="TextureButton" parent="PanelBackground/MarginContainer/MainVBox/UnitRow"]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+toggle_mode = true
+
+[node name="UnitIcon" type="TextureRect" parent="PanelBackground/MarginContainer/MainVBox/UnitRow/UnitBtn3"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -16.0
+offset_top = -16.0
+offset_right = 16.0
+offset_bottom = 16.0
+grow_horizontal = 2
+grow_vertical = 2
+custom_minimum_size = Vector2(32, 32)
+texture = ExtResource("11_troops")
+expand_mode = 1
+stretch_mode = 5
+texture_filter = 1
+
+[node name="DialogueLabel" type="Label" parent="PanelBackground/MarginContainer/MainVBox"]
+layout_mode = 2
+text = "Lord Karl, what is your command?"
+label_settings = SubResource("LabelSettings_Dialogue")
+horizontal_alignment = 1
