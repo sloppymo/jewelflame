@@ -15,7 +15,7 @@
 [ext_resource type="Texture2D" uid="uid://bus81jjgecagp" path="res://assets/ui/button_frame.png" id="13_button"]
 [ext_resource type="Texture2D" uid="uid://cbetu24ylyx46" path="res://assets/ui/button_frame_hover.png" id="14_button_hover"]
 [ext_resource type="Texture2D" uid="uid://brorxd8i8eee7" path="res://assets/ui/button_frame_pressed.png" id="15_button_pressed"]
-[ext_resource type="FontFile" uid="uid://ishmeria_font" path="res://assets/fonts/Ishmeria.ttf" id="16_ishmeria"]
+[ext_resource type="FontFile" uid="uid://balhubgx82ol0" path="res://assets/fonts/Ishmeria.ttf" id="16_ishmeria"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1"]
 bg_color = Color(0.15, 0.12, 0.25, 1)
@@ -77,9 +77,13 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.1, 0.08, 0.2, 1)
+color = Color(0.102, 0.063, 0.243, 1)
 
 [node name="PanelFrame" type="NinePatchRect" parent="."]
 layout_mode = 1
@@ -101,10 +105,10 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 16.0
-offset_top = 16.0
-offset_right = -16.0
-offset_bottom = -16.0
+offset_left = 12.0
+offset_top = 12.0
+offset_right = -12.0
+offset_bottom = -12.0
 grow_horizontal = 2
 grow_vertical = 2
 
@@ -235,7 +239,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "497"
 label_settings = SubResource("LabelSettings_Stat")
-horizontal_alignment = 2
+horizontal_alignment = 0
 
 [node name="StatRow1" type="HBoxContainer" parent="PanelFrame/MarginContainer/MainVBox/StatsGrid"]
 layout_mode = 2
@@ -255,7 +259,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "56"
 label_settings = SubResource("LabelSettings_Stat")
-horizontal_alignment = 2
+horizontal_alignment = 0
 
 [node name="StatRow2" type="HBoxContainer" parent="PanelFrame/MarginContainer/MainVBox/StatsGrid"]
 layout_mode = 2
@@ -275,7 +279,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "391"
 label_settings = SubResource("LabelSettings_Stat")
-horizontal_alignment = 2
+horizontal_alignment = 0
 
 [node name="StatRow3" type="HBoxContainer" parent="PanelFrame/MarginContainer/MainVBox/StatsGrid"]
 layout_mode = 2
@@ -295,7 +299,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "38"
 label_settings = SubResource("LabelSettings_Stat")
-horizontal_alignment = 2
+horizontal_alignment = 0
 
 [node name="StatRow4" type="HBoxContainer" parent="PanelFrame/MarginContainer/MainVBox/StatsGrid"]
 layout_mode = 2
@@ -315,7 +319,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "0"
 label_settings = SubResource("LabelSettings_Stat")
-horizontal_alignment = 2
+horizontal_alignment = 0
 
 [node name="StatRow5" type="HBoxContainer" parent="PanelFrame/MarginContainer/MainVBox/StatsGrid"]
 layout_mode = 2
