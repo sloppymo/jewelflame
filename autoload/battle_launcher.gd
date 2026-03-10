@@ -3,7 +3,7 @@ extends Node
 # Battle Launcher - Connects Strategic Map to Tactical Battle
 # Call launch_battle() from province_panel.gd when Attack is clicked
 
-const TacticalBattleScene = preload("res://scenes/tactical/tactical_battle.tscn")
+const TacticalBattleScene = preload("res://scenes/tactical/tactical_battle_hexforge.tscn")
 
 # Store pre-battle state for return
 var previous_scene_path: String = ""

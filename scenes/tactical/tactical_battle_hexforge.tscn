@@ -1,0 +1,193 @@
+[gd_scene load_steps=7 format=3 uid="uid://c8n2m4k6p9qr"]
+
+[ext_resource type="Script" path="res://tactical/tactical_battle_main.gd" id="1_main_script"]
+[ext_resource type="FontFile" path="res://assets/fonts/Ishmeria.ttf" id="2_ishmeria_font"]
+
+[sub_resource type="Theme" id="Theme_battle"]
+default_font = ExtResource("2_ishmeria_font")
+default_font_size = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.06, 0.04, 0.15, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.8, 0.7, 0.3, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button"]
+bg_color = Color(0.2, 0.15, 0.1, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.8, 0.7, 0.3, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button_hover"]
+bg_color = Color(0.3, 0.25, 0.15, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1.0, 0.9, 0.5, 1)
+
+[node name="TacticalBattle" type="Node2D" groups=["tactical_battle"]]
+script = ExtResource("1_main_script")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(960, 540)
+zoom = Vector2(1.5, 1.5)
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="BattleUI" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+theme = SubResource("Theme_battle")
+
+[node name="TopBar" type="Panel" parent="CanvasLayer/BattleUI"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 60.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="TurnLabel" type="Label" parent="CanvasLayer/BattleUI/TopBar"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 20.0
+offset_top = -15.0
+offset_right = 300.0
+offset_bottom = 15.0
+theme_override_font_sizes/font_size = 24
+text = "Turn 1 - Player Phase"
+vertical_alignment = 1
+
+[node name="ProvinceName" type="Label" parent="CanvasLayer/BattleUI/TopBar"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = -150.0
+offset_top = -15.0
+offset_right = 150.0
+offset_bottom = 15.0
+theme_override_font_sizes/font_size = 20
+text = "Battle of Province"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="EndTurnButton" type="Button" parent="CanvasLayer/BattleUI/TopBar"]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -140.0
+offset_top = -20.0
+offset_right = -20.0
+offset_bottom = 20.0
+theme_override_styles/normal = SubResource("StyleBoxFlat_button")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_hover")
+text = "End Turn"
+
+[node name="RetreatButton" type="Button" parent="CanvasLayer/BattleUI/TopBar"]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -280.0
+offset_top = -20.0
+offset_right = -160.0
+offset_bottom = 20.0
+theme_override_styles/normal = SubResource("StyleBoxFlat_button")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_hover")
+text = "Retreat"
+
+[node name="UnitInfoPanel" type="Panel" parent="CanvasLayer/BattleUI"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = -180.0
+offset_right = 220.0
+offset_bottom = -20.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="BattleLog" type="RichTextLabel" parent="CanvasLayer/BattleUI"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -320.0
+offset_top = -200.0
+offset_right = -20.0
+offset_bottom = -20.0
+theme_override_styles/normal = SubResource("StyleBoxFlat_panel")
+bbcode_enabled = true
+text = "[color=green]Battle started...[/color]\n"
+scroll_following = true
+
+[node name="Instructions" type="Label" parent="CanvasLayer/BattleUI"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -200.0
+offset_top = -40.0
+offset_right = 200.0
+offset_bottom = -10.0
+theme_override_font_sizes/font_size = 14
+text = "Click unit to select | Click hex to move | Click enemy to attack | ESC to deselect"
+horizontal_alignment = 1
+
+[node name="VictoryPanel" type="Panel" parent="CanvasLayer/BattleUI"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -100.0
+offset_right = 200.0
+offset_bottom = 100.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="VictoryLabel" type="Label" parent="CanvasLayer/BattleUI/VictoryPanel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -150.0
+offset_top = -30.0
+offset_right = 150.0
+offset_bottom = 30.0
+theme_override_font_sizes/font_size = 32
+text = "Victory!"
+horizontal_alignment = 1
+vertical_alignment = 1
