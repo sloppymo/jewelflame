@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://c8n2m4k6p9qr"]
+[gd_scene format=3 uid="uid://cfk485t0qqdrr"]
 
 [ext_resource type="Script" path="res://tactical/tactical_battle_main.gd" id="1_main_script"]
 [ext_resource type="FontFile" path="res://assets/fonts/Ishmeria.ttf" id="2_ishmeria_font"]
