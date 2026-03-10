@@ -77,10 +77,10 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -60.0
-offset_top = -60.0
-offset_right = 60.0
-offset_bottom = 60.0
+offset_left = -100.0
+offset_top = -100.0
+offset_right = 100.0
+offset_bottom = 100.0
 grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.102, 0.063, 0.243, 1)
@@ -105,15 +105,17 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 12.0
-offset_top = 12.0
-offset_right = -12.0
-offset_bottom = -12.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = -20.0
 grow_horizontal = 2
 grow_vertical = 2
 
 [node name="MainVBox" type="VBoxContainer" parent="PanelFrame/MarginContainer"]
 layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 theme_override_constants/separation = 4
 
 [node name="HeaderRow" type="HBoxContainer" parent="PanelFrame/MarginContainer/MainVBox"]
@@ -217,8 +219,9 @@ texture_filter = 1
 
 [node name="StatsGrid" type="GridContainer" parent="PanelFrame/MarginContainer/MainVBox"]
 layout_mode = 2
+size_flags_horizontal = 3
 columns = 2
-theme_override_constants/h_separation = 20
+theme_override_constants/h_separation = 24
 theme_override_constants/v_separation = 4
 
 [node name="StatRow0" type="HBoxContainer" parent="PanelFrame/MarginContainer/MainVBox/StatsGrid"]
