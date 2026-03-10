@@ -28,7 +28,7 @@ position = Vector2(550, 100)
 [node name="LeftPanelBackground" type="ColorRect" parent="CanvasLayer"]
 anchors_preset = 9
 anchor_bottom = 1.0
-offset_right = 500.0
+offset_right = 560.0
 grow_vertical = 2
 color = Color(0.06, 0.04, 0.15, 1)
 
