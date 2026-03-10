@@ -65,10 +65,10 @@ shadow_size = 1
 shadow_color = Color(0, 0, 0, 0.8)
 
 [node name="LeftPanel" type="Control"]
-custom_minimum_size = Vector2(560, 600)
+custom_minimum_size = Vector2(480, 600)
 anchors_preset = 9
 anchor_bottom = 1.0
-offset_right = 560.0
+offset_right = 480.0
 grow_vertical = 2
 script = ExtResource("1_script")
 
@@ -77,10 +77,10 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -20.0
-offset_top = -20.0
-offset_right = 20.0
-offset_bottom = 20.0
+offset_left = -60.0
+offset_top = -60.0
+offset_right = 60.0
+offset_bottom = 60.0
 grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.102, 0.063, 0.243, 1)
@@ -218,8 +218,8 @@ texture_filter = 1
 [node name="StatsGrid" type="GridContainer" parent="PanelFrame/MarginContainer/MainVBox"]
 layout_mode = 2
 columns = 2
-theme_override_constants/h_separation = 12
-theme_override_constants/v_separation = 2
+theme_override_constants/h_separation = 20
+theme_override_constants/v_separation = 4
 
 [node name="StatRow0" type="HBoxContainer" parent="PanelFrame/MarginContainer/MainVBox/StatsGrid"]
 layout_mode = 2
@@ -339,7 +339,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "45"
 label_settings = SubResource("LabelSettings_Stat")
-horizontal_alignment = 2
+horizontal_alignment = 0
 
 [node name="Divider3" type="TextureRect" parent="PanelFrame/MarginContainer/MainVBox"]
 custom_minimum_size = Vector2(0, 12)
