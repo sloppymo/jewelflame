@@ -1,0 +1,448 @@
+[gd_scene load_steps=21 format=3 uid="uid://left_panel_gemfire"]
+
+[ext_resource type="Script" path="res://ui/left_panel_gemfire.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://dmciy24fnm8cw" path="res://assets/ui/panels/panel_border.png" id="2_panel_border"]
+[ext_resource type="Texture2D" uid="uid://bfd31jq5650wo" path="res://assets/crests/crest_blanche.png" id="3_crest"]
+[ext_resource type="Texture2D" uid="uid://bmsbxrehd6fek" path="res://assets/ui/divider_gold.png" id="4_divider"]
+[ext_resource type="Texture2D" uid="uid://c8avt0bfe43ke" path="res://assets/ui/portrait_frame.png" id="5_portrait_frame"]
+[ext_resource type="Texture2D" uid="uid://crk3clpnarf4a" path="res://assets/portraits/house_blanche/lord_blanche.png" id="6_portrait"]
+[ext_resource type="Texture2D" uid="uid://cwluvyt0vys26" path="res://assets/icons/icon_swords.png" id="7_swords"]
+[ext_resource type="Texture2D" uid="uid://bjp87gwr3fatm" path="res://assets/icons/icon_gold.png" id="8_gold"]
+[ext_resource type="Texture2D" uid="uid://b5unwcyy7rpn7" path="res://assets/icons/icon_flags.png" id="9_flags"]
+[ext_resource type="Texture2D" uid="uid://jykltbxixlk0" path="res://assets/icons/icon_food.png" id="10_food"]
+[ext_resource type="Texture2D" uid="uid://cs58thj4pbfcy" path="res://assets/icons/icon_troops.png" id="11_troops"]
+[ext_resource type="Texture2D" uid="uid://b6ndnhhentdg0" path="res://assets/icons/icon_castle.png" id="12_castle"]
+[ext_resource type="Texture2D" uid="uid://bus81jjgecagp" path="res://assets/ui/button_frame.png" id="13_button"]
+[ext_resource type="Texture2D" uid="uid://cbetu24ylyx46" path="res://assets/ui/button_frame_hover.png" id="14_button_hover"]
+[ext_resource type="Texture2D" uid="uid://brorxd8i8eee7" path="res://assets/ui/button_frame_pressed.png" id="15_button_pressed"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1"]
+bg_color = Color(0.15, 0.12, 0.25, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.8, 0.7, 0.3, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_left = 4
+corner_radius_bottom_right = 4
+
+[sub_resource type="LabelSettings" id="LabelSettings_Family"]
+font_size = 18
+font_color = Color(1, 0.95, 0.8, 1)
+shadow_size = 2
+shadow_color = Color(0, 0, 0, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_Province"]
+font_size = 14
+font_color = Color(0.9, 0.85, 0.7, 1)
+shadow_size = 1
+shadow_color = Color(0, 0, 0, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_LordName"]
+font_size = 16
+font_color = Color(1, 0.95, 0.8, 1)
+shadow_size = 2
+shadow_color = Color(0, 0, 0, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_Stat"]
+font_size = 14
+font_color = Color(1, 0.98, 0.9, 1)
+shadow_size = 1
+shadow_color = Color(0, 0, 0, 0.8)
+
+[sub_resource type="LabelSettings" id="LabelSettings_Prompt"]
+font_size = 12
+font_color = Color(0.9, 0.85, 0.7, 1)
+shadow_size = 1
+shadow_color = Color(0, 0, 0, 0.8)
+
+[node name="LeftPanel" type="Control"]
+custom_minimum_size = Vector2(280, 600)
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_right = 280.0
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="PanelFrame" type="NinePatchRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_panel_border")
+patch_margin_left = 16
+patch_margin_top = 16
+patch_margin_right = 16
+patch_margin_bottom = 16
+axis_stretch_horizontal = 0
+axis_stretch_vertical = 0
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelFrame"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = 12.0
+offset_right = -12.0
+offset_bottom = -12.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MainVBox" type="VBoxContainer" parent="PanelFrame/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="HeaderRow" type="HBoxContainer" parent="PanelFrame/MarginContainer/MainVBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="CrestIcon" type="TextureRect" parent="PanelFrame/MarginContainer/MainVBox/HeaderRow"]
+custom_minimum_size = Vector2(48, 64)
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("3_crest")
+expand_mode = 1
+stretch_mode = 5
+texture_filter = 1
+
+[node name="TitleVBox" type="VBoxContainer" parent="PanelFrame/MarginContainer/MainVBox/HeaderRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+alignment = 1
+
+[node name="FamilyLabel" type="Label" parent="PanelFrame/MarginContainer/MainVBox/HeaderRow/TitleVBox"]
+layout_mode = 2
+text = "Blanche"
+label_settings = SubResource("LabelSettings_Family")
+
+[node name="ProvinceLabel" type="Label" parent="PanelFrame/MarginContainer/MainVBox/HeaderRow/TitleVBox"]
+layout_mode = 2
+text = "5: Petaria"
+label_settings = SubResource("LabelSettings_Province")
+
+[node name="Divider1" type="TextureRect" parent="PanelFrame/MarginContainer/MainVBox"]
+custom_minimum_size = Vector2(0, 12)
+layout_mode = 2
+texture = ExtResource("4_divider")
+expand_mode = 1
+stretch_mode = 1
+texture_filter = 1
+
+[node name="LordRow" type="HBoxContainer" parent="PanelFrame/MarginContainer/MainVBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="PortraitFrame" type="NinePatchRect" parent="PanelFrame/MarginContainer/MainVBox/LordRow"]
+custom_minimum_size = Vector2(80, 104)
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("5_portrait_frame")
+patch_margin_left = 16
+patch_margin_top = 16
+patch_margin_right = 16
+patch_margin_bottom = 16
+axis_stretch_horizontal = 0
+axis_stretch_vertical = 0
+
+[node name="Portrait" type="TextureRect" parent="PanelFrame/MarginContainer/MainVBox/LordRow/PortraitFrame"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -32.0
+offset_top = -48.0
+offset_right = 32.0
+offset_bottom = 48.0
+grow_horizontal = 2
+grow_vertical = 2
+custom_minimum_size = Vector2(64, 96)
+texture = ExtResource("6_portrait")
+expand_mode = 1
+stretch_mode = 5
+texture_filter = 1
+
+[node name="LordInfoVBox" type="VBoxContainer" parent="PanelFrame/MarginContainer/MainVBox/LordRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+alignment = 1
+
+[node name="LordName" type="Label" parent="PanelFrame/MarginContainer/MainVBox/LordRow/LordInfoVBox"]
+layout_mode = 2
+text = "Lord Karl"
+label_settings = SubResource("LabelSettings_LordName")
+
+[node name="SwordsIcon" type="TextureRect" parent="PanelFrame/MarginContainer/MainVBox/LordRow/LordInfoVBox"]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+size_flags_horizontal = 4
+texture = ExtResource("7_swords")
+expand_mode = 1
+stretch_mode = 5
+texture_filter = 1
+
+[node name="Divider2" type="TextureRect" parent="PanelFrame/MarginContainer/MainVBox"]
+custom_minimum_size = Vector2(0, 12)
+layout_mode = 2
+texture = ExtResource("4_divider")
+expand_mode = 1
+stretch_mode = 1
+texture_filter = 1
+
+[node name="StatsGrid" type="GridContainer" parent="PanelFrame/MarginContainer/MainVBox"]
+layout_mode = 2
+columns = 2
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 4
+
+[node name="StatRow0" type="HBoxContainer" parent="PanelFrame/MarginContainer/MainVBox/StatsGrid"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Icon" type="TextureRect" parent="PanelFrame/MarginContainer/MainVBox/StatsGrid/StatRow0"]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+texture = ExtResource("8_gold")
+expand_mode = 1
+stretch_mode = 5
+texture_filter = 1
+
+[node name="Value" type="Label" parent="PanelFrame/MarginContainer/MainVBox/StatsGrid/StatRow0"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "497"
+label_settings = SubResource("LabelSettings_Stat")
+horizontal_alignment = 2
+
+[node name="StatRow1" type="HBoxContainer" parent="PanelFrame/MarginContainer/MainVBox/StatsGrid"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Icon" type="TextureRect" parent="PanelFrame/MarginContainer/MainVBox/StatsGrid/StatRow1"]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+texture = ExtResource("9_flags")
+expand_mode = 1
+stretch_mode = 5
+texture_filter = 1
+
+[node name="Value" type="Label" parent="PanelFrame/MarginContainer/MainVBox/StatsGrid/StatRow1"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "56"
+label_settings = SubResource("LabelSettings_Stat")
+horizontal_alignment = 2
+
+[node name="StatRow2" type="HBoxContainer" parent="PanelFrame/MarginContainer/MainVBox/StatsGrid"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Icon" type="TextureRect" parent="PanelFrame/MarginContainer/MainVBox/StatsGrid/StatRow2"]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+texture = ExtResource("10_food")
+expand_mode = 1
+stretch_mode = 5
+texture_filter = 1
+
+[node name="Value" type="Label" parent="PanelFrame/MarginContainer/MainVBox/StatsGrid/StatRow2"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "391"
+label_settings = SubResource("LabelSettings_Stat")
+horizontal_alignment = 2
+
+[node name="StatRow3" type="HBoxContainer" parent="PanelFrame/MarginContainer/MainVBox/StatsGrid"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Icon" type="TextureRect" parent="PanelFrame/MarginContainer/MainVBox/StatsGrid/StatRow3"]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+texture = ExtResource("7_swords")
+expand_mode = 1
+stretch_mode = 5
+texture_filter = 1
+
+[node name="Value" type="Label" parent="PanelFrame/MarginContainer/MainVBox/StatsGrid/StatRow3"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "38"
+label_settings = SubResource("LabelSettings_Stat")
+horizontal_alignment = 2
+
+[node name="StatRow4" type="HBoxContainer" parent="PanelFrame/MarginContainer/MainVBox/StatsGrid"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Icon" type="TextureRect" parent="PanelFrame/MarginContainer/MainVBox/StatsGrid/StatRow4"]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+texture = ExtResource("11_troops")
+expand_mode = 1
+stretch_mode = 5
+texture_filter = 1
+
+[node name="Value" type="Label" parent="PanelFrame/MarginContainer/MainVBox/StatsGrid/StatRow4"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "0"
+label_settings = SubResource("LabelSettings_Stat")
+horizontal_alignment = 2
+
+[node name="StatRow5" type="HBoxContainer" parent="PanelFrame/MarginContainer/MainVBox/StatsGrid"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Icon" type="TextureRect" parent="PanelFrame/MarginContainer/MainVBox/StatsGrid/StatRow5"]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+texture = ExtResource("12_castle")
+expand_mode = 1
+stretch_mode = 5
+texture_filter = 1
+
+[node name="Value" type="Label" parent="PanelFrame/MarginContainer/MainVBox/StatsGrid/StatRow5"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "45"
+label_settings = SubResource("LabelSettings_Stat")
+horizontal_alignment = 2
+
+[node name="Divider3" type="TextureRect" parent="PanelFrame/MarginContainer/MainVBox"]
+custom_minimum_size = Vector2(0, 12)
+layout_mode = 2
+texture = ExtResource("4_divider")
+expand_mode = 1
+stretch_mode = 1
+texture_filter = 1
+
+[node name="CommandsRow" type="HBoxContainer" parent="PanelFrame/MarginContainer/MainVBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="CommandBtn0" type="TextureButton" parent="PanelFrame/MarginContainer/MainVBox/CommandsRow"]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+toggle_mode = true
+texture_normal = ExtResource("13_button")
+texture_pressed = ExtResource("15_button_pressed")
+texture_hover = ExtResource("14_button_hover")
+texture_filter = 1
+
+[node name="Icon" type="TextureRect" parent="PanelFrame/MarginContainer/MainVBox/CommandsRow/CommandBtn0"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -16.0
+offset_top = -16.0
+offset_right = 16.0
+offset_bottom = 16.0
+grow_horizontal = 2
+grow_vertical = 2
+custom_minimum_size = Vector2(32, 32)
+texture = ExtResource("7_swords")
+expand_mode = 1
+stretch_mode = 5
+texture_filter = 1
+
+[node name="CommandBtn1" type="TextureButton" parent="PanelFrame/MarginContainer/MainVBox/CommandsRow"]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+toggle_mode = true
+texture_normal = ExtResource("13_button")
+texture_pressed = ExtResource("15_button_pressed")
+texture_hover = ExtResource("14_button_hover")
+texture_filter = 1
+
+[node name="Icon" type="TextureRect" parent="PanelFrame/MarginContainer/MainVBox/CommandsRow/CommandBtn1"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -16.0
+offset_top = -16.0
+offset_right = 16.0
+offset_bottom = 16.0
+grow_horizontal = 2
+grow_vertical = 2
+custom_minimum_size = Vector2(32, 32)
+texture = ExtResource("10_food")
+expand_mode = 1
+stretch_mode = 5
+texture_filter = 1
+
+[node name="CommandBtn2" type="TextureButton" parent="PanelFrame/MarginContainer/MainVBox/CommandsRow"]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+toggle_mode = true
+texture_normal = ExtResource("13_button")
+texture_pressed = ExtResource("15_button_pressed")
+texture_hover = ExtResource("14_button_hover")
+texture_filter = 1
+
+[node name="Icon" type="TextureRect" parent="PanelFrame/MarginContainer/MainVBox/CommandsRow/CommandBtn2"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -16.0
+offset_top = -16.0
+offset_right = 16.0
+offset_bottom = 16.0
+grow_horizontal = 2
+grow_vertical = 2
+custom_minimum_size = Vector2(32, 32)
+texture = ExtResource("9_flags")
+expand_mode = 1
+stretch_mode = 5
+texture_filter = 1
+
+[node name="CommandBtn3" type="TextureButton" parent="PanelFrame/MarginContainer/MainVBox/CommandsRow"]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+toggle_mode = true
+texture_normal = ExtResource("13_button")
+texture_pressed = ExtResource("15_button_pressed")
+texture_hover = ExtResource("14_button_hover")
+texture_filter = 1
+
+[node name="Icon" type="TextureRect" parent="PanelFrame/MarginContainer/MainVBox/CommandsRow/CommandBtn3"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -16.0
+offset_top = -16.0
+offset_right = 16.0
+offset_bottom = 16.0
+grow_horizontal = 2
+grow_vertical = 2
+custom_minimum_size = Vector2(32, 32)
+texture = ExtResource("11_troops")
+expand_mode = 1
+stretch_mode = 5
+texture_filter = 1
+
+[node name="PromptLabel" type="Label" parent="PanelFrame/MarginContainer/MainVBox"]
+layout_mode = 2
+text = "Lord Karl, what is your command?"
+label_settings = SubResource("LabelSettings_Prompt")
+horizontal_alignment = 1
