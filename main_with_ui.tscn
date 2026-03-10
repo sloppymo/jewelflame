@@ -15,6 +15,16 @@ position = Vector2(600, 350)
 zoom = Vector2(0.8, 0.8)
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
+layer = -1
+
+[node name="Background" type="TextureRect" parent="CanvasLayer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+expand_mode = 1
+stretch_mode = 6
 
 [node name="ProvincePanel" parent="CanvasLayer" instance=ExtResource("2_panel")]
 anchors_preset = 6

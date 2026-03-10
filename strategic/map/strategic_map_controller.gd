@@ -76,7 +76,7 @@ func _on_attack_pressed():
 		print("No province selected for attack")
 		return
 	
-	var province = EnhancedGameState.get_province(selected_province_id)
+	var province = GameState.get_province(selected_province_id)
 	if not province or province.owner_id != TurnManager.get_current_family():
 		print("Cannot attack from this province")
 		return
@@ -84,7 +84,7 @@ func _on_attack_pressed():
 	# Find adjacent enemy provinces
 	var targets = []
 	for neighbor_id in province.neighbors:
-		var neighbor = EnhancedGameState.get_province(neighbor_id)
+		var neighbor = GameState.get_province(neighbor_id)
 		if neighbor and neighbor.owner_id != province.owner_id:
 			targets.append(neighbor)
 	
@@ -113,7 +113,7 @@ func _on_recruit_pressed():
 		print("No province selected for recruitment")
 		return
 	
-	var province = EnhancedGameState.get_province(selected_province_id)
+	var province = GameState.get_province(selected_province_id)
 	if not province or province.owner_id != TurnManager.get_current_family():
 		print("Cannot recruit in this province")
 		return
@@ -131,7 +131,7 @@ func _on_develop_pressed():
 		print("No province selected for development")
 		return
 	
-	var province = EnhancedGameState.get_province(selected_province_id)
+	var province = GameState.get_province(selected_province_id)
 	if not province or province.owner_id != TurnManager.get_current_family():
 		print("Cannot develop this province")
 		return
@@ -154,13 +154,13 @@ func update_turn_display():
 		turn_label.text = "%s Turn - %s - Month %d, Year %d" % [
 			current_family.capitalize(),
 			current_phase,
-			EnhancedGameState.current_month,
-			EnhancedGameState.current_year
+			GameState.current_month,
+			GameState.current_year
 		]
 	
 	if date_label:
-		var season = get_season_name(EnhancedGameState.current_month)
-		date_label.text = "%s, Year %d" % [season, EnhancedGameState.current_year]
+		var season = get_season_name(GameState.current_month)
+		date_label.text = "%s, Year %d" % [season, GameState.current_year]
 
 func get_season_name(month: int) -> String:
 	match month:
@@ -181,7 +181,7 @@ func populate_lord_roster():
 	
 	# Add current family's lords
 	var current_family = TurnManager.get_current_family()
-	for character in EnhancedGameState.characters.values():
+	for character in GameState.characters.values():
 		if character.family_id == current_family and character.is_lord:
 			var lord_button = Button.new()
 			lord_button.text = "%s (Age: %d, Loyalty: %d)" % [
@@ -199,7 +199,7 @@ func _on_lord_clicked(lord_id: String):
 
 func show_province_info(province_id: int):
 	selected_province_id = province_id
-	var province = EnhancedGameState.get_province(province_id)
+	var province = GameState.get_province(province_id)
 	if not province:
 		return
 	

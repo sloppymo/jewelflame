@@ -11,8 +11,8 @@ func _init(province: int, lord: String, action: String = "recruit"):
 	recruitment_action = action
 
 func can_execute() -> bool:
-	var province = EnhancedGameState.get_province(province_id)
-	var lord = EnhancedGameState.get_character(defeated_lord_id)
+	var province = GameState.get_province(province_id)
+	var lord = GameState.get_character(defeated_lord_id)
 	
 	if not province or not lord:
 		return false
@@ -22,7 +22,7 @@ func can_execute() -> bool:
 		return false
 	
 	# Check if province belongs to player's family
-	if province.owner_id != EnhancedGameState.player_family_id:
+	if province.owner_id != GameState.player_family_id:
 		return false
 	
 	# Check recruitment requirements based on action
@@ -51,8 +51,8 @@ func execute():
 	
 	save_state()
 	
-	var province = EnhancedGameState.get_province(province_id)
-	var lord = EnhancedGameState.get_character(defeated_lord_id)
+	var province = GameState.get_province(province_id)
+	var lord = GameState.get_character(defeated_lord_id)
 	
 	match recruitment_action:
 		"recruit":
@@ -60,7 +60,7 @@ func execute():
 			province.gold -= 100
 			
 			# Convert lord to player's service
-			lord.family_id = EnhancedGameState.player_family_id
+			lord.family_id = GameState.player_family_id
 			lord.loyalty = 50  # Reset loyalty to neutral
 			lord.is_captured = false
 			lord.capture_family_id = ""
@@ -72,7 +72,7 @@ func execute():
 			if province.stationed_lord_id == "":
 				province.stationed_lord_id = defeated_lord_id
 			
-			print("Recruited %s to service of %s" % [lord.name, EnhancedGameState.player_family_id])
+			print("Recruited %s to service of %s" % [lord.name, GameState.player_family_id])
 		
 		"banish":
 			# Remove lord from game
@@ -111,15 +111,15 @@ func undo():
 	
 	restore_state()
 	
-	var province = EnhancedGameState.get_province(province_id)
-	var lord = EnhancedGameState.get_character(defeated_lord_id)
+	var province = GameState.get_province(province_id)
+	var lord = GameState.get_character(defeated_lord_id)
 	
 	match recruitment_action:
 		"recruit":
 			# Restore original family
 			lord.family_id = execution_data["previous_family"]
 			lord.is_captured = true
-			lord.capture_family_id = EnhancedGameState.player_family_id
+			lord.capture_family_id = GameState.player_family_id
 			
 			# Return to prisoners
 			province.prisoner_lords.append(defeated_lord_id)
@@ -135,13 +135,13 @@ func undo():
 			# Restore as prisoner
 			province.prisoner_lords.append(defeated_lord_id)
 			lord.is_captured = true
-			lord.capture_family_id = EnhancedGameState.player_family_id
+			lord.capture_family_id = GameState.player_family_id
 		
 		"release":
 			# Return to prisoner status
 			province.prisoner_lords.append(defeated_lord_id)
 			lord.is_captured = true
-			lord.capture_family_id = EnhancedGameState.player_family_id
+			lord.capture_family_id = GameState.player_family_id
 			lord.loyalty -= 20  # Remove loyalty bonus
 	
 	# Emit signals
@@ -151,8 +151,8 @@ func undo():
 	EventBus.CharacterDataChanged.emit(defeated_lord_id, "loyalty", lord.loyalty)
 
 func get_description() -> String:
-	var province = EnhancedGameState.get_province(province_id)
-	var lord = EnhancedGameState.get_character(defeated_lord_id)
+	var province = GameState.get_province(province_id)
+	var lord = GameState.get_character(defeated_lord_id)
 	
 	if province and lord:
 		match recruitment_action:

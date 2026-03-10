@@ -49,7 +49,7 @@ func _setup_button(btn: Button, callback: Callable):
 func show_lord_info(lord_id_param: String):
 	lord_id = lord_id_param
 	
-	var lord = EnhancedGameState.get_character(lord_id)
+	var lord = GameState.get_character(lord_id)
 	if not lord:
 		return
 	
@@ -195,28 +195,28 @@ func _update_fifth_unit(lord):
 		fifth_unit_panel.add_child(empty)
 
 func _get_family_name(family_id: String) -> String:
-	var family = EnhancedGameState.get_family(family_id)
+	var family = GameState.get_family(family_id)
 	if family:
 		return family.name
 	return "Unknown"
 
 func _get_lord_troops(lord) -> int:
 	var total = 0
-	for province in EnhancedGameState.provinces.values():
+	for province in GameState.provinces.values():
 		if province.owner_id == lord.family_id:
 			total += province.soldiers
 	return total
 
 func _get_lord_gold(lord) -> int:
 	var total = 0
-	for province in EnhancedGameState.provinces.values():
+	for province in GameState.provinces.values():
 		if province.owner_id == lord.family_id:
 			total += province.gold
 	return total
 
 func _get_lord_food(lord) -> int:
 	var total = 0
-	for province in EnhancedGameState.provinces.values():
+	for province in GameState.provinces.values():
 		if province.owner_id == lord.family_id:
 			total += province.food
 	return total

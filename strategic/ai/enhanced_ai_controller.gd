@@ -116,7 +116,7 @@ class StrategicAI extends Node:
 		var attacks = []
 		
 		for neighbor_id in province.neighbors:
-			var neighbor = EnhancedGameState.get_province(neighbor_id)
+			var neighbor = GameState.get_province(neighbor_id)
 			if not neighbor or neighbor.owner_id == family_id:
 				continue
 			
@@ -272,7 +272,7 @@ class TacticalAI extends Node:
 		var abilities = {}
 		
 		# Check if commander has special abilities
-		var commander = EnhancedGameState.get_character(battle_data.attacking_commander_id)
+		var commander = GameState.get_character(battle_data.attacking_commander_id)
 		if commander and commander.is_lord:
 			match commander.special_ability:
 				"rally":
@@ -306,7 +306,7 @@ func setup(family: String, personality: PersonalityType):
 
 func get_family_provinces() -> Array:
 	var provinces = []
-	for province in EnhancedGameState.provinces.values():
+	for province in GameState.provinces.values():
 		if province.owner_id == family_id:
 			provinces.append(province)
 	return provinces
@@ -320,7 +320,7 @@ func calculate_province_strength(province) -> int:
 	
 	# Add commander bonus
 	if province.stationed_lord_id != "":
-		var lord = EnhancedGameState.get_character(province.stationed_lord_id)
+		var lord = GameState.get_character(province.stationed_lord_id)
 		if lord and lord.is_lord:
 			strength = int(strength * (1.0 + lord.command_rating / 100.0))
 	
@@ -361,7 +361,7 @@ func calculate_attack_risk(attacker, defender) -> float:
 
 func calculate_attack_forces(province, target_province_id: int) -> Dictionary:
 	var attacker_strength = min(province.soldiers, 100)
-	var target_province = EnhancedGameState.get_province(target_province_id)
+	var target_province = GameState.get_province(target_province_id)
 	var defender_strength = target_province.soldiers if target_province else 50
 	return {
 		"attacker_strength": attacker_strength,
@@ -400,7 +400,7 @@ func execute_ai_lord_command(lord, family):
 		DomesticCommands.execute_develop(development.province_id, development.type)
 
 func get_lord_province(lord_id: String):
-	for province in EnhancedGameState.provinces.values():
+	for province in GameState.provinces.values():
 		if province.governor_id == lord_id:
 			return province
 	return null
@@ -409,7 +409,7 @@ func evaluate_lord_movements(province) -> Array[Dictionary]:
 	var movements = []
 	
 	# Simple movement evaluation - move lords to strengthen borders
-	var lord = EnhancedGameState.get_character(province.governor_id)
+	var lord = GameState.get_character(province.governor_id)
 	if not lord or not lord.is_lord:
 		return movements
 	
@@ -417,7 +417,7 @@ func evaluate_lord_movements(province) -> Array[Dictionary]:
 	if province.soldiers < 30:
 		# Look for nearby friendly provinces with excess troops
 		for neighbor_id in province.neighbors:
-			var neighbor = EnhancedGameState.get_province(neighbor_id)
+			var neighbor = GameState.get_province(neighbor_id)
 			if neighbor and neighbor.owner_id == family_id and neighbor.soldiers > 80:
 				movements.append({
 					"type": "movement",

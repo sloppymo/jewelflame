@@ -22,6 +22,15 @@ signal ProvinceExhausted(id: int, exhausted: bool)
 signal TurnEnded(month: int, year: int)
 
 @warning_ignore("unused_signal")
+signal TurnCompleted(month: int, year: int)
+
+@warning_ignore("unused_signal")
+signal FamilyTurnStarted(family_id: String)
+
+@warning_ignore("unused_signal")
+signal LordTurnStarted(lord_id: String)
+
+@warning_ignore("unused_signal")
 signal BattleResolved(result: Dictionary)
 
 @warning_ignore("unused_signal")
@@ -36,3 +45,7 @@ signal RequestTacticalBattle(battle_data: Dictionary)
 
 @warning_ignore("unused_signal")
 signal TacticalBattleCompleted(result: Dictionary)
+
+# Command system signals
+@warning_ignore("unused_signal")
+signal CommandSelected(command: String)

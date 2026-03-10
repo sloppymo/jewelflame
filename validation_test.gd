@@ -11,13 +11,13 @@ func _ready():
 	else:
 		print("❌ EventBus failed")
 	
-	if EnhancedGameState:
-		print("✅ EnhancedGameState loaded")
+	if GameState:
+		print("✅ GameState loaded")
 		# Test basic access
-		print("Current month: ", EnhancedGameState.current_month)
-		print("Current year: ", EnhancedGameState.current_year)
+		print("Current month: ", GameState.current_month)
+		print("Current year: ", GameState.current_year)
 	else:
-		print("❌ EnhancedGameState failed")
+		print("❌ GameState failed")
 	
 	if GameState:
 		print("✅ GameState loaded")

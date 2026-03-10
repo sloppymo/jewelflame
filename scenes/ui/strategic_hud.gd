@@ -199,13 +199,13 @@ func _on_turn_completed(month: int, year: int):
 func _update_year_month():
 	var month_names = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", 
 					   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-	var month = EnhancedGameState.current_month
-	var year = EnhancedGameState.current_year
+	var month = GameState.current_month
+	var year = GameState.current_year
 	var month_name = month_names[month] if month >= 1 and month <= 12 else "???"
 	year_month_label.text = "Year %d %s" % [year, month_name]
 
 func _update_family_display():
-	var family = EnhancedGameState.get_family(current_family_id)
+	var family = GameState.get_family(current_family_id)
 	if not family:
 		return
 	
@@ -215,7 +215,7 @@ func _update_family_display():
 	# Count owned provinces
 	var province_count = 0
 	var capital_name = ""
-	for province in EnhancedGameState.provinces.values():
+	for province in GameState.provinces.values():
 		if province.owner_id == current_family_id:
 			province_count += 1
 			if capital_name == "" or province.is_capital:
@@ -224,7 +224,7 @@ func _update_family_display():
 	province_label.text = "%d:%s" % [province_count, capital_name]
 
 func _update_lord_display():
-	var lord = EnhancedGameState.get_character(current_lord_id)
+	var lord = GameState.get_character(current_lord_id)
 	if not lord:
 		return
 	
@@ -290,21 +290,21 @@ func _update_portrait(lord):
 
 func _get_lord_gold(lord) -> int:
 	var total = 0
-	for province in EnhancedGameState.provinces.values():
+	for province in GameState.provinces.values():
 		if province.owner_id == lord.family_id:
 			total += province.gold
 	return total
 
 func _get_lord_food(lord) -> int:
 	var total = 0
-	for province in EnhancedGameState.provinces.values():
+	for province in GameState.provinces.values():
 		if province.owner_id == lord.family_id:
 			total += province.food
 	return total
 
 func _get_lord_troops(lord) -> int:
 	var total = 0
-	for province in EnhancedGameState.provinces.values():
+	for province in GameState.provinces.values():
 		if province.owner_id == lord.family_id:
 			total += province.soldiers
 	return total
@@ -316,7 +316,7 @@ func _update_prompt():
 	if current_lord_id.is_empty():
 		_set_prompt("Select a lord...")
 	else:
-		var lord = EnhancedGameState.get_character(current_lord_id)
+		var lord = GameState.get_character(current_lord_id)
 		if lord:
 			_set_prompt("Lord %s, what is your command?" % lord.name)
 

@@ -60,7 +60,7 @@ func show_family_roster(family_id_param: String):
 	family_id = family_id_param
 	current_page = 0
 	
-	var family = EnhancedGameState.get_family(family_id)
+	var family = GameState.get_family(family_id)
 	if family:
 		title_label.text = "%s Family Roster" % family.name
 	
@@ -70,7 +70,7 @@ func show_family_roster(family_id_param: String):
 
 func _load_family_lords():
 	family_lords.clear()
-	for character in EnhancedGameState.characters.values():
+	for character in GameState.characters.values():
 		if character.family_id == family_id and character is LordData:
 			family_lords.append(character)
 	
@@ -143,7 +143,7 @@ func _create_lord_row(name: String, age: String, atk: String, def: String, cmd: 
 
 func _get_lord_troops(lord) -> String:
 	var total = 0
-	for province in EnhancedGameState.provinces.values():
+	for province in GameState.provinces.values():
 		if province.owner_id == lord.family_id:
 			total += province.soldiers
 	return str(total)

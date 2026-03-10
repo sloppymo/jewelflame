@@ -1,4 +1,4 @@
-[gd_scene load_steps=3 format=3 uid="uid://bqvx8y1x8nql7"]
+[gd_scene load_steps=3 format=3 uid="uid://a846316bb2ac43fa"]
 
 [ext_resource type="Script" path="res://strategic/map/strategic_map_controller.gd" id="1_0k8xr"]
 

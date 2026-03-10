@@ -13,14 +13,14 @@ func _init(from_id: int, to_id: int, res_type: String, amt: int):
 	amount = amt
 
 func can_execute() -> bool:
-	var source = EnhancedGameState.get_province(from_province_id)
-	var target = EnhancedGameState.get_province(to_province_id)
+	var source = GameState.get_province(from_province_id)
+	var target = GameState.get_province(to_province_id)
 	
 	if not source or not target:
 		return false
 	if source.owner_id != target.owner_id:
 		return false
-	if source.owner_id != EnhancedGameState.player_family_id:
+	if source.owner_id != GameState.player_family_id:
 		return false
 	if source.get(resource_type, 0) < amount:
 		return false
@@ -33,8 +33,8 @@ func execute():
 	
 	save_state()
 	
-	var source = EnhancedGameState.get_province(from_province_id)
-	var target = EnhancedGameState.get_province(to_province_id)
+	var source = GameState.get_province(from_province_id)
+	var target = GameState.get_province(to_province_id)
 	
 	# Store previous values for undo
 	execution_data["previous_source_amount"] = source.get(resource_type, 0)
@@ -61,8 +61,8 @@ func undo():
 	
 	restore_state()
 	
-	var source = EnhancedGameState.get_province(from_province_id)
-	var target = EnhancedGameState.get_province(to_province_id)
+	var source = GameState.get_province(from_province_id)
+	var target = GameState.get_province(to_province_id)
 	
 	if source and target:
 		# Restore previous amounts
@@ -76,8 +76,8 @@ func undo():
 		print("Transport undone: ", amount, " ", resource_type, " from ", source.name, " to ", target.name)
 
 func get_description() -> String:
-	var source = EnhancedGameState.get_province(from_province_id)
-	var target = EnhancedGameState.get_province(to_province_id)
+	var source = GameState.get_province(from_province_id)
+	var target = GameState.get_province(to_province_id)
 	
 	if source and target:
 		return "Transport " + str(amount) + " " + resource_type + " from " + source.name + " to " + target.name

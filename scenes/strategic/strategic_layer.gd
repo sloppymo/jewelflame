@@ -7,6 +7,10 @@ const COLOR_GOLD = Color("#c4a000")
 
 const LordData = preload("res://resources/data_classes/lord_data.gd")
 
+# Autoload references
+@onready var GameState = get_node("/root/GameState")
+@onready var RandomEvents = get_node("/root/RandomEvents")
+
 var current_command: String = ""
 var selected_province_id: int = -1
 
@@ -21,239 +25,229 @@ var tactical_battle_scene = null
 var current_battle_result = null
 var pending_battle_data: Dictionary = {}
 
-@onready var strategic_hud = $StrategicHUD
+@onready var canvas_layer: CanvasLayer = $CanvasLayer
+@onready var view_menu: Window = $CanvasLayer/ViewMenu
+@onready var hex_grid_container: Node2D = $CanvasLayer/HexGridContainer
 
 func _ready():
-	_setup_strategic_hud()
-	_setup_view_windows()
-	_connect_signals()
 	
-	# Connect to battle request signal from EnhancedGameState
+	_connect_signals()
+	_render_province_map()
+	
+	# Connect to battle request signal from GameState
 	EventBus.RequestTacticalBattle.connect(_on_request_tactical_battle)
+	
+	# Connect to province selection
+	EventBus.ProvinceSelected.connect(_on_province_selected)
+	
+	# Connect to command selection from menu panel
+	EventBus.CommandSelected.connect(_on_command_selected)
 	
 	print("Strategic Layer initialized")
 
-func _on_request_tactical_battle(battle_data: Dictionary):
-	"""Handle battle launch request from EnhancedGameState"""
-	print("DEBUG: StrategicLayer received battle request")
+func _input(event):
+	# Fallback province click detection
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		var mouse_pos = get_global_mouse_position()
+		if hex_grid_container:
+			for child in hex_grid_container.get_children():
+				if child is Area2D:
+					# Check if mouse is within hex bounds (simple distance check)
+					var distance = mouse_pos.distance_to(child.position)
+					if distance < 50:  # Hex radius
+						var province_id = int(child.name.split("_")[1])
+						print("Province clicked (fallback): ", province_id)
+						EventBus.ProvinceSelected.emit(province_id)
+						break
+
+func _render_province_map():
+	"""Render the hex-based province map"""
+	if not hex_grid_container:
+		push_error("HexGridContainer not found!")
+		return
+	var hex_container = hex_grid_container
 	
-	# Build the battle data structures
-	var attacker_lord = battle_data.get("attacker")
-	var defender_lord = battle_data.get("defender")
+	# Clear existing
+	for child in hex_container.get_children():
+		child.queue_free()
 	
-	if not attacker_lord or not defender_lord:
-		push_error("Missing lord data in battle request")
+	# Render each province as a hex
+	for province_id in GameState.provinces.keys():
+		_create_province_hex(province_id, hex_container)
+
+func _create_province_hex(province_id: int, container: Node2D):
+	var province = GameState.provinces[province_id]
+	var family = GameState.families.get(province.owner_id)
+	
+	var area = Area2D.new()
+	area.name = "Province_%d" % province_id
+	area.position = _get_province_position(province_id)
+	area.input_pickable = true
+	area.monitoring = true
+	area.monitorable = true
+	
+	# Collision for clicking
+	var collision = CollisionPolygon2D.new()
+	collision.polygon = _get_hex_shape()
+	collision.build_mode = CollisionPolygon2D.BUILD_SOLIDS
+	area.add_child(collision)
+	
+	# Visual hex
+	var polygon = Polygon2D.new()
+	polygon.name = "Visual"
+	polygon.polygon = _get_hex_shape()
+	polygon.color = family.color if family else Color.GRAY
+	polygon.color.a = 0.6
+	area.add_child(polygon)
+	
+	# Border
+	var border = Line2D.new()
+	border.points = _get_hex_shape()
+	border.closed = true
+	border.width = 2
+	border.default_color = Color.WHITE
+	area.add_child(border)
+	
+	# Province name label
+	var label = Label.new()
+	label.text = province.name
+	label.position = Vector2(-40, -10)
+	label.add_theme_color_override("font_color", Color.WHITE)
+	label.add_theme_font_size_override("font_size", 14)
+	area.add_child(label)
+	
+	# Click handler
+	area.input_event.connect(_on_province_clicked.bind(province_id))
+	
+	container.add_child(area)
+	
+func _get_hex_shape() -> PackedVector2Array:
+	var size = 60.0
+	var points = PackedVector2Array()
+	for i in range(6):
+		var angle = deg_to_rad(60 * i - 30)
+		points.append(Vector2(cos(angle), sin(angle)) * size)
+	return points
+
+func _get_province_position(id: int) -> Vector2:
+	# Grid layout for 5 provinces
+	var positions = {
+		1: Vector2(400, 300),   # Dunmoor - left
+		2: Vector2(550, 200),   # Carveti - top
+		3: Vector2(550, 400),   # Cobrige - bottom
+		4: Vector2(700, 250),   # Banshea - right-top
+		5: Vector2(700, 450)    # Petaria - right-bottom
+	}
+	return positions.get(id, Vector2(500, 350))
+
+func _on_province_clicked(viewport, event, shape_idx, province_id: int):
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		print("Province clicked: ", province_id)
+		EventBus.ProvinceSelected.emit(province_id)
+
+func _on_province_selected(province_id: int):
+	selected_province_id = province_id
+	var province = GameState.provinces.get(province_id)
+	if not province:
 		return
 	
-	# Store for result processing
-	pending_battle_data = {
-		"attacker": attacker_lord,
-		"defender": defender_lord,
-		"province_id": battle_data.get("province_id", 0)
-	}
+	print("Selected province: ", province.name)
 	
-	# Launch tactical scene
-	_launch_tactical_scene(attacker_lord, defender_lord)
+	# Visual feedback - highlight selected province
+	_highlight_province(province_id)
+	
+	# Handle command if one is active
+	if current_command == "develop":
+		_execute_develop_command(province)
+	elif current_command == "search":
+		_execute_search_command(province)
+	elif current_command == "battle":
+		_execute_battle_command(province)
 
-func _launch_tactical_scene(attacker, defender):
-	"""Instantiate and configure tactical battle"""
-	print("DEBUG: Launching tactical scene for ", attacker.name, " vs ", defender.name)
-	
-	# Hide strategic UI
-	if strategic_hud:
-		strategic_hud.hide()
-	
-	# Load tactical scene
-	var tactical_scene = load("res://scenes/tactical/tactical_battle.tscn")
-	if not tactical_scene:
-		push_error("Failed to load tactical_battle.tscn")
-		strategic_hud.show()
+func _highlight_province(province_id: int):
+	"""Highlight the selected province hex"""
+	if not hex_grid_container:
 		return
 	
-	var instance = tactical_scene.instantiate()
-	tactical_battle_scene = instance
-	
-	# Configure data with province_id for result processing
-	instance.attacker_data = _build_battle_data(attacker)
-	instance.defender_data = _build_battle_data(defender)
-	instance.set_meta("province_id", pending_battle_data.get("province_id", 0))
-	
-	# Connect completion signal before adding to tree
-	if not instance.battle_ended.is_connected(_on_tactical_battle_ended):
-		instance.battle_ended.connect(_on_tactical_battle_ended)
-	
-	add_child(instance)
-	print("DEBUG: Tactical battle scene added to tree")
+	for child in hex_grid_container.get_children():
+		var visual = child.get_node_or_null("Visual")
+		if visual:
+			if child.name == "Province_%d" % province_id:
+				visual.modulate = Color(1.5, 1.5, 1.5)  # Brighten
+			else:
+				visual.modulate = Color.WHITE  # Reset
 
-func _build_battle_data(lord) -> Dictionary:
-	"""Convert lord to battle data format"""
-	if not lord:
-		return {}
+func _execute_develop_command(province):
+	"""Execute develop command on selected province"""
+	if province.owner_id != GameState.get_current_family():
+		print("Cannot develop enemy province!")
+		return
 	
-	return {
-		"lord": lord,
-		"units": _build_units_from_lord(lord),
-		"personality": _get_personality(lord),
-		"time_of_day": "day"
-	}
+	province.cultivation += 10
+	print("Developed province: ", province.name)
 
-func _setup_strategic_hud():
-	# Get references to HUD elements
-	var battle_btn = strategic_hud.get_node("MarginContainer/MainHBox/LeftPanel/VBoxContainer/CommandBar/BattleBtn")
-	var develop_btn = strategic_hud.get_node("MarginContainer/MainHBox/LeftPanel/VBoxContainer/CommandBar/DevelopBtn")
-	var search_btn = strategic_hud.get_node("MarginContainer/MainHBox/LeftPanel/VBoxContainer/CommandBar/SearchBtn")
-	var military_btn = strategic_hud.get_node("MarginContainer/MainHBox/LeftPanel/VBoxContainer/CommandBar/MilitaryBtn")
-	var view_btn = strategic_hud.get_node("MarginContainer/MainHBox/LeftPanel/VBoxContainer/CommandBar/ViewBtn")
-	var end_turn_btn = strategic_hud.get_node("MarginContainer/MainHBox/LeftPanel/VBoxContainer/CommandBar/EndTurnBtn")
-	
-	# Connect command buttons
-	battle_btn.pressed.connect(_on_command_selected.bind("battle"))
-	develop_btn.pressed.connect(_on_command_selected.bind("develop"))
-	search_btn.pressed.connect(_on_command_selected.bind("search"))
-	military_btn.pressed.connect(_on_command_selected.bind("military"))
-	view_btn.pressed.connect(_on_view_button_pressed)
-	end_turn_btn.pressed.connect(_on_end_turn_requested)
-	
-	# Style buttons
-	_style_command_button(battle_btn)
-	_style_command_button(develop_btn)
-	_style_command_button(search_btn)
-	_style_command_button(military_btn)
-	_style_command_button(view_btn)
-	_style_command_button(end_turn_btn)
-	
-	# Setup view menu
-	var view_menu = strategic_hud.get_node("ViewMenu")
-	var one_btn = view_menu.get_node("MarginContainer/VBoxContainer/OneBtn")
-	var many_btn = view_menu.get_node("MarginContainer/VBoxContainer/ManyBtn")
-	var land_btn = view_menu.get_node("MarginContainer/VBoxContainer/LandBtn")
-	var fifth_btn = view_menu.get_node("MarginContainer/VBoxContainer/FifthBtn")
-	var close_btn = view_menu.get_node("MarginContainer/VBoxContainer/CloseBtn")
-	
-	one_btn.pressed.connect(_on_view_mode_selected.bind("one"))
-	many_btn.pressed.connect(_on_view_mode_selected.bind("many"))
-	land_btn.pressed.connect(_on_view_mode_selected.bind("land"))
-	fifth_btn.pressed.connect(_on_view_mode_selected.bind("fifth"))
-	close_btn.pressed.connect(_on_view_menu_closed)
-	
-	# Style view menu buttons
-	_style_view_button(one_btn)
-	_style_view_button(many_btn)
-	_style_view_button(land_btn)
-	_style_view_button(fifth_btn)
-	_style_view_button(close_btn)
-	
-	# Set view menu title
-	view_menu.title = "View"
+func _execute_search_command(province):
+	"""Execute search command on selected province"""
+	print("Searched province: ", province.name)
 
-func _style_command_button(btn: Button):
-	var normal_style = StyleBoxFlat.new()
-	normal_style.bg_color = COLOR_ROYAL_BLUE
-	normal_style.border_color = COLOR_GOLD
-	normal_style.border_width_left = 2
-	normal_style.border_width_top = 2
-	normal_style.border_width_right = 2
-	normal_style.border_width_bottom = 2
-	normal_style.corner_radius_top_left = 4
-	normal_style.corner_radius_top_right = 4
-	normal_style.corner_radius_bottom_left = 4
-	normal_style.corner_radius_bottom_right = 4
-	btn.add_theme_stylebox_override("normal", normal_style)
+func _execute_battle_command(province):
+	"""Execute battle command - attack selected province"""
+	var current_family = GameState.get_current_family()
 	
-	var hover_style = StyleBoxFlat.new()
-	hover_style.bg_color = Color("#6a6abe")
-	hover_style.border_color = Color("#e6d47a")
-	hover_style.border_width_left = 2
-	hover_style.border_width_top = 2
-	hover_style.border_width_right = 2
-	hover_style.border_width_bottom = 2
-	hover_style.corner_radius_top_left = 4
-	hover_style.corner_radius_top_right = 4
-	hover_style.corner_radius_bottom_left = 4
-	hover_style.corner_radius_bottom_right = 4
-	btn.add_theme_stylebox_override("hover", hover_style)
-	
-	var pressed_style = StyleBoxFlat.new()
-	pressed_style.bg_color = Color("#2a2a7e")
-	pressed_style.border_color = COLOR_GOLD
-	pressed_style.border_width_left = 3
-	pressed_style.border_width_top = 3
-	pressed_style.border_width_right = 1
-	pressed_style.border_width_bottom = 1
-	pressed_style.corner_radius_top_left = 4
-	pressed_style.corner_radius_top_right = 4
-	pressed_style.corner_radius_bottom_left = 4
-	pressed_style.corner_radius_bottom_right = 4
-	btn.add_theme_stylebox_override("pressed", pressed_style)
-	
-	btn.add_theme_font_size_override("font_size", 14)
-
-func _style_view_button(btn: Button):
-	var normal_style = StyleBoxFlat.new()
-	normal_style.bg_color = COLOR_ROYAL_BLUE
-	normal_style.border_color = COLOR_GOLD
-	normal_style.border_width_left = 2
-	normal_style.border_width_top = 2
-	normal_style.border_width_right = 2
-	normal_style.border_width_bottom = 2
-	btn.add_theme_stylebox_override("normal", normal_style)
-	
-	var hover_style = StyleBoxFlat.new()
-	hover_style.bg_color = Color("#6a6abe")
-	hover_style.border_color = Color("#e6d47a")
-	hover_style.border_width_left = 2
-	hover_style.border_width_top = 2
-	hover_style.border_width_right = 2
-	hover_style.border_width_bottom = 2
-	btn.add_theme_stylebox_override("hover", hover_style)
-	
-	btn.add_theme_font_size_override("font_size", 12)
-	btn.add_theme_color_override("font_color", Color.WHITE)
-
-func _setup_view_windows():
-	# Preload view scenes (they will be instantiated when needed)
-	pass
+	# If enemy province, launch battle
+	print("Attacking enemy province: ", province.name)
+	_start_test_battle()
 
 func _connect_signals():
-	# Connect to GameState events
-	EventBus.TurnCompleted.connect(_on_turn_completed)
-	EventBus.FamilyTurnStarted.connect(_on_family_turn_started)
-	EventBus.LordTurnStarted.connect(_on_lord_turn_started)
+	# Connect view menu buttons (if view_menu exists)
+	if not view_menu:
+		return
+	
+	var one_btn = view_menu.get_node_or_null("MarginContainer/VBoxContainer/OneBtn")
+	var many_btn = view_menu.get_node_or_null("MarginContainer/VBoxContainer/ManyBtn")
+	var land_btn = view_menu.get_node_or_null("MarginContainer/VBoxContainer/LandBtn")
+	var fifth_btn = view_menu.get_node_or_null("MarginContainer/VBoxContainer/FifthBtn")
+	var close_btn = view_menu.get_node_or_null("MarginContainer/VBoxContainer/CloseBtn")
+	
+	if one_btn:
+		one_btn.pressed.connect(_on_view_mode_selected.bind("one"))
+	if many_btn:
+		many_btn.pressed.connect(_on_view_mode_selected.bind("many"))
+	if land_btn:
+		land_btn.pressed.connect(_on_view_mode_selected.bind("land"))
+	if fifth_btn:
+		fifth_btn.pressed.connect(_on_view_mode_selected.bind("fifth"))
+	if close_btn:
+		close_btn.pressed.connect(_on_view_menu_closed)
 
 func _on_command_selected(command: String):
 	current_command = command
 	print("DEBUG: Command selected: ", command)
 	
-	var prompt_label = strategic_hud.get_node("MarginContainer/MainHBox/LeftPanel/VBoxContainer/PromptSection/PromptLabel")
-	
 	match command:
 		"battle":
-			print("DEBUG: Battle command matched, starting test battle...")
-			prompt_label.text = "Where do you wish to invade? (Click TEST BATTLE to test)"
-			# For testing, immediately show a battle
-			_start_test_battle()
+			print("DEBUG: Battle command selected")
 		"develop":
-			prompt_label.text = "Select province to develop."
+			print("DEBUG: Develop command selected")
 		"search":
-			prompt_label.text = "Send searcher where? (Cost: 5 gold)"
+			print("DEBUG: Search command selected")
 		"military":
-			prompt_label.text = "Select military action."
-	
-	print("Command selected: ", command)
+			print("DEBUG: Military command selected")
+		"view":
+			if view_menu:
+				view_menu.popup_centered()
 
 func _start_test_battle():
 	# Start a test battle with real data from current lords
 	print("DEBUG: _start_test_battle() called")
-	var prompt_label = strategic_hud.get_node("MarginContainer/MainHBox/LeftPanel/VBoxContainer/PromptSection/PromptLabel")
-	prompt_label.text = "Loading tactical battle..."
 	
 	# Get current lords
-	var current_family = EnhancedGameState.get_current_family()
+	var current_family = GameState.get_current_family()
 	var attacker_lord = _get_first_lord(current_family)
 	
 	# Get enemy lord (first non-player family)
 	var enemy_family = ""
-	for family_id in EnhancedGameState.families:
+	for family_id in GameState.families.keys():
 		if family_id != current_family:
 			enemy_family = family_id
 			break
@@ -288,13 +282,10 @@ func _start_test_battle():
 		# Connect to battle end signal
 		tactical_battle_scene.battle_ended.connect(_on_tactical_battle_ended)
 		tactical_battle_scene.lord_captured.connect(_on_lord_captured)
-		
-		# Hide strategic HUD during battle
-		strategic_hud.hide()
 
 func _get_first_lord(family_id: String):
-	for char_id in EnhancedGameState.characters:
-		var character = EnhancedGameState.characters[char_id]
+	for char_id in GameState.characters.keys():
+		var character = GameState.characters[char_id]
 		if character.family_id == family_id and character.is_lord:
 			return character
 	return null
@@ -307,7 +298,8 @@ func _build_units_from_lord(lord) -> Array:
 	var units = []
 	var base_troops = 20
 	
-	base_troops = lord.command_rating / 2
+	if lord.get("command_rating"):
+		base_troops = lord.command_rating / 2
 	
 	units.append({"type": "Knights", "count": base_troops})
 	
@@ -326,7 +318,7 @@ func _get_personality(lord) -> String:
 	if not lord:
 		return "balanced"
 	
-	# Check if lord has attack/defense ratings (LordData has them, CharacterData doesn't)
+	# Check if lord has attack/defense ratings
 	if lord is LordData:
 		var lord_data = lord as LordData
 		if lord_data.attack_rating > lord_data.defense_rating + 10:
@@ -342,7 +334,7 @@ func _on_lord_captured(captured_lord, captor):
 	captured_lord.is_captured = true
 
 func _on_tactical_battle_ended(result: Dictionary):
-	"""Handle tactical battle completion and notify EnhancedGameState"""
+	"""Handle tactical battle completion and notify GameState"""
 	print("DEBUG: Tactical battle ended with result: ", result)
 	current_battle_result = result
 	
@@ -351,39 +343,11 @@ func _on_tactical_battle_ended(result: Dictionary):
 		tactical_battle_scene.queue_free()
 		tactical_battle_scene = null
 	
-	# Show strategic HUD again
-	strategic_hud.show()
-	
 	# Apply battle results to game state
 	_apply_battle_results(result)
 	
-	# Signal completion back to EnhancedGameState
+	# Signal completion back to GameState
 	EventBus.TacticalBattleCompleted.emit(result)
-	
-	var prompt_label = strategic_hud.get_node("MarginContainer/MainHBox/LeftPanel/VBoxContainer/PromptSection/PromptLabel")
-	
-	# Check for captured lord
-	if result.get("attacker_lost"):
-		prompt_label.text = "Battle lost! Your forces were defeated."
-	elif result.get("attacker_won"):
-		prompt_label.text = "Victory! Enemy defeated."
-	elif result.get("retreat"):
-		prompt_label.text = "Retreated from battle."
-	
-	# Show ransom dialog if lord captured
-	if result.get("lord_captured"):
-		_show_ransom_dialog(result.get("captured_lord"))
-
-func _show_ransom_dialog(lord):
-	var ransom_scene = load("res://scenes/tactical/ransom_dialog.tscn")
-	if ransom_scene:
-		var ransom_dialog = ransom_scene.instantiate()
-		add_child(ransom_dialog)
-		ransom_dialog.show_ransom_dialog(lord, EnhancedGameState.get_current_family())
-		ransom_dialog.dialog_closed.connect(func(): ransom_dialog.queue_free())
-
-func return_from_battle(result: Dictionary):
-	_on_tactical_battle_ended(result)
 
 func _apply_battle_results(result: Dictionary):
 	"""Update game state based on battle outcome"""
@@ -395,7 +359,7 @@ func _apply_battle_results(result: Dictionary):
 	
 	# Handle province capture
 	if province_id >= 0 and province_captured and winner == "attacker":
-		var province = EnhancedGameState.get_province(province_id)
+		var province = GameState.get_province(province_id)
 		var winner_lord = pending_battle_data.get("attacker")
 		
 		if province and winner_lord:
@@ -418,30 +382,18 @@ func _apply_battle_results(result: Dictionary):
 			captured_lord.is_captured = true
 			print("DEBUG: Lord captured: ", captured_lord.name)
 
-func _on_view_button_pressed():
-	var view_menu = strategic_hud.get_node("ViewMenu")
-	view_menu.popup_centered()
-
 func _on_view_mode_selected(mode: String):
-	var view_menu = strategic_hud.get_node("ViewMenu")
 	view_menu.hide()
-	
-	var current_family = EnhancedGameState.get_current_family()
-	var prompt_label = strategic_hud.get_node("MarginContainer/MainHBox/LeftPanel/VBoxContainer/PromptSection/PromptLabel")
 	
 	match mode:
 		"one":
-			prompt_label.text = "Viewing individual lord..."
 			_show_view_one()
 		"many":
-			prompt_label.text = "Viewing family roster..."
-			_show_view_many(current_family)
+			_show_view_many(GameState.get_current_family())
 		"land":
-			prompt_label.text = "Viewing province data..."
-			_show_view_land(current_family)
+			_show_view_land(GameState.get_current_family())
 		"fifth":
-			prompt_label.text = "Viewing 5th Unit inventory..."
-			_show_view_fifth(current_family)
+			_show_view_fifth(GameState.get_current_family())
 
 func _show_view_many(family_id: String):
 	var scene = load("res://scenes/ui/view_many.tscn")
@@ -474,9 +426,9 @@ func _show_view_one():
 		add_child(view_one_window)
 		view_one_window.view_close_requested.connect(_on_view_closed)
 		
-		var current_lord = EnhancedGameState.selected_lord_id
+		var current_lord = GameState.selected_lord_id
 		if current_lord.is_empty():
-			var family_lords = EnhancedGameState.get_family_lords(EnhancedGameState.get_current_family())
+			var family_lords = GameState.get_family_lords(GameState.get_current_family())
 			if not family_lords.is_empty():
 				current_lord = family_lords[0].id
 			
@@ -484,152 +436,67 @@ func _show_view_one():
 			view_one_window.show_lord_info(current_lord)
 
 func _on_view_closed():
-	var prompt_label = strategic_hud.get_node("MarginContainer/MainHBox/LeftPanel/VBoxContainer/PromptSection/PromptLabel")
-	var current_lord = EnhancedGameState.selected_lord_id
-	if not current_lord.is_empty():
-		var lord = EnhancedGameState.get_character(current_lord)
-		if lord:
-			prompt_label.text = "Lord %s, what is your command?" % lord.name
-	else:
-		prompt_label.text = "Select a lord..."
+	pass
 
 func _on_view_menu_closed():
-	var view_menu = strategic_hud.get_node("ViewMenu")
-	view_menu.hide()
+	if view_menu:
+		view_menu.hide()
 
-func _on_end_turn_requested():
-	var prompt_label = strategic_hud.get_node("MarginContainer/MainHBox/LeftPanel/VBoxContainer/PromptSection/PromptLabel")
-	prompt_label.text = "Plotting strategy..."
-	_end_turn()
-
-func _end_turn():
-	# Trigger random events (20% chance)
-	var event = RandomEventsEnhanced.try_trigger_random_event()
-	if not event.is_empty():
-		_show_event_notification(event)
+func _on_request_tactical_battle(battle_data: Dictionary):
+	"""Handle battle launch request from GameState"""
+	print("DEBUG: StrategicLayer received battle request")
 	
-	# Advance game turn
-	EnhancedGameState.advance_turn_phase()
-
-func _show_event_notification(event: Dictionary):
-	var event_banner = strategic_hud.get_node("EventBanner")
-	var icon_label = event_banner.get_node("Panel/HBoxContainer/IconLabel")
-	var text_label = event_banner.get_node("Panel/HBoxContainer/TextLabel")
+	# Build the battle data structures
+	var attacker_lord = battle_data.get("attacker")
+	var defender_lord = battle_data.get("defender")
 	
-	icon_label.text = event.get("icon", "📢")
-	text_label.text = event.get("message", "An event has occurred")
-	
-	event_banner.show()
-	await get_tree().create_timer(5.0).timeout
-	event_banner.hide()
-
-func _on_turn_completed(month: int, year: int):
-	print("Turn completed: Year ", year, " Month ", month)
-	_update_year_month_display()
-
-func _on_family_turn_started(family_id: String):
-	print("Family turn started: ", family_id)
-	_update_family_display()
-
-func _on_lord_turn_started(lord_id: String):
-	print("Lord turn started: ", lord_id)
-	_update_lord_display(lord_id)
-
-func _update_year_month_display():
-	var month_names = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", 
-					   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-	var month = EnhancedGameState.current_month
-	var year = EnhancedGameState.current_year
-	var month_name = month_names[month] if month >= 1 and month <= 12 else "???"
-	
-	var year_month_label = strategic_hud.get_node("MarginContainer/MainHBox/LeftPanel/VBoxContainer/TopSection/YearMonthLabel")
-	year_month_label.text = "Year %d %s" % [year, month_name]
-
-func _update_family_display():
-	var current_family = EnhancedGameState.get_current_family()
-	var family = EnhancedGameState.get_family(current_family)
-	if not family:
+	if not attacker_lord or not defender_lord:
+		push_error("Missing lord data in battle request")
 		return
 	
-	var family_name_label = strategic_hud.get_node("MarginContainer/MainHBox/LeftPanel/VBoxContainer/TopSection/FamilyNameLabel")
-	var family_shield = strategic_hud.get_node("MarginContainer/MainHBox/LeftPanel/VBoxContainer/TopSection/FamilyShield")
-	var province_label = strategic_hud.get_node("MarginContainer/MainHBox/LeftPanel/VBoxContainer/TopSection/ProvinceLabel")
+	# Store for result processing
+	pending_battle_data = {
+		"attacker": attacker_lord,
+		"defender": defender_lord,
+		"province_id": battle_data.get("province_id", 0)
+	}
 	
-	family_name_label.text = family.name
-	family_shield.color = family.color
-	
-	# Count owned provinces
-	var province_count = 0
-	var capital_name = ""
-	for province in EnhancedGameState.provinces.values():
-		if province.owner_id == current_family:
-			province_count += 1
-			if capital_name == "" or province.is_capital:
-				capital_name = province.name
-	
-	province_label.text = "%d:%s" % [province_count, capital_name]
+	# Launch tactical scene
+	_launch_tactical_scene(attacker_lord, defender_lord)
 
-func _update_lord_display(lord_id: String):
-	var lord = EnhancedGameState.get_character(lord_id)
+func _launch_tactical_scene(attacker, defender):
+	"""Instantiate and configure tactical battle"""
+	print("DEBUG: Launching tactical scene for ", attacker.name, " vs ", defender.name)
+	
+	# Load tactical scene
+	var tactical_scene = load("res://scenes/tactical/tactical_battle.tscn")
+	if not tactical_scene:
+		push_error("Failed to load tactical_battle.tscn")
+		return
+	
+	var instance = tactical_scene.instantiate()
+	tactical_battle_scene = instance
+	
+	# Configure data with province_id for result processing
+	instance.attacker_data = _build_battle_data(attacker)
+	instance.defender_data = _build_battle_data(defender)
+	instance.set_meta("province_id", pending_battle_data.get("province_id", 0))
+	
+	# Connect completion signal before adding to tree
+	if not instance.battle_ended.is_connected(_on_tactical_battle_ended):
+		instance.battle_ended.connect(_on_tactical_battle_ended)
+	
+	add_child(instance)
+	print("DEBUG: Tactical battle scene added to tree")
+
+func _build_battle_data(lord) -> Dictionary:
+	"""Convert lord to battle data format"""
 	if not lord:
-		return
+		return {}
 	
-	var lord_name_label = strategic_hud.get_node("MarginContainer/MainHBox/LeftPanel/VBoxContainer/LordSection/LordNameLabel")
-	lord_name_label.text = lord.name
-	
-	_update_stats(lord)
-
-func _update_stats(lord):
-	var stat_grid = strategic_hud.get_node("MarginContainer/MainHBox/LeftPanel/VBoxContainer/StatsSection/StatGrid")
-	
-	# Clear existing stats
-	for child in stat_grid.get_children():
-		child.queue_free()
-	
-	# Add stat labels with icons
-	var stats = [
-		{"icon": "💰", "value": _get_lord_gold(lord)},
-		{"icon": "🚩", "value": lord.command_rating if lord.get("command_rating") else 50},
-		{"icon": "🍞", "value": _get_lord_food(lord)},
-		{"icon": "⚔️", "value": lord.attack_rating if lord.get("attack_rating") else 50},
-		{"icon": "🪖", "value": _get_lord_troops(lord)},
-		{"icon": "🏰", "value": lord.defense_rating if lord.get("defense_rating") else 50}
-	]
-	
-	for stat in stats:
-		var hbox = HBoxContainer.new()
-		hbox.add_theme_constant_override("separation", 2)
-		
-		var icon_label = Label.new()
-		icon_label.text = stat.icon
-		icon_label.add_theme_font_size_override("font_size", 10)
-		hbox.add_child(icon_label)
-		
-		var value_label = Label.new()
-		value_label.text = str(stat.value)
-		value_label.add_theme_color_override("font_color", Color.WHITE)
-		value_label.add_theme_font_size_override("font_size", 12)
-		hbox.add_child(value_label)
-		
-		stat_grid.add_child(hbox)
-
-func _get_lord_gold(lord) -> int:
-	var total = 0
-	for province in EnhancedGameState.provinces.values():
-		if province.owner_id == lord.family_id:
-			total += province.gold
-	return total
-
-func _get_lord_food(lord) -> int:
-	var total = 0
-	for province in EnhancedGameState.provinces.values():
-		if province.owner_id == lord.family_id:
-			total += province.food
-	return total
-
-func _get_lord_troops(lord) -> int:
-	var total = 0
-	for province in EnhancedGameState.provinces.values():
-		if province.owner_id == lord.family_id:
-			total += province.soldiers
-	return total
+	return {
+		"lord": lord,
+		"units": _build_units_from_lord(lord),
+		"personality": _get_personality(lord),
+		"time_of_day": "day"
+	}

@@ -13,12 +13,12 @@ func _init(lord: String, from: int, to: int):
 	transport_cost = calculate_transport_cost()
 
 func can_execute() -> bool:
-	var lord = EnhancedGameState.get_character(lord_id)
+	var lord = GameState.get_character(lord_id)
 	if not lord:
 		return false
 	
-	var from_province = EnhancedGameState.get_province(from_province_id)
-	var to_province = EnhancedGameState.get_province(to_province_id)
+	var from_province = GameState.get_province(from_province_id)
+	var to_province = GameState.get_province(to_province_id)
 	
 	if not from_province or not to_province:
 		return false
@@ -52,8 +52,8 @@ func execute():
 	
 	save_state()
 	
-	var from_province = EnhancedGameState.get_province(from_province_id)
-	var to_province = EnhancedGameState.get_province(to_province_id)
+	var from_province = GameState.get_province(from_province_id)
+	var to_province = GameState.get_province(to_province_id)
 	
 	# Move lord
 	from_province.stationed_lord_id = ""
@@ -82,8 +82,8 @@ func undo():
 	restore_state()
 	
 	# Reverse the move
-	var to_province = EnhancedGameState.get_province(to_province_id)
-	var from_province = EnhancedGameState.get_province(from_province_id)
+	var to_province = GameState.get_province(to_province_id)
+	var from_province = GameState.get_province(from_province_id)
 	
 	to_province.stationed_lord_id = ""
 	from_province.stationed_lord_id = lord_id
@@ -96,7 +96,7 @@ func undo():
 	EventBus.ProvinceDataChanged.emit(from_province_id, "transport_capacity", from_province.transport_capacity)
 
 func calculate_transport_cost() -> int:
-	var lord = EnhancedGameState.get_character(lord_id)
+	var lord = GameState.get_character(lord_id)
 	var base_cost = 10
 	
 	# Modify by lord's leadership
@@ -107,9 +107,9 @@ func calculate_transport_cost() -> int:
 	return base_cost
 
 func get_description() -> String:
-	var lord = EnhancedGameState.get_character(lord_id)
-	var from_province = EnhancedGameState.get_province(from_province_id)
-	var to_province = EnhancedGameState.get_province(to_province_id)
+	var lord = GameState.get_character(lord_id)
+	var from_province = GameState.get_province(from_province_id)
+	var to_province = GameState.get_province(to_province_id)
 	
 	if lord and from_province and to_province:
 		return "Move %s from %s to %s" % [lord.name, from_province.name, to_province.name]

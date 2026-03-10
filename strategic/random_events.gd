@@ -3,6 +3,19 @@ extends Node
 const DISASTER_CHANCE = 0.05  # 5% per month
 const POSITIVE_CHANCE = 0.10  # 10% on develop
 
+func try_trigger_random_event() -> Dictionary:
+	"""Try to trigger a random event (20% chance). Returns event data or empty dict."""
+	if randf() < 0.2:
+		var event_types = [
+			{"icon": "⚔️", "message": "Enemy scouts spotted near the border!"},
+			{"icon": "💰", "message": "Merchants report increased trade activity."},
+			{"icon": "🌾", "message": "Bountiful harvest reported in the countryside."},
+			{"icon": "🏰", "message": "Travelers speak of strange ruins discovered."},
+			{"icon": "👁️", "message": "A mysterious figure seeks audience with the lord."}
+		]
+		return event_types[randi() % event_types.size()]
+	return {}
+
 func trigger_monthly_events():
 	for province_id in GameState.provinces:
 		var province = GameState.provinces[province_id]

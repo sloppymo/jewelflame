@@ -48,7 +48,7 @@ func _setup_button(btn: Button, callback: Callable):
 func show_province_data(family_id_param: String):
 	family_id = family_id_param
 	
-	var family = EnhancedGameState.get_family(family_id)
+	var family = GameState.get_family(family_id)
 	if family:
 		var province_count = _count_owned_provinces()
 		title_label.text = "%s: %d provinces" % [family.name, province_count]
@@ -59,14 +59,14 @@ func show_province_data(family_id_param: String):
 
 func _count_owned_provinces() -> int:
 	var count = 0
-	for province in EnhancedGameState.provinces.values():
+	for province in GameState.provinces.values():
 		if province.owner_id == family_id:
 			count += 1
 	return count
 
 func _load_owned_provinces():
 	owned_provinces.clear()
-	for province in EnhancedGameState.provinces.values():
+	for province in GameState.provinces.values():
 		if province.owner_id == family_id:
 			owned_provinces.append(province)
 	
@@ -134,7 +134,7 @@ func _create_province_row(id: String, name: String, gold: String, food: String, 
 func _get_lord_name(lord_id: String) -> String:
 	if lord_id.is_empty():
 		return "None"
-	var lord = EnhancedGameState.get_character(lord_id)
+	var lord = GameState.get_character(lord_id)
 	if lord:
 		return lord.name
 	return "Unknown"

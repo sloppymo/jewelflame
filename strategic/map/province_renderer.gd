@@ -11,6 +11,16 @@ var selection_highlight: Texture2D
 var selected_province_id: int = -1
 
 func _ready():
+	# Load background map
+	var canvas_layer = get_node_or_null("CanvasLayer")
+	if canvas_layer:
+		var background = canvas_layer.get_node_or_null("Background")
+		if background:
+			var map_texture = load("res://assets/maps/gemfire_map.png")
+			if map_texture:
+				background.texture = map_texture
+				print("Loaded background map")
+	
 	# Load terrain sprites
 	terrain_sprites = {
 		"plains": load("res://assets/terrain/plains.png"),
@@ -107,14 +117,16 @@ func create_province_area(province_id: int):
 	labels.add_child(label)
 
 func get_province_position(id: int) -> Vector2:
+	# Positions spread across the land mass
+	# Based on the 30-province Gemfire map layout
 	var positions = {
-		1: Vector2(400, 300),
-		2: Vector2(600, 200),
-		3: Vector2(600, 400),
-		4: Vector2(800, 300),
-		5: Vector2(800, 500)
+		1: Vector2(700, 280),   # Dunmoor - western coast (near province 9)
+		2: Vector2(900, 200),   # Carveti - northern area (near province 7)
+		3: Vector2(850, 420),   # Cobrige - central area (near province 10)
+		4: Vector2(1100, 280),  # Banshea - eastern upper (near province 17)
+		5: Vector2(1050, 500)   # Petaria - eastern lower (near province 22)
 	}
-	return positions.get(id, Vector2(500, 500))
+	return positions.get(id, Vector2(800, 350))
 
 func get_province_shape(id: int) -> PackedVector2Array:
 	var province = GameState.provinces[id]

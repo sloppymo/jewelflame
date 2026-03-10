@@ -155,8 +155,8 @@ func undo() -> Dictionary:
 	return ErrorHandler.create_success()
 
 func get_description() -> String:
-	var attacker_province = EnhancedGameState.get_province(attacking_province_id)
-	var defender_province = EnhancedGameState.get_province(defending_province_id)
+	var attacker_province = GameState.get_province(attacking_province_id)
+	var defender_province = GameState.get_province(defending_province_id)
 	
 	if attacker_province and defender_province:
 		return "Attack %s from %s" % [defender_province.name, attacker_province.name]

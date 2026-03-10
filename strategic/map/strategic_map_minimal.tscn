@@ -1,4 +1,4 @@
-[gd_scene load_steps=3 format=3 uid="uid://bqvx8y1x8nql5"]
+[gd_scene load_steps=3 format=3 uid="uid://bqvx8y1x8nqm1"]
 
 [ext_resource type="Script" path="res://strategic/map/province_renderer.gd" id="1_0k8xr"]
 [ext_resource type="PackedScene" path="res://ui/province_panel.tscn" id="2_panel"]

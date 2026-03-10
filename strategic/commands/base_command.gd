@@ -21,15 +21,15 @@ func get_description() -> String:
 	return command_name
 
 func save_state() -> Dictionary:
-	if not is_instance_valid(EnhancedGameState):
-		return ErrorHandler.create_error(ErrorHandler.ErrorType.INVALID_STATE, "EnhancedGameState not available")
-	execution_data = EnhancedGameState.get_save_data()
+	if not is_instance_valid(GameState):
+		return ErrorHandler.create_error(ErrorHandler.ErrorType.INVALID_STATE, "GameState not available")
+	execution_data = GameState.get_save_data()
 	return ErrorHandler.create_success()
 
 func restore_state() -> Dictionary:
 	if execution_data.is_empty():
 		return ErrorHandler.create_error(ErrorHandler.ErrorType.INVALID_STATE, "No execution data")
-	EnhancedGameState.load_save_data(execution_data)
+	GameState.load_save_data(execution_data)
 	return ErrorHandler.create_success()
 
 func redo() -> Dictionary:

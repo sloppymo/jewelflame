@@ -7,8 +7,8 @@ class_name PortraitDisplay
 func _ready():
 	# Set texture filter to nearest for crisp pixel art
 	texture_filter = TEXTURE_FILTER_NEAREST
-	expand_mode = EXPAND_MODE_KEEP_SIZE
-	stretch_mode = STRETCH_MODE_KEEP
+	expand_mode = TextureRect.EXPAND_KEEP_SIZE
+	stretch_mode = TextureRect.STRETCH_KEEP
 
 func set_character(character: CharacterData):
 	if character and not character.portrait_path.is_empty():

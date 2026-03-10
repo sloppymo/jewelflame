@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Jewelflame"
-run/main_scene="res://main_minimal.tscn"
+run/main_scene="res://main_strategic.tscn"
 config/features=PackedStringArray("4.6")
 config/icon="res://icon.svg"
 
@@ -28,7 +28,7 @@ DomesticCommands="*res://strategic/commands/domestic_commands.gd"
 #BattleResolver="*res://battle/battle_resolver.gd"
 #HarvestSystem="*res://strategic/economy/harvest_system.gd"
 #EconomyManager="*res://strategic/economy/economy_manager.gd"
-#RandomEvents="*res://strategic/random_events.gd"
+RandomEvents="*res://strategic/random_events.gd"
 
 [display]
 

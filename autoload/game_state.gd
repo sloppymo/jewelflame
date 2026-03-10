@@ -4,6 +4,7 @@ var provinces: Dictionary = {}  # int -> ProvinceData
 var families: Dictionary = {}   # String -> FamilyData
 var characters: Dictionary = {} # String -> CharacterData
 var player_family_id: String = "blanche"
+var selected_lord_id: String = ""
 
 # Turn management
 var current_family_index: int = 0
@@ -113,6 +114,17 @@ func reset_family_exhaustion(family_id: String):
 		if province.owner_id == family_id:
 			province.is_exhausted = false
 			EventBus.ProvinceExhausted.emit(province.id, false)
+
+func advance_turn_phase():
+	advance_turn()
+
+func get_family_lords(family_id: String) -> Array:
+	var family_lords = []
+	for char_id in characters:
+		var character = characters[char_id]
+		if character.family_id == family_id and character.is_lord:
+			family_lords.append(character)
+	return family_lords
 
 func check_victory_conditions() -> Dictionary:
 	var result = {}

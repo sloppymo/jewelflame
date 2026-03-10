@@ -26,12 +26,12 @@ func _ready():
 
 func _test_game_state():
 	print("\n[TEST] Game State")
-	print("  Current Year: ", EnhancedGameState.current_year)
-	print("  Current Month: ", EnhancedGameState.current_month)
-	print("  Current Family: ", EnhancedGameState.get_current_family())
-	print("  Provinces: ", EnhancedGameState.provinces.size())
-	print("  Families: ", EnhancedGameState.families.size())
-	print("  Characters: ", EnhancedGameState.characters.size())
+	print("  Current Year: ", GameState.current_year)
+	print("  Current Month: ", GameState.current_month)
+	print("  Current Family: ", GameState.get_current_family())
+	print("  Provinces: ", GameState.provinces.size())
+	print("  Families: ", GameState.families.size())
+	print("  Characters: ", GameState.characters.size())
 	print("  [PASS] Game State initialized")
 
 func _test_search_system():
@@ -53,11 +53,11 @@ func _test_random_events():
 	print("\n[TEST] Random Events")
 	
 	# Test event definitions
-	var event_types = RandomEventsEnhanced.EventType.values()
+	var event_types = RandomEvents.EventType.values()
 	print("  Event types: ", event_types.size())
 	
 	# Test event generation
-	var event = RandomEventsEnhanced.try_trigger_random_event()
+	var event = RandomEvents.try_trigger_random_event()
 	if event.is_empty():
 		print("  No event triggered (80% chance of no event)")
 	else:
@@ -122,7 +122,7 @@ func _input(event):
 				print("  Search result: ", result)
 			KEY_5:
 				print("\n[MANUAL TEST] Testing Random Event")
-				var event = RandomEventsEnhanced.try_trigger_random_event()
+				var event = RandomEvents.try_trigger_random_event()
 				if event.is_empty():
 					print("  No event (80% chance)")
 				else:

@@ -10,12 +10,12 @@ func _init(p_id: int, dev_type: String):
 	development_type = dev_type
 
 func can_execute() -> bool:
-	var province = EnhancedGameState.get_province(province_id)
+	var province = GameState.get_province(province_id)
 	if not province:
 		return false
 	if province.is_exhausted:
 		return false
-	if province.owner_id != EnhancedGameState.player_family_id:
+	if province.owner_id != GameState.player_family_id:
 		return false
 	if province.gold < cost:
 		return false
@@ -28,7 +28,7 @@ func execute():
 	
 	save_state()
 	
-	var province = EnhancedGameState.get_province(province_id)
+	var province = GameState.get_province(province_id)
 	
 	# Store previous values for undo
 	execution_data["previous_value"] = province.get(development_type, 0)
@@ -63,7 +63,7 @@ func undo():
 	
 	restore_state()
 	
-	var province = EnhancedGameState.get_province(province_id)
+	var province = GameState.get_province(province_id)
 	if province:
 		# Restore previous values
 		province.set(development_type, execution_data.get("previous_value", 0))
@@ -78,7 +78,7 @@ func undo():
 		print("Development undone: ", development_type, " in ", province.name)
 
 func get_description() -> String:
-	var province = EnhancedGameState.get_province(province_id)
+	var province = GameState.get_province(province_id)
 	if province:
 		return "Develop " + development_type + " in " + province.name
 	return "Develop " + development_type + " in province " + str(province_id)

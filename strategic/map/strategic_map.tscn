@@ -1,4 +1,4 @@
-[gd_scene load_steps=2 format=3 uid="uid://bqvx8y1x8nql5"]
+[gd_scene load_steps=2 format=3 uid="uid://bqvx8y1x8nql6"]
 
 [ext_resource type="Script" path="res://strategic/map/province_renderer.gd" id="1_0k8xr"]
 

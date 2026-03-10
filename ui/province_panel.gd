@@ -77,10 +77,11 @@ func _load_assets():
 	icon_swords = load("res://assets/icons/icon_swords.png")
 	icon_castle = load("res://assets/icons/icon_castle.png")
 	
-	# Button frames
-	button_frame_normal = load("res://assets/ui/button_frame.png")
-	button_frame_hover = load("res://assets/ui/button_frame_hover.png")
-	button_frame_pressed = load("res://assets/ui/button_frame_pressed.png")
+	# Button frames from new sprite sheet (sheet2 - each button is 128x128, we use left 112x48)
+	var button_sheet = load("res://assets/ui/sheet2_button_states.png")
+	button_frame_normal = button_sheet
+	button_frame_hover = button_sheet
+	button_frame_pressed = button_sheet
 	
 	# Portrait textures
 	portrait_textures = {
@@ -320,11 +321,14 @@ func _create_action_buttons() -> HBoxContainer:
 	container.alignment = BoxContainer.ALIGNMENT_CENTER
 	container.add_theme_constant_override("separation", 12)
 	
+	# Load command icons from sprite sheet
+	var icon_sheet = load("res://assets/ui/sheet3_command_icons.png")
+	
 	var buttons = [
-		{"name": "Attack", "callback": _on_attack_button_pressed},
-		{"name": "Develop", "callback": _on_develop_button_pressed},
-		{"name": "Move", "callback": _on_move_button_pressed},
-		{"name": "Recruit", "callback": _on_recruit_button_pressed}
+		{"name": "Attack", "callback": _on_attack_button_pressed, "icon_region": Rect2(8, 8, 48, 48)},
+		{"name": "Develop", "callback": _on_develop_button_pressed, "icon_region": Rect2(72, 8, 48, 48)},
+		{"name": "Move", "callback": _on_move_button_pressed, "icon_region": Rect2(136, 8, 48, 48)},
+		{"name": "Recruit", "callback": _on_recruit_button_pressed, "icon_region": Rect2(200, 8, 48, 48)}
 	]
 	
 	for btn_data in buttons:
@@ -333,6 +337,15 @@ func _create_action_buttons() -> HBoxContainer:
 		button.text = btn_data.name
 		button.custom_minimum_size = button_size
 		button.pressed.connect(btn_data.callback)
+		
+		# Add icon
+		if icon_sheet:
+			var icon_atlas = AtlasTexture.new()
+			icon_atlas.atlas = icon_sheet
+			icon_atlas.region = btn_data.icon_region
+			button.icon = icon_atlas
+			button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			button.vertical_icon_alignment = VERTICAL_ALIGNMENT_TOP
 		
 		# Apply button styles
 		_apply_button_style(button)
@@ -345,28 +358,39 @@ func _create_action_buttons() -> HBoxContainer:
 	return container
 
 func _apply_button_style(button: Button):
-	"""Apply SNES-style button frame with states."""
-	if button_frame_normal:
+	"""Apply SNES-style button frame with states from sprite sheet."""
+	var button_sheet = load("res://assets/ui/sheet2_button_states.png")
+	if button_sheet:
+		# Normal state - first 128px column
+		var atlas_normal = AtlasTexture.new()
+		atlas_normal.atlas = button_sheet
+		atlas_normal.region = Rect2(8, 40, 112, 48)
 		var style_normal = StyleBoxTexture.new()
-		style_normal.texture = button_frame_normal
+		style_normal.texture = atlas_normal
 		style_normal.texture_margin_left = 4
 		style_normal.texture_margin_right = 4
 		style_normal.texture_margin_top = 4
 		style_normal.texture_margin_bottom = 4
 		button.add_theme_stylebox_override("normal", style_normal)
-	
-	if button_frame_hover:
+		
+		# Hover state - second 128px column
+		var atlas_hover = AtlasTexture.new()
+		atlas_hover.atlas = button_sheet
+		atlas_hover.region = Rect2(136, 40, 112, 48)
 		var style_hover = StyleBoxTexture.new()
-		style_hover.texture = button_frame_hover
+		style_hover.texture = atlas_hover
 		style_hover.texture_margin_left = 4
 		style_hover.texture_margin_right = 4
 		style_hover.texture_margin_top = 4
 		style_hover.texture_margin_bottom = 4
 		button.add_theme_stylebox_override("hover", style_hover)
-	
-	if button_frame_pressed:
+		
+		# Pressed state - third 128px column
+		var atlas_pressed = AtlasTexture.new()
+		atlas_pressed.atlas = button_sheet
+		atlas_pressed.region = Rect2(264, 40, 112, 48)
 		var style_pressed = StyleBoxTexture.new()
-		style_pressed.texture = button_frame_pressed
+		style_pressed.texture = atlas_pressed
 		style_pressed.texture_margin_left = 4
 		style_pressed.texture_margin_right = 4
 		style_pressed.texture_margin_top = 4

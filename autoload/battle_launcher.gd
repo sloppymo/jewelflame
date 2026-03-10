@@ -111,7 +111,7 @@ func _safe_scene_change(new_scene: Node) -> void:
 func _return_to_strategic_map() -> void:
 	"""Return to the strategic map scene."""
 	
-	var strategic_scene = load("res://main_with_ui.tscn").instantiate()
+	var strategic_scene = load("res://main_strategic.tscn").instantiate()
 	_safe_scene_change(strategic_scene)
 	
 	print("BattleLauncher: Returned to strategic map")
