@@ -101,10 +101,10 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 12.0
-offset_top = 12.0
-offset_right = -12.0
-offset_bottom = -12.0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = -16.0
 grow_horizontal = 2
 grow_vertical = 2
 
@@ -214,12 +214,13 @@ texture_filter = 1
 [node name="StatsGrid" type="GridContainer" parent="PanelFrame/MarginContainer/MainVBox"]
 layout_mode = 2
 columns = 2
-theme_override_constants/h_separation = 8
-theme_override_constants/v_separation = 4
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 2
 
 [node name="StatRow0" type="HBoxContainer" parent="PanelFrame/MarginContainer/MainVBox/StatsGrid"]
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_constants/separation = 4
 
 [node name="Icon" type="TextureRect" parent="PanelFrame/MarginContainer/MainVBox/StatsGrid/StatRow0"]
 custom_minimum_size = Vector2(32, 32)
@@ -239,6 +240,7 @@ horizontal_alignment = 2
 [node name="StatRow1" type="HBoxContainer" parent="PanelFrame/MarginContainer/MainVBox/StatsGrid"]
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_constants/separation = 4
 
 [node name="Icon" type="TextureRect" parent="PanelFrame/MarginContainer/MainVBox/StatsGrid/StatRow1"]
 custom_minimum_size = Vector2(32, 32)
@@ -258,6 +260,7 @@ horizontal_alignment = 2
 [node name="StatRow2" type="HBoxContainer" parent="PanelFrame/MarginContainer/MainVBox/StatsGrid"]
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_constants/separation = 4
 
 [node name="Icon" type="TextureRect" parent="PanelFrame/MarginContainer/MainVBox/StatsGrid/StatRow2"]
 custom_minimum_size = Vector2(32, 32)
@@ -277,6 +280,7 @@ horizontal_alignment = 2
 [node name="StatRow3" type="HBoxContainer" parent="PanelFrame/MarginContainer/MainVBox/StatsGrid"]
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_constants/separation = 4
 
 [node name="Icon" type="TextureRect" parent="PanelFrame/MarginContainer/MainVBox/StatsGrid/StatRow3"]
 custom_minimum_size = Vector2(32, 32)
@@ -296,6 +300,7 @@ horizontal_alignment = 2
 [node name="StatRow4" type="HBoxContainer" parent="PanelFrame/MarginContainer/MainVBox/StatsGrid"]
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_constants/separation = 4
 
 [node name="Icon" type="TextureRect" parent="PanelFrame/MarginContainer/MainVBox/StatsGrid/StatRow4"]
 custom_minimum_size = Vector2(32, 32)
@@ -315,6 +320,7 @@ horizontal_alignment = 2
 [node name="StatRow5" type="HBoxContainer" parent="PanelFrame/MarginContainer/MainVBox/StatsGrid"]
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_constants/separation = 4
 
 [node name="Icon" type="TextureRect" parent="PanelFrame/MarginContainer/MainVBox/StatsGrid/StatRow5"]
 custom_minimum_size = Vector2(32, 32)
