@@ -5,10 +5,14 @@ extends Control
 @onready var faction_name: Label = $PanelBackground/MarginContainer/MainVBox/FactionHeader/FactionLabels/FactionName
 @onready var province_name: Label = $PanelBackground/MarginContainer/MainVBox/FactionHeader/FactionLabels/ProvinceName
 @onready var banner_icon: TextureRect = $PanelBackground/MarginContainer/MainVBox/FactionHeader/BannerIcon
+@onready var portrait_frame: NinePatchRect = $PanelBackground/MarginContainer/MainVBox/CharacterSection/PortraitFrame
 @onready var portrait: TextureRect = $PanelBackground/MarginContainer/MainVBox/CharacterSection/PortraitFrame/Portrait
 @onready var name_label: Label = $PanelBackground/MarginContainer/MainVBox/CharacterSection/NameSection/NameLabel
 @onready var class_icon: TextureRect = $PanelBackground/MarginContainer/MainVBox/CharacterSection/NameSection/ClassIcon
 @onready var dialogue_label: Label = $PanelBackground/MarginContainer/MainVBox/DialogueLabel
+
+# Fallback portrait texture
+var fallback_portrait: Texture2D = null
 
 # Resource labels
 @onready var resource_values: Array[Label] = [
@@ -63,6 +67,42 @@ const CRESTS: Dictionary = {
 
 func _ready():
 	_setup_unit_buttons()
+	_setup_portrait_frame()
+	_load_fallback_portrait()
+	
+	# Debug output
+	print("StrategicPanel ready")
+	print("Portrait node: ", portrait)
+	print("Portrait frame: ", portrait_frame)
+	print("Portrait current texture: ", portrait.texture if portrait else "null")
+
+func _setup_portrait_frame():
+	"""Ensure portrait frame is properly configured."""
+	if portrait_frame:
+		portrait_frame.patch_margin_left = 12
+		portrait_frame.patch_margin_top = 12
+		portrait_frame.patch_margin_right = 12
+		portrait_frame.patch_margin_bottom = 12
+		portrait_frame.axis_stretch_horizontal = 0  # TILE mode
+		portrait_frame.axis_stretch_vertical = 0    # TILE mode
+
+func _load_fallback_portrait():
+	"""Load fallback portrait if main portrait fails."""
+	# Try to load a fallback portrait
+	var fallback_paths = [
+		"res://assets/portraits/house_blanche/lord_blanche.png",
+		"res://assets/portraits/house_blanche/portrait_blanche_80.png",
+		"res://assets/crests/crest_blanche.png"
+	]
+	
+	for path in fallback_paths:
+		if ResourceLoader.exists(path):
+			fallback_portrait = load(path)
+			if fallback_portrait:
+				print("Loaded fallback portrait from: ", path)
+				return
+			
+	print("WARNING: Could not load any fallback portrait")
 
 func _setup_unit_buttons():
 	for i in range(unit_buttons.size()):
@@ -77,14 +117,40 @@ func _on_unit_button_toggled(pressed: bool, index: int):
 # Required public methods
 func set_character(name: String, portrait_texture: Texture2D, faction: String):
 	"""Set the character name, portrait, and faction."""
+	print("StrategicPanel.set_character called: ", name, ", faction: ", faction)
 	name_label.text = name
+	
+	# Set portrait with fallback
 	if portrait_texture:
+		print("Setting portrait texture: ", portrait_texture)
 		portrait.texture = portrait_texture
+		portrait.modulate = Color.WHITE
+	elif fallback_portrait:
+		print("Using fallback portrait for: ", name)
+		portrait.texture = fallback_portrait
+		portrait.modulate = Color.WHITE
+	else:
+		push_warning("No portrait texture available for: " + name)
+		# Create a colored placeholder
+		portrait.texture = null
+		portrait.modulate = _get_faction_color(faction)
+	
+	# Set faction crest
 	if CRESTS.has(faction):
 		var crest_path = CRESTS[faction]
 		if ResourceLoader.exists(crest_path):
 			banner_icon.texture = load(crest_path)
+			print("Loaded crest: ", crest_path)
+	
 	set_dialogue_text("%s, what is your command?" % name)
+
+func _get_faction_color(faction: String) -> Color:
+	"""Get a color representing the faction for placeholder portraits."""
+	match faction.to_lower():
+		"blanche": return Color(0.2, 0.4, 0.8)  # Blue
+		"lyle": return Color(0.8, 0.2, 0.2)    # Red
+		"coryll": return Color(0.2, 0.8, 0.2)  # Green
+		_: return Color(0.5, 0.5, 0.5)          # Gray
 
 func set_resources(gold: int, food: int, troops: int, mana: int, grain: int, authority: int):
 	"""Set the 6 resource values."""
