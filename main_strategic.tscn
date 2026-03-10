@@ -25,6 +25,13 @@ stretch_mode = 6
 [node name="HexGridContainer" type="Node2D" parent="CanvasLayer"]
 position = Vector2(550, 100)
 
+[node name="LeftPanelBackground" type="ColorRect" parent="CanvasLayer"]
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_right = 500.0
+grow_vertical = 2
+color = Color(0.06, 0.04, 0.15, 1)
+
 [node name="LeftPanelGemfire" parent="CanvasLayer" instance=ExtResource("2_menu_panel")]
 anchors_preset = 9
 anchor_left = 0.0
