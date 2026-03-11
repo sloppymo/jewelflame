@@ -7,9 +7,8 @@ const COLOR_GOLD = Color("#c4a000")
 
 const LordData = preload("res://resources/data_classes/lord_data.gd")
 
-# Autoload references
-@onready var GameState = get_node("/root/GameState")
-@onready var RandomEvents = get_node("/root/RandomEvents")
+# Note: GameState and RandomEvents are autoloads - access directly or via get_tree().root
+# Do NOT use @onready with get_node("/root/...") - causes tree access errors
 
 var current_command: String = ""
 var selected_province_id: int = -1
