@@ -58,11 +58,11 @@ const RESOURCE_ICONS: Dictionary = {
 	"castle": "res://assets/icons/icon_castle.png"
 }
 
-# Crest paths
-const CRESTS: Dictionary = {
-	"blanche": "res://assets/crests/crest_blanche.png",
-	"lyle": "res://assets/crests/crest_lyle.png",
-	"coryll": "res://assets/crests/crest_coryll.png"
+# Crest paths - now generated procedurally since assets/crests/ was removed
+const CREST_COLORS: Dictionary = {
+	"blanche": Color("#4169E1"),  # Royal blue
+	"lyle": Color("#DC143C"),     # Crimson
+	"coryll": Color("#228B22")    # Forest green
 }
 
 func _ready():
@@ -104,7 +104,7 @@ func _load_fallback_portrait():
 	var fallback_paths = [
 		"res://assets/portraits/house_blanche/lord_blanche.png",
 		"res://assets/portraits/house_blanche/portrait_blanche_80.png",
-		"res://assets/crests/crest_blanche.png"
+		"res://assets/portraits/house_blanche/lord_blanche.png"
 	]
 	
 	for path in fallback_paths:

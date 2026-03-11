@@ -296,10 +296,10 @@ func _setup_stat_icons() -> void:
 		_create_castle_icon()     # Protection
 	]
 	
-	var rows := [stat_row_0, stat_row_1, stat_row_2, stat_row_3, stat_row_4, stat_row_5]
+	var rows: Array = [stat_row_0, stat_row_1, stat_row_2, stat_row_3, stat_row_4, stat_row_5]
 	
 	for i in range(min(icons.size(), rows.size())):
-		var row := rows[i]
+		var row: HBoxContainer = rows[i]
 		if row == null:
 			continue
 			
@@ -321,7 +321,7 @@ func _setup_command_buttons() -> void:
 	
 	command_button_group = ButtonGroup.new()
 	
-	var buttons := [cmd_battle, cmd_develop, cmd_march, cmd_troops]
+	var buttons: Array = [cmd_battle, cmd_develop, cmd_march, cmd_troops]
 	var icon_creators: Array[Callable] = [
 		_create_battle_icon,
 		_create_develop_icon,
@@ -331,7 +331,7 @@ func _setup_command_buttons() -> void:
 	var button_names := ["CmdBattle", "CmdDevelop", "CmdMarch", "CmdTroops"]
 	
 	for i in range(buttons.size()):
-		var btn := buttons[i]
+		var btn: TextureButton = buttons[i]
 		if btn == null:
 			continue
 			
@@ -520,12 +520,12 @@ func _update_stats(province: ProvinceData) -> void:
 	_update_stat(5, province.protection)
 
 func _update_stat(slot: int, value: int) -> void:
-	var rows := [stat_row_0, stat_row_1, stat_row_2, stat_row_3, stat_row_4, stat_row_5]
+	var rows: Array = [stat_row_0, stat_row_1, stat_row_2, stat_row_3, stat_row_4, stat_row_5]
 	
 	if slot < 0 or slot >= rows.size():
 		return
 	
-	var row := rows[slot]
+	var row: HBoxContainer = rows[slot]
 	if row == null:
 		return
 	
@@ -548,9 +548,9 @@ func _reset_command_buttons() -> void:
 	if command_palette == null:
 		return
 	
-	for btn in command_palette.get_children():
-		if btn is TextureButton:
-			btn.button_pressed = false
+	for child in command_palette.get_children():
+		if child is TextureButton:
+			child.button_pressed = false
 	
 	current_command = ""
 
@@ -650,22 +650,22 @@ func _get_portrait_for_lord(lord_id: String, family_id: String) -> String:
 		var house_portraits: Array = portrait_paths[house_folder]
 		
 		# Try to match by lord_id in filename
-		for path in house_portraits:
-			var filename := path.to_lower()
+		for path: String in house_portraits:
+			var filename: String = path.to_lower()
 			if lord_id.to_lower() in filename:
 				return path
 		
 		# Try to match by lord name (without title)
 		if lord:
 			var lord_name_lower := _format_lord_name(lord.name).to_lower()
-			for path in house_portraits:
-				var filename := path.to_lower()
+			for path: String in house_portraits:
+				var filename: String = path.to_lower()
 				if lord_name_lower in filename or lord.name.to_lower() in filename:
 					return path
 		
 		# Fallback: find any portrait with "lord" and family name
-		for path in house_portraits:
-			var filename := path.to_lower()
+		for path: String in house_portraits:
+			var filename: String = path.to_lower()
 			if filename.contains("lord_") and filename.contains(family_id.to_lower()):
 				return path
 		
@@ -760,22 +760,22 @@ func _create_shield_icon(color: Color) -> ImageTexture:
 	var start_y := 2
 	
 	for y in range(shield_shape.size()):
-		var row_y := start_y + y
+		var row_y: int = start_y + y
 		if row_y >= size:
 			break
 		
-		var half_width := shield_shape[y]
+		var half_width: int = shield_shape[y]
 		if half_width == 0:
 			continue
 		
-		var cx := size / 2.0
+		var cx: float = size / 2.0
 		
 		for x in range(size):
-			var dx := abs(x - cx)
+			var dx: float = abs(x - cx)
 			if dx > half_width:
 				continue
 			
-			var is_border := dx >= half_width - 2 or y < 2 or (y > 35 and dx > half_width * 0.6)
+			var is_border: bool = dx >= half_width - 2 or y < 2 or (y > 35 and dx > half_width * 0.6)
 			
 			if is_border:
 				img.set_pixel(x, row_y, gold)
@@ -845,7 +845,7 @@ func _create_divider_texture() -> ImageTexture:
 		if x % 20 == 0:
 			for dy in range(2, 10):
 				for dx in range(-1, 2):
-					var d := abs(dx) + abs(dy - 5)
+					var d: int = abs(dx) + abs(dy - 5)
 					if d < 2:
 						img.set_pixel(x + dx, dy, light_gold)
 	

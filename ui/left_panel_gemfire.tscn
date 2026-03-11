@@ -2,7 +2,6 @@
 
 [ext_resource type="Script" path="res://ui/left_panel_gemfire.gd" id="1_script"]
 [ext_resource type="Texture2D" uid="uid://dmciy24fnm8cw" path="res://assets/ui/panels/panel_border.png" id="2_panel_border"]
-[ext_resource type="Texture2D" uid="uid://bfd31jq5650wo" path="res://assets/crests/crest_blanche.png" id="3_crest"]
 [ext_resource type="Texture2D" uid="uid://bmsbxrehd6fek" path="res://assets/ui/divider_gold.png" id="4_divider"]
 [ext_resource type="Texture2D" uid="uid://c8avt0bfe43ke" path="res://assets/ui/portrait_frame.png" id="5_portrait_frame"]
 [ext_resource type="Texture2D" uid="uid://crk3clpnarf4a" path="res://assets/portraits/house_blanche/lord_blanche.png" id="6_portrait"]
@@ -133,7 +132,7 @@ theme_override_constants/separation = 8
 custom_minimum_size = Vector2(64, 80)
 layout_mode = 2
 size_flags_vertical = 4
-texture = ExtResource("3_crest")
+# texture = null  # Crest removed - set procedurally in script
 expand_mode = 1
 stretch_mode = 5
 texture_filter = 1
