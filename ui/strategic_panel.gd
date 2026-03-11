@@ -132,20 +132,29 @@ func set_character(name: String, portrait_texture: Texture2D, faction: String):
 	print("StrategicPanel.set_character called: ", name, ", faction: ", faction)
 	name_label.text = name
 	
+	# CRITICAL FIX: Remove any debug labels that show filenames
+	for child: Node in portrait.get_children():
+		if child is Label:
+			child.queue_free()
+	
 	# Set portrait with fallback
 	if portrait_texture:
 		print("Setting portrait texture: ", portrait_texture)
 		portrait.texture = portrait_texture
 		portrait.modulate = Color.WHITE
+		portrait.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	elif fallback_portrait:
 		print("Using fallback portrait for: ", name)
 		portrait.texture = fallback_portrait
 		portrait.modulate = Color.WHITE
+		portrait.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	else:
 		push_warning("No portrait texture available for: " + name)
-		# Create a colored placeholder
-		portrait.texture = null
-		portrait.modulate = _get_faction_color(faction)
+		# Create a procedural placeholder instead of null (prevents checkered transparency)
+		portrait.texture = _create_placeholder_portrait(faction)
+		portrait.modulate = Color.WHITE
 	
 	# Set faction crest (procedurally generated since crest assets removed)
 	banner_icon.texture = _create_crest_texture(faction)
@@ -204,6 +213,35 @@ func _create_crest_texture(faction: String) -> ImageTexture:
 				
 				if abs(x - cx) < 3:
 					img.set_pixel(x, row_y, highlight.lightened(0.1))
+	
+	return ImageTexture.create_from_image(img)
+
+func _create_placeholder_portrait(faction: String) -> ImageTexture:
+	"""Create a procedural placeholder portrait when no texture is available."""
+	var size := Vector2(72, 96)
+	var img := Image.create(int(size.x), int(size.y), false, Image.FORMAT_RGBA8)
+	
+	# Fill with faction color background
+	var bg_color := _get_faction_color(faction)
+	img.fill(bg_color.darkened(0.3))
+	
+	# Draw simple silhouette
+	var silhouette := Color(0.4, 0.4, 0.5, 0.8)
+	var highlight := Color(0.7, 0.7, 0.8, 0.9)
+	
+	for x in range(int(size.x)):
+		for y in range(int(size.y)):
+			var dx := x - int(size.x) / 2
+			
+			# Head
+			var dy_head := y - 25
+			var dist_head := dx * dx + dy_head * dy_head
+			if dist_head < 64:
+				img.set_pixel(x, y, highlight if dx < -2 else silhouette)
+			
+			# Body
+			if abs(dx) < 20 and y > 35 and y < 75:
+				img.set_pixel(x, y, silhouette)
 	
 	return ImageTexture.create_from_image(img)
 
