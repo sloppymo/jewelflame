@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ci1n6nn4rb5la"
-path="res://.godot/imported/attack.png-dd734237af8fbca88e926c20e8e0f8c4.ctex"
+uid="uid://ogjyb6jn207l"
+path="res://.godot/imported/grok-image-9f5f8024-4b29-4dd8-b47b-8cb7dbf747c4.jpeg-62cd1123624c40d9b6592504b7c2dd5a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/effects/attack.png"
-dest_files=["res://.godot/imported/attack.png-dd734237af8fbca88e926c20e8e0f8c4.ctex"]
+source_file="res://assets/portraits/house_coryll/grok-image-9f5f8024-4b29-4dd8-b47b-8cb7dbf747c4.jpeg"
+dest_files=["res://.godot/imported/grok-image-9f5f8024-4b29-4dd8-b47b-8cb7dbf747c4.jpeg-62cd1123624c40d9b6592504b7c2dd5a.ctex"]
 
 [params]
 

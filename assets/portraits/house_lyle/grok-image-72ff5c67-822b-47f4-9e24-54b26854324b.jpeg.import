@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bmpwfga08g85"
-path="res://.godot/imported/crest_lyle.png-80d8925c4b419b171f7fea13694e0d20.ctex"
+uid="uid://brvfdy6j5663f"
+path="res://.godot/imported/grok-image-72ff5c67-822b-47f4-9e24-54b26854324b.jpeg-9beb414d269a7250107e2cd3132d8793.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/crests/crest_lyle.png"
-dest_files=["res://.godot/imported/crest_lyle.png-80d8925c4b419b171f7fea13694e0d20.ctex"]
+source_file="res://assets/portraits/house_lyle/grok-image-72ff5c67-822b-47f4-9e24-54b26854324b.jpeg"
+dest_files=["res://.godot/imported/grok-image-72ff5c67-822b-47f4-9e24-54b26854324b.jpeg-9beb414d269a7250107e2cd3132d8793.ctex"]
 
 [params]
 

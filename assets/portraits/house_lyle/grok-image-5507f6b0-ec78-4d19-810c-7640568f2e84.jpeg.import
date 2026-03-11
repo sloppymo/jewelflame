@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://h1g7krvcvshv"
-path="res://.godot/imported/cavalry_blue.png-5dd2a94ce14e82fecd64f043452d7582.ctex"
+uid="uid://byhcks34m3xaw"
+path="res://.godot/imported/grok-image-5507f6b0-ec78-4d19-810c-7640568f2e84.jpeg-8e85c4f17e1256d47c6410e569de1633.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/units/cavalry_blue.png"
-dest_files=["res://.godot/imported/cavalry_blue.png-5dd2a94ce14e82fecd64f043452d7582.ctex"]
+source_file="res://assets/portraits/house_lyle/grok-image-5507f6b0-ec78-4d19-810c-7640568f2e84.jpeg"
+dest_files=["res://.godot/imported/grok-image-5507f6b0-ec78-4d19-810c-7640568f2e84.jpeg-8e85c4f17e1256d47c6410e569de1633.ctex"]
 
 [params]
 

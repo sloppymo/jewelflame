@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://d4ncokqkwbsjj"
-path="res://.godot/imported/Unit_Archer_Red.png-0d82493273b6b90d97a84c3f4c4c52cd.ctex"
+uid="uid://23qt2o66br8f"
+path="res://.godot/imported/grok-image-19a9ef37-3cb6-4773-b0f1-6ba240d5e55a.jpeg-cad2e6ce0cd1c86c462ee69192cf3ef8.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/batch2/units/Unit_Archer_Red.png"
-dest_files=["res://.godot/imported/Unit_Archer_Red.png-0d82493273b6b90d97a84c3f4c4c52cd.ctex"]
+source_file="res://assets/portraits/house_coryll/grok-image-19a9ef37-3cb6-4773-b0f1-6ba240d5e55a.jpeg"
+dest_files=["res://.godot/imported/grok-image-19a9ef37-3cb6-4773-b0f1-6ba240d5e55a.jpeg-cad2e6ce0cd1c86c462ee69192cf3ef8.ctex"]
 
 [params]
 

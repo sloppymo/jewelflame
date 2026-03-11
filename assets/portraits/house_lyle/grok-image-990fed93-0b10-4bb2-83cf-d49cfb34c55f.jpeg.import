@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://d08coqad1kmrm"
-path="res://.godot/imported/Jewel_Emerald.png-65588abbe5c5ac3e9b2d7709954ebdad.ctex"
+uid="uid://bvwkl5bileecp"
+path="res://.godot/imported/grok-image-990fed93-0b10-4bb2-83cf-d49cfb34c55f.jpeg-e5cf6941cd2b0d0b45d64b5ee757ebde.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/batch2/jewels/Jewel_Emerald.png"
-dest_files=["res://.godot/imported/Jewel_Emerald.png-65588abbe5c5ac3e9b2d7709954ebdad.ctex"]
+source_file="res://assets/portraits/house_lyle/grok-image-990fed93-0b10-4bb2-83cf-d49cfb34c55f.jpeg"
+dest_files=["res://.godot/imported/grok-image-990fed93-0b10-4bb2-83cf-d49cfb34c55f.jpeg-e5cf6941cd2b0d0b45d64b5ee757ebde.ctex"]
 
 [params]
 
