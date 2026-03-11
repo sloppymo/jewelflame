@@ -20,6 +20,12 @@ extends Control
 @export var icon_mana: Texture2D
 @export var icon_troops: Texture2D
 
+## Button textures - chopped from Gemfire-style icons
+@export var btn_recruit_texture: Texture2D
+@export var btn_develop_texture: Texture2D
+@export var btn_attack_texture: Texture2D
+@export var btn_diplomacy_texture: Texture2D
+
 ## Faction colors
 const COLOR_BLANCHE: Color = Color("#1a3a7a")  # Royal blue
 const COLOR_LYLE: Color = Color("#8b2a2a")     # Crimson
@@ -44,10 +50,10 @@ var food_label: Label
 var mana_label: Label
 var troops_label: Label
 
-var recruit_button: Button
-var develop_button: Button
-var attack_button: Button
-var info_button: Button
+var recruit_button: TextureButton
+var develop_button: TextureButton
+var attack_button: TextureButton
+var info_button: TextureButton
 
 var resource_grid: GridContainer
 
@@ -167,13 +173,13 @@ func _create_ui_structure() -> void:
 	resource_grid.add_theme_constant_override("v_separation", 12)
 	vbox.add_child(resource_grid)
 	
-	# Create resource slots
-	_create_resource_slot("gold", icon_gold if icon_gold else _get_default_icon("gold"), "100")
-	_create_resource_slot("food", icon_food if icon_food else _get_default_icon("food"), "100")
-	_create_resource_slot("mana", icon_mana if icon_mana else _get_default_icon("mana"), "50")
-	_create_resource_slot("troops", icon_troops if icon_troops else _get_default_icon("troops"), "0")
-	_create_resource_slot("population", _get_default_icon("population"), "0")
-	_create_resource_slot("castles", _get_default_icon("castle"), "0")
+	# Create resource slots - use chopped button assets for icons
+	_create_resource_slot("gold", icon_gold if icon_gold else _load_button_texture("btn_gold"), "100")
+	_create_resource_slot("food", icon_food if icon_food else _load_button_texture("btn_bread"), "100")
+	_create_resource_slot("mana", icon_mana if icon_mana else _load_button_texture("btn_crown"), "50")
+	_create_resource_slot("troops", icon_troops if icon_troops else _load_button_texture("btn_banner"), "0")
+	_create_resource_slot("population", _load_button_texture("btn_helmet"), "0")
+	_create_resource_slot("castles", _load_button_texture("btn_crops"), "0")
 	
 	# Store label references
 	gold_label = resource_grid.get_node("GoldSlot/Value")
@@ -209,28 +215,60 @@ func _create_ui_structure() -> void:
 	var button_row = HBoxContainer.new()
 	button_row.name = "ButtonRow"
 	button_row.alignment = BoxContainer.ALIGNMENT_CENTER
-	button_row.add_theme_constant_override("separation", 8)
+	button_row.add_theme_constant_override("separation", 12)
 	vbox.add_child(button_row)
 	
-	recruit_button = Button.new()
-	recruit_button.name = "RecruitButton"
-	recruit_button.text = "Recruit"
+	# Create TextureButtons with chopped assets
+	recruit_button = _create_texture_button(
+		"RecruitButton",
+		btn_recruit_texture if btn_recruit_texture else _load_button_texture("btn_crops"),
+		"Recruit troops"
+	)
 	button_row.add_child(recruit_button)
 	
-	develop_button = Button.new()
-	develop_button.name = "DevelopButton"
-	develop_button.text = "Develop"
+	develop_button = _create_texture_button(
+		"DevelopButton", 
+		btn_develop_texture if btn_develop_texture else _load_button_texture("btn_worker"),
+		"Develop province"
+	)
 	button_row.add_child(develop_button)
 	
-	attack_button = Button.new()
-	attack_button.name = "AttackButton"
-	attack_button.text = "Attack"
+	attack_button = _create_texture_button(
+		"AttackButton",
+		btn_attack_texture if btn_attack_texture else _load_button_texture("btn_catapult"),
+		"Attack enemy"
+	)
 	button_row.add_child(attack_button)
 	
-	info_button = Button.new()
-	info_button.name = "InfoButton"
-	info_button.text = "Info"
+	info_button = _create_texture_button(
+		"InfoButton",
+		btn_diplomacy_texture if btn_diplomacy_texture else _load_button_texture("btn_diplomacy"),
+		"Information"
+	)
 	button_row.add_child(info_button)
+
+func _create_texture_button(name: String, texture: Texture2D, tooltip: String) -> TextureButton:
+	"""Create a TextureButton with proper pixel art settings."""
+	var btn = TextureButton.new()
+	btn.name = name
+	btn.texture_normal = texture
+	btn.texture_pressed = texture  # Could use darker variant
+	btn.texture_hover = texture    # Could use lighter variant
+	btn.tooltip_text = tooltip
+	btn.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	
+	# Fixed size for consistency (scale down from 120x80)
+	btn.custom_minimum_size = Vector2(60, 40)
+	btn.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
+	
+	return btn
+
+func _load_button_texture(button_name: String) -> Texture2D:
+	"""Load a button texture from the assets/ui/buttons folder."""
+	var path = "res://assets/ui/buttons/%s.png" % button_name
+	if ResourceLoader.exists(path):
+		return load(path)
+	return _get_default_icon(button_name)
 
 func _create_resource_slot(id: String, icon: Texture2D, initial_value: String) -> void:
 	"""Create a resource slot with icon and value label."""
