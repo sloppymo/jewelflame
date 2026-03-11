@@ -28,6 +28,7 @@ var pending_battle_data: Dictionary = {}
 @onready var canvas_layer: CanvasLayer = $CanvasLayer
 @onready var view_menu: Window = $CanvasLayer/ViewMenu
 @onready var hex_grid_container: Node2D = $CanvasLayer/HexGridContainer
+@onready var strategic_panel = $CanvasLayer/StrategicPanel
 
 func _ready():
 	
@@ -153,6 +154,9 @@ func _on_province_selected(province_id: int):
 	
 	print("Selected province: ", province.name)
 	
+	# Update StrategicPanel with province info
+	_update_strategic_panel(province)
+	
 	# Visual feedback - highlight selected province
 	_highlight_province(province_id)
 	
@@ -163,6 +167,58 @@ func _on_province_selected(province_id: int):
 		_execute_search_command(province)
 	elif current_command == "battle":
 		_execute_battle_command(province)
+
+func _update_strategic_panel(province):
+	"""Update the StrategicPanel with province and lord information."""
+	if not strategic_panel:
+		push_warning("StrategicPanel not found!")
+		return
+	
+	# Get province owner info
+	var family = GameState.families.get(province.owner_id)
+	var faction_name = family.name if family else province.owner_id
+	var province_display = "%d: %s" % [province.id, province.name]
+	
+	# Set faction info
+	strategic_panel.set_faction(province.owner_id, faction_name, province_display)
+	
+	# Get governor/lord info
+	var lord = null
+	var lord_name = "Unknown"
+	var portrait_texture = null
+	
+	if province.get("governor_id") and not province.governor_id.is_empty():
+		lord = GameState.get_character(province.governor_id)
+	
+	# Fallback: get first lord of the family
+	if not lord:
+		for char_id in GameState.characters.keys():
+			var character = GameState.characters[char_id]
+			if character.family_id == province.owner_id and character.is_lord:
+				lord = character
+				break
+	
+	if lord:
+		lord_name = lord.name
+		# Try to load portrait
+		if lord.get("portrait_path") and not lord.portrait_path.is_empty():
+			if ResourceLoader.exists(lord.portrait_path):
+				portrait_texture = load(lord.portrait_path)
+	
+	# Update character display
+	strategic_panel.set_character(lord_name, portrait_texture, province.owner_id)
+	
+	# Update resources
+	strategic_panel.set_resources(
+		province.get("gold", 0),
+		province.get("food", 0),
+		province.get("soldiers", 0),
+		province.get("mana", 0),
+		province.get("grain", 0),
+		province.get("authority", 0)
+	)
+	
+	print("Updated StrategicPanel for: ", province.name, ", Lord: ", lord_name)
 
 func _highlight_province(province_id: int):
 	"""Highlight the selected province hex"""

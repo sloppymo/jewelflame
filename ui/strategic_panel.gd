@@ -68,13 +68,25 @@ const CRESTS: Dictionary = {
 func _ready():
 	_setup_unit_buttons()
 	_setup_portrait_frame()
+	_setup_portrait_display()
 	_load_fallback_portrait()
+	
+	# Hide class icon (swords) by default - it was showing as an X
+	if class_icon:
+		class_icon.visible = false
 	
 	# Debug output
 	print("StrategicPanel ready")
 	print("Portrait node: ", portrait)
 	print("Portrait frame: ", portrait_frame)
 	print("Portrait current texture: ", portrait.texture if portrait else "null")
+
+func _setup_portrait_display():
+	"""Configure the portrait TextureRect for proper display."""
+	if portrait:
+		portrait.expand_mode = TextureRect.EXPAND_KEEP_SIZE
+		portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		portrait.texture_filter = TEXTURE_FILTER_NEAREST  # Crisp pixel art
 
 func _setup_portrait_frame():
 	"""Ensure portrait frame is properly configured."""
