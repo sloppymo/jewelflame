@@ -140,6 +140,10 @@ func _on_province_selected(province_id: int):
 	if lord:
 		lord_name.text = lord.name
 		
+		# CRITICAL FIX: Remove ALL children from portrait (fixes "Coryll.png" debug text)
+		for child in portrait.get_children():
+			child.queue_free()
+		
 		# Load portrait
 		var portrait_path = _get_portrait_for_lord(current_governor_id, family_id)
 		if portrait_path != "" and ResourceLoader.exists(portrait_path):

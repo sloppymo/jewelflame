@@ -369,12 +369,11 @@ func _fix_portrait_settings() -> void:
 	portrait_texture.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
 	portrait_texture.modulate = Color.WHITE
 	
-	# Check for and remove any debug label children (fixes "Coryll.png" text)
+	# CRITICAL FIX: Remove ALL children from portrait (fixes "Coryll.png" debug text)
 	for child in portrait_texture.get_children():
-		if child is Label:
-			if debug_mode:
-				print("Removing debug label from portrait: ", child.name)
-			child.queue_free()
+		if debug_mode:
+			print("Removing child from portrait: ", child.name)
+		child.queue_free()
 	
 	# Set fallback silhouette if no texture assigned yet
 	if portrait_texture.texture == null:

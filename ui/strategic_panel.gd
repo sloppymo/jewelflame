@@ -132,10 +132,10 @@ func set_character(name: String, portrait_texture: Texture2D, faction: String):
 	print("StrategicPanel.set_character called: ", name, ", faction: ", faction)
 	name_label.text = name
 	
-	# CRITICAL FIX: Remove any debug labels that show filenames
-	for child: Node in portrait.get_children():
-		if child is Label:
-			child.queue_free()
+	# CRITICAL FIX: Remove ALL children from portrait (debug labels showing filenames like "_Coryll.png")
+	for child in portrait.get_children():
+		print("DEBUG: Removing child from portrait: ", child.name)
+		child.queue_free()
 	
 	# Set portrait with fallback
 	if portrait_texture:
