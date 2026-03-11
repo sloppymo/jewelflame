@@ -2,13 +2,39 @@
 
 [ext_resource type="Script" path="res://ui/strategic_menu_panel.gd" id="1_script"]
 
-[node name="StrategicMenuPanel" type="PanelContainer"]
+[node name="StrategicMenuPanel" type="PanelContainer" node_paths=PackedStringArray("family_name_label", "province_label", "shield_icon", "portrait_frame", "portrait_texture", "portrait_mask", "title_label", "name_label", "frame_border", "stats_grid", "stat_row_0", "stat_row_1", "stat_row_2", "stat_row_3", "stat_row_4", "stat_row_5", "command_palette", "cmd_battle", "cmd_develop", "cmd_march", "cmd_troops", "border_frame", "divider_1", "divider_2", "divider_3", "prompt_text")]
 custom_minimum_size = Vector2(280, 0)
 anchors_preset = 9
 anchor_bottom = 1.0
 offset_right = 280.0
 grow_vertical = 2
 script = ExtResource("1_script")
+family_name_label = NodePath("MarginContainer/ContentStack/HeaderRow/HeaderText/FamilyName")
+province_label = NodePath("MarginContainer/ContentStack/HeaderRow/HeaderText/ProvinceLabel")
+shield_icon = NodePath("MarginContainer/ContentStack/HeaderRow/ShieldIcon")
+portrait_frame = NodePath("MarginContainer/ContentStack/PortraitSection/PortraitFrame")
+portrait_texture = NodePath("MarginContainer/ContentStack/PortraitSection/PortraitFrame/PortraitTex")
+portrait_mask = NodePath("MarginContainer/ContentStack/PortraitSection/PortraitFrame/PortraitMask")
+title_label = NodePath("MarginContainer/ContentStack/PortraitSection/LordInfo/TitleLabel")
+name_label = NodePath("MarginContainer/ContentStack/PortraitSection/LordInfo/NameLabel")
+frame_border = NodePath("MarginContainer/ContentStack/PortraitSection/PortraitFrame/FrameBorder")
+stats_grid = NodePath("MarginContainer/ContentStack/StatsGrid")
+stat_row_0 = NodePath("MarginContainer/ContentStack/StatsGrid/StatRow0")
+stat_row_1 = NodePath("MarginContainer/ContentStack/StatsGrid/StatRow1")
+stat_row_2 = NodePath("MarginContainer/ContentStack/StatsGrid/StatRow2")
+stat_row_3 = NodePath("MarginContainer/ContentStack/StatsGrid/StatRow3")
+stat_row_4 = NodePath("MarginContainer/ContentStack/StatsGrid/StatRow4")
+stat_row_5 = NodePath("MarginContainer/ContentStack/StatsGrid/StatRow5")
+command_palette = NodePath("MarginContainer/ContentStack/CommandPalette")
+cmd_battle = NodePath("MarginContainer/ContentStack/CommandPalette/CmdBattle")
+cmd_develop = NodePath("MarginContainer/ContentStack/CommandPalette/CmdDevelop")
+cmd_march = NodePath("MarginContainer/ContentStack/CommandPalette/CmdMarch")
+cmd_troops = NodePath("MarginContainer/ContentStack/CommandPalette/CmdTroops")
+border_frame = NodePath("MarginContainer/BorderFrame")
+divider_1 = NodePath("MarginContainer/ContentStack/Divider1")
+divider_2 = NodePath("MarginContainer/ContentStack/Divider2")
+divider_3 = NodePath("MarginContainer/ContentStack/Divider3")
+prompt_text = NodePath("MarginContainer/ContentStack/PromptText")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 2
