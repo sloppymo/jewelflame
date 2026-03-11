@@ -368,6 +368,7 @@ func _fix_portrait_settings() -> void:
 	portrait_texture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	portrait_texture.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
 	portrait_texture.modulate = Color.WHITE
+	portrait_texture.clip_contents = true  # Prevent debug text overflow
 	
 	# CRITICAL FIX: Remove ALL children from portrait (fixes "Coryll.png" debug text)
 	for child in portrait_texture.get_children():

@@ -144,6 +144,13 @@ func _on_province_selected(province_id: int):
 		for child in portrait.get_children():
 			child.queue_free()
 		
+		# Reset portrait settings to prevent debug text
+		portrait.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		portrait.expand_mode = TextureRect.EXPAND_KEEP_SIZE
+		portrait.modulate = Color.WHITE
+		portrait.clip_contents = true
+		
 		# Load portrait
 		var portrait_path = _get_portrait_for_lord(current_governor_id, family_id)
 		if portrait_path != "" and ResourceLoader.exists(portrait_path):

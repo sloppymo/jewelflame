@@ -137,24 +137,24 @@ func set_character(name: String, portrait_texture: Texture2D, faction: String):
 		print("DEBUG: Removing child from portrait: ", child.name)
 		child.queue_free()
 	
+	# Reset portrait settings to prevent debug text from showing
+	portrait.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	portrait.expand_mode = TextureRect.EXPAND_KEEP_SIZE
+	portrait.modulate = Color.WHITE
+	portrait.clip_contents = true  # Prevent any overflow
+	
 	# Set portrait with fallback
 	if portrait_texture:
 		print("Setting portrait texture: ", portrait_texture)
 		portrait.texture = portrait_texture
-		portrait.modulate = Color.WHITE
-		portrait.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-		portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	elif fallback_portrait:
 		print("Using fallback portrait for: ", name)
 		portrait.texture = fallback_portrait
-		portrait.modulate = Color.WHITE
-		portrait.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-		portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	else:
 		push_warning("No portrait texture available for: " + name)
-		# Create a procedural placeholder instead of null (prevents checkered transparency)
+		# Use a solid color texture instead of null to prevent debug visualization
 		portrait.texture = _create_placeholder_portrait(faction)
-		portrait.modulate = Color.WHITE
 	
 	# Set faction crest (procedurally generated since crest assets removed)
 	banner_icon.texture = _create_crest_texture(faction)
