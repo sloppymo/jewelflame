@@ -101,6 +101,7 @@ func _ready() -> void:
 	_setup_stat_icons()
 	_setup_command_buttons()
 	_setup_shield_icons()
+	_fix_portrait_settings()
 	_connect_signals()
 	
 	if debug_mode:
@@ -354,6 +355,31 @@ func _setup_shield_icons() -> void:
 	if shield_icon:
 		shield_icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 
+## Fixes portrait TextureRect settings to prevent checkered transparency and text bleeding
+func _fix_portrait_settings() -> void:
+	if portrait_texture == null:
+		return
+	
+	# CRITICAL FIXES for portrait display:
+	# 1. NEAREST filter prevents blur on pixel art
+	# 2. KEEP_ASPECT_CENTERED prevents stretching
+	# 3. EXPAND_FIT_WIDTH_PROPORTIONAL ensures proper sizing
+	portrait_texture.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	portrait_texture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	portrait_texture.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
+	portrait_texture.modulate = Color.WHITE
+	
+	# Check for and remove any debug label children (fixes "Coryll.png" text)
+	for child in portrait_texture.get_children():
+		if child is Label:
+			if debug_mode:
+				print("Removing debug label from portrait: ", child.name)
+			child.queue_free()
+	
+	# Set fallback silhouette if no texture assigned yet
+	if portrait_texture.texture == null:
+		portrait_texture.texture = _create_silhouette_texture()
+
 # ============================================================================
 # EVENT HANDLERS
 # ============================================================================
@@ -437,6 +463,13 @@ func _update_portrait(governor: CharacterData, family_id: String) -> void:
 	if portrait_mask:
 		portrait_mask.color = mask_color
 	
+	# Configure portrait texture settings (fixes checkered transparency + sizing)
+	if portrait_texture:
+		portrait_texture.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		portrait_texture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		portrait_texture.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
+		portrait_texture.modulate = Color.WHITE
+	
 	# Load portrait texture
 	var governor_id := governor.id if governor else ""
 	var portrait_path := _get_portrait_for_lord(governor_id, family_id)
@@ -451,8 +484,6 @@ func _update_portrait(governor: CharacterData, family_id: String) -> void:
 			if tex:
 				var final_tex := _composite_portrait_with_bg(tex, mask_color)
 				portrait_texture.texture = final_tex
-				portrait_texture.modulate = Color.WHITE
-				portrait_texture.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 				
 				if debug_mode:
 					print("Portrait loaded: ", tex.get_size())
