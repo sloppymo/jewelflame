@@ -147,14 +147,65 @@ func set_character(name: String, portrait_texture: Texture2D, faction: String):
 		portrait.texture = null
 		portrait.modulate = _get_faction_color(faction)
 	
-	# Set faction crest
-	if CRESTS.has(faction):
-		var crest_path = CRESTS[faction]
-		if ResourceLoader.exists(crest_path):
-			banner_icon.texture = load(crest_path)
-			print("Loaded crest: ", crest_path)
+	# Set faction crest (procedurally generated since crest assets removed)
+	banner_icon.texture = _create_crest_texture(faction)
 	
 	set_dialogue_text("%s, what is your command?" % name)
+
+func _create_crest_texture(faction: String) -> ImageTexture:
+	"""Create a procedural crest texture since crest assets were removed."""
+	var size := 48
+	var img := Image.create(size, size, false, Image.FORMAT_RGBA8)
+	img.fill(Color(0, 0, 0, 0))
+	
+	var color := _get_faction_color(faction)
+	var dark := color.darkened(0.5)
+	var mid := color.darkened(0.2)
+	var highlight := color.lightened(0.3)
+	var gold := Color("#d4af37")
+	
+	# Shield shape defined by rows (width at each y)
+	var shield_shape := [
+		0,0,0,18,18,20,20,20,20,20,
+		20,20,20,20,20,20,20,20,20,20,
+		20,20,20,20,19,19,18,18,17,16,
+		15,14,13,12,11,10,9,8,6,4,0,0,0
+	]
+	
+	var start_y := 2
+	
+	for y in range(shield_shape.size()):
+		var row_y: int = start_y + y
+		if row_y >= size:
+			break
+		
+		var half_width: int = shield_shape[y]
+		if half_width == 0:
+			continue
+		
+		var cx: float = size / 2.0
+		
+		for x in range(size):
+			var dx: float = abs(x - cx)
+			if dx > half_width:
+				continue
+			
+			var is_border: bool = dx >= half_width - 2 or y < 2 or (y > 35 and dx > half_width * 0.6)
+			
+			if is_border:
+				img.set_pixel(x, row_y, gold)
+			else:
+				if x < cx - 6:
+					img.set_pixel(x, row_y, highlight)
+				elif x > cx + 6:
+					img.set_pixel(x, row_y, mid)
+				else:
+					img.set_pixel(x, row_y, color)
+				
+				if abs(x - cx) < 3:
+					img.set_pixel(x, row_y, highlight.lightened(0.1))
+	
+	return ImageTexture.create_from_image(img)
 
 func _get_faction_color(faction: String) -> Color:
 	"""Get a color representing the faction for placeholder portraits."""
@@ -201,7 +252,4 @@ func set_faction(faction_id: String, faction_name_text: String, province_text: S
 	"""Set faction info with crest and text."""
 	faction_name.text = faction_name_text
 	province_name.text = province_text
-	if CRESTS.has(faction_id):
-		var crest_path = CRESTS[faction_id]
-		if ResourceLoader.exists(crest_path):
-			banner_icon.texture = load(crest_path)
+	banner_icon.texture = _create_crest_texture(faction_id)
