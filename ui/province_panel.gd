@@ -103,6 +103,9 @@ func _load_assets():
 
 func _setup_panel_structure():
 	"""Build the complete panel hierarchy."""
+	# CRITICAL: Allow mouse events to pass through to children (buttons)
+	mouse_filter = Control.MOUSE_FILTER_PASS
+	
 	# Clear existing
 	for child in get_children():
 		child.queue_free()
@@ -200,9 +203,10 @@ func _setup_panel_structure():
 	portrait_texture.custom_minimum_size = portrait_size  # 128x160 ONLY
 	portrait_texture.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	portrait_texture.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	portrait_texture.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	portrait_texture.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	portrait_texture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	portrait_texture.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST  # CRITICAL: Prevents blur
+	portrait_texture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED  # CRITICAL: Proper sizing
+	portrait_texture.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL  # CRITICAL: Fit frame
+	portrait_texture.modulate = Color.WHITE  # Ensure full opacity
 	portrait_container.add_child(portrait_texture)
 	
 	# Lord name - below portrait
@@ -234,6 +238,7 @@ func _setup_panel_structure():
 	action_buttons = _create_action_buttons()
 	action_buttons.custom_minimum_size = Vector2(0, 64)  # Fixed height for buttons
 	action_buttons.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	action_buttons.mouse_filter = Control.MOUSE_FILTER_PASS  # CRITICAL: Allow mouse events to reach buttons
 	vbox.add_child(action_buttons)
 	
 	# 5. Command Prompt - FIXED SIZE
@@ -336,7 +341,10 @@ func _create_action_buttons() -> HBoxContainer:
 		button.name = btn_data.name + "Button"
 		button.text = btn_data.name
 		button.custom_minimum_size = button_size
+		button.mouse_filter = Control.MOUSE_FILTER_STOP  # CRITICAL: Capture mouse events
+		button.focus_mode = Control.FOCUS_ALL  # Allow keyboard focus
 		button.pressed.connect(btn_data.callback)
+		print("DEBUG: Created button '", button.name, "' with signal connected")
 		
 		# Add icon
 		if icon_sheet:
@@ -459,17 +467,28 @@ func update_panel(province_id: int):
 func _update_portrait(province):
 	var lord = _get_province_lord(province)
 	
+	# CRITICAL FIX: Remove any debug labels that show filenames like "Coryll.png"
+	for child: Node in portrait_texture.get_children():
+		if child is Label:
+			child.queue_free()
+	
 	if lord:
 		lord_name_label.text = lord.name
 		var tex = portrait_textures.get(lord.id)
 		if tex:
 			portrait_texture.texture = tex
 			portrait_texture.custom_minimum_size = portrait_size
+			# CRITICAL FIX: Ensure proper texture settings to avoid checkered transparency
+			portrait_texture.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+			portrait_texture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			portrait_texture.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
+			portrait_texture.modulate = Color.WHITE
 		else:
-			portrait_texture.texture = null
+			# CRITICAL FIX: Use fallback silhouette instead of null (prevents checkered transparency)
+			portrait_texture.texture = _create_fallback_portrait()
 	else:
 		lord_name_label.text = "No Governor"
-		portrait_texture.texture = null
+		portrait_texture.texture = _create_fallback_portrait()
 
 func _update_stats(province):
 	# Update all stat labels
@@ -514,6 +533,7 @@ func _get_province_lord(province) -> CharacterData:
 	return null
 
 func _on_close_pressed():
+	print("DEBUG: Close button pressed")
 	hide()
 	current_province_id = -1
 
@@ -521,19 +541,52 @@ func _on_province_data_changed(province_id: int, field: String, value: Variant):
 	if province_id == current_province_id and visible:
 		update_panel(province_id)
 
+func _create_fallback_portrait() -> ImageTexture:
+	"""Create a fallback silhouette portrait when no texture exists."""
+	var size := Vector2(80, 120)
+	var img := Image.create(int(size.x), int(size.y), false, Image.FORMAT_RGBA8)
+	img.fill(Color(0.15, 0.12, 0.25))  # Dark purple background
+	
+	var silhouette_color := Color(0.4, 0.4, 0.5, 0.8)
+	var highlight_color := Color(0.6, 0.6, 0.7, 0.9)
+	
+	# Draw simple knight silhouette
+	for x in range(int(size.x)):
+		for y in range(int(size.y)):
+			var dx := x - int(size.x) / 2
+			
+			# Head (circle at top)
+			var dy_head := y - 30
+			var dist_head := dx * dx + dy_head * dy_head
+			if dist_head < 144:  # radius 12
+				img.set_pixel(x, y, highlight_color if dx < -3 else silhouette_color)
+			
+			# Body/Shoulders
+			if abs(dx) < 25 and y > 45 and y < 90:
+				img.set_pixel(x, y, silhouette_color)
+	
+	return ImageTexture.create_from_image(img)
+
 func _on_recruit_button_pressed():
+	print("DEBUG: Recruit button pressed for province ", current_province_id)
 	if current_province_id != -1:
 		if MilitaryCommands.execute_recruit(current_province_id, 50):
 			update_panel(current_province_id)
+	else:
+		print("DEBUG: Recruit button pressed but no province selected")
 
 func _on_develop_button_pressed():
+	print("DEBUG: Develop button pressed for province ", current_province_id)
 	if current_province_id != -1:
 		var province = GameState.provinces[current_province_id]
 		var type = "cultivation" if province.cultivation <= province.protection else "protection"
 		if DomesticCommands.execute_develop(current_province_id, type):
 			update_panel(current_province_id)
+	else:
+		print("DEBUG: Develop button pressed but no province selected")
 
 func _on_attack_button_pressed():
+	print("DEBUG: Attack button pressed for province ", current_province_id)
 	if current_province_id != -1:
 		var province = GameState.provinces[current_province_id]
 		var player_family = GameState.get_player_family()
@@ -556,8 +609,10 @@ func _on_attack_button_pressed():
 		BattleLauncher.launch_battle(current_province_id, target_id, 0.7, _on_battle_returned)
 
 func _on_move_button_pressed():
+	print("DEBUG: Move button pressed for province ", current_province_id)
 	"""Move troops between owned provinces."""
 	if current_province_id == -1:
+		print("DEBUG: Move button pressed but no province selected")
 		return
 	
 	var province = GameState.provinces[current_province_id]
