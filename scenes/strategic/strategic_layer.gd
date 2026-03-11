@@ -210,12 +210,12 @@ func _update_strategic_panel(province):
 	
 	# Update resources
 	strategic_panel.set_resources(
-		province.get("gold", 0),
-		province.get("food", 0),
-		province.get("soldiers", 0),
-		province.get("mana", 0),
-		province.get("grain", 0),
-		province.get("authority", 0)
+		province.gold,
+		province.food,
+		province.soldiers,
+		province.mana if province.get("mana") else 0,
+		province.grain if province.get("grain") else 0,
+		province.authority if province.get("authority") else 0
 	)
 	
 	print("Updated StrategicPanel for: ", province.name, ", Lord: ", lord_name)
