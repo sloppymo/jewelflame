@@ -11,8 +11,9 @@ extends Control
 
 @export var province_id: String = ""
 
-## Texture references (set in inspector)
+## Texture references (set in inspector or fallback to defaults)
 @export var panel_border_texture: Texture2D
+@export var portrait_frame_texture: Texture2D
 @export var portrait_texture: Texture2D
 @export var icon_gold: Texture2D
 @export var icon_food: Texture2D
@@ -29,24 +30,26 @@ const COLOR_CREAM: Color = Color("#f4e4c1")
 const COLOR_GREEN: Color = Color("#4a8b4a")
 
 # ============================================================================
-# UI REFERENCES (to be wired in scene)
+# UI REFERENCES - Created dynamically in _ready()
 # ============================================================================
 
-@onready var panel_container: PanelContainer
-@onready var nine_patch: NinePatchRect
-@onready var portrait_rect: TextureRect
-@onready var province_name_label: Label
-@onready var lord_name_label: Label
+var panel_background: NinePatchRect
+var portrait_frame: NinePatchRect
+var portrait_rect: TextureRect
+var province_name_label: Label
+var lord_name_label: Label
 
-@onready var gold_label: Label
-@onready var food_label: Label
-@onready var mana_label: Label
-@onready var troops_label: Label
+var gold_label: Label
+var food_label: Label
+var mana_label: Label
+var troops_label: Label
 
-@onready var recruit_button: Button
-@onready var develop_button: Button
-@onready var attack_button: Button
-@onready var info_button: Button
+var recruit_button: Button
+var develop_button: Button
+var attack_button: Button
+var info_button: Button
+
+var resource_grid: GridContainer
 
 # ============================================================================
 # STATE
@@ -60,25 +63,202 @@ var is_player_turn: bool = false
 # ============================================================================
 
 func _ready() -> void:
+	_create_ui_structure()
 	_setup_panel_style()
 	_connect_signals()
 	_hide_panel()
 
-func _setup_panel_style() -> void:
-	# Ensure pixel-perfect rendering
-	if nine_patch:
-	nine_patch.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-		nine_patch.texture = panel_border_texture
-		# 24px margins as specified
-		nine_patch.patch_margin_left = 24
-		nine_patch.patch_margin_right = 24
-		nine_patch.patch_margin_top = 24
-		nine_patch.patch_margin_bottom = 24
+func _create_ui_structure() -> void:
+	"""Create the complete UI hierarchy dynamically."""
 	
-	if portrait_rect:
-		portrait_rect.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-		portrait_rect.custom_minimum_size = Vector2(256, 384)  # 2× native
-		portrait_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	# Main panel background (NinePatchRect for scalable frame)
+	panel_background = NinePatchRect.new()
+	panel_background.name = "PanelBackground"
+	panel_background.texture = panel_border_texture if panel_border_texture else _get_default_panel_texture()
+	panel_background.patch_margin_left = 24
+	panel_background.patch_margin_right = 24
+	panel_background.patch_margin_top = 24
+	panel_background.patch_margin_bottom = 24
+	panel_background.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	panel_background.set_anchors_preset(Control.PRESET_FULL_RECT)
+	add_child(panel_background)
+	
+	# Content container - margins inside the frame
+	var content = MarginContainer.new()
+	content.name = "Content"
+	content.set_anchors_preset(Control.PRESET_FULL_RECT)
+	content.add_theme_constant_override("margin_left", 32)
+	content.add_theme_constant_override("margin_right", 32)
+	content.add_theme_constant_override("margin_top", 32)
+	content.add_theme_constant_override("margin_bottom", 32)
+	panel_background.add_child(content)
+	
+	# Main vertical layout
+	var vbox = VBoxContainer.new()
+	vbox.name = "MainVBox"
+	vbox.add_theme_constant_override("separation", 16)
+	content.add_child(vbox)
+	
+	# --- HEADER SECTION ---
+	var header = HBoxContainer.new()
+	header.name = "Header"
+	header.add_theme_constant_override("separation", 16)
+	vbox.add_child(header)
+	
+	# Portrait frame (NinePatchRect for decorative border)
+	portrait_frame = NinePatchRect.new()
+	portrait_frame.name = "PortraitFrame"
+	portrait_frame.texture = portrait_frame_texture if portrait_frame_texture else _get_default_frame_texture()
+	portrait_frame.patch_margin_left = 8
+	portrait_frame.patch_margin_right = 8
+	portrait_frame.patch_margin_top = 8
+	portrait_frame.patch_margin_bottom = 8
+	portrait_frame.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	portrait_frame.custom_minimum_size = Vector2(120, 160)
+	header.add_child(portrait_frame)
+	
+	# Portrait texture inside frame
+	portrait_rect = TextureRect.new()
+	portrait_rect.name = "Portrait"
+	portrait_rect.texture = portrait_texture if portrait_texture else _get_default_portrait_texture()
+	portrait_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	portrait_rect.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	portrait_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
+	portrait_rect.set_anchor_and_offset(MARGIN_LEFT, 0, 8)
+	portrait_rect.set_anchor_and_offset(MARGIN_RIGHT, 1, -8)
+	portrait_rect.set_anchor_and_offset(MARGIN_TOP, 0, 8)
+	portrait_rect.set_anchor_and_offset(MARGIN_BOTTOM, 1, -8)
+	portrait_frame.add_child(portrait_rect)
+	
+	# Info column (faction banner + names)
+	var info_column = VBoxContainer.new()
+	info_column.name = "InfoColumn"
+	info_column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	header.add_child(info_column)
+	
+	# Faction banner placeholder (could be TextureRect with banner)
+	var banner = ColorRect.new()
+	banner.name = "FactionBanner"
+	banner.custom_minimum_size = Vector2(0, 32)
+	banner.color = COLOR_BLANCHE
+	info_column.add_child(banner)
+	
+	# Province name label
+	province_name_label = Label.new()
+	province_name_label.name = "ProvinceName"
+	province_name_label.text = "3: Petaria"
+	province_name_label.add_theme_font_size_override("font_size", 24)
+	province_name_label.add_theme_color_override("font_color", COLOR_GOLD)
+	info_column.add_child(province_name_label)
+	
+	# Lord name label
+	lord_name_label = Label.new()
+	lord_name_label.name = "LordName"
+	lord_name_label.text = "Lars"
+	lord_name_label.add_theme_font_size_override("font_size", 20)
+	lord_name_label.add_theme_color_override("font_color", COLOR_CREAM)
+	info_column.add_child(lord_name_label)
+	
+	# --- RESOURCE GRID ---
+	resource_grid = GridContainer.new()
+	resource_grid.name = "ResourceGrid"
+	resource_grid.columns = 2
+	resource_grid.add_theme_constant_override("h_separation", 32)
+	resource_grid.add_theme_constant_override("v_separation", 12)
+	vbox.add_child(resource_grid)
+	
+	# Create resource slots
+	_create_resource_slot("gold", icon_gold if icon_gold else _get_default_icon("gold"), "100")
+	_create_resource_slot("food", icon_food if icon_food else _get_default_icon("food"), "100")
+	_create_resource_slot("mana", icon_mana if icon_mana else _get_default_icon("mana"), "50")
+	_create_resource_slot("troops", icon_troops if icon_troops else _get_default_icon("troops"), "0")
+	_create_resource_slot("population", _get_default_icon("population"), "0")
+	_create_resource_slot("castles", _get_default_icon("castle"), "0")
+	
+	# Store label references
+	gold_label = resource_grid.get_node("GoldSlot/Value")
+	food_label = resource_grid.get_node("FoodSlot/Value")
+	mana_label = resource_grid.get_node("ManaSlot/Value")
+	troops_label = resource_grid.get_node("TroopsSlot/Value")
+	
+	# --- UNIT TYPE ROW ---
+	var unit_row = HBoxContainer.new()
+	unit_row.name = "UnitRow"
+	unit_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	unit_row.add_theme_constant_override("separation", 16)
+	vbox.add_child(unit_row)
+	
+	# Unit type icons (placeholder)
+	for i in range(4):
+		var unit_icon = TextureRect.new()
+		unit_icon.name = "UnitIcon%d" % i
+		unit_icon.custom_minimum_size = Vector2(32, 32)
+		unit_icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		unit_row.add_child(unit_icon)
+	
+	# --- DIALOGUE SECTION ---
+	var dialogue_label = Label.new()
+	dialogue_label.name = "Dialogue"
+	dialogue_label.text = "Lars, what is your command?"
+	dialogue_label.add_theme_font_size_override("font_size", 16)
+	dialogue_label.add_theme_color_override("font_color", COLOR_CREAM)
+	dialogue_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(dialogue_label)
+	
+	# --- BUTTON ROW ---
+	var button_row = HBoxContainer.new()
+	button_row.name = "ButtonRow"
+	button_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	button_row.add_theme_constant_override("separation", 8)
+	vbox.add_child(button_row)
+	
+	recruit_button = Button.new()
+	recruit_button.name = "RecruitButton"
+	recruit_button.text = "Recruit"
+	button_row.add_child(recruit_button)
+	
+	develop_button = Button.new()
+	develop_button.name = "DevelopButton"
+	develop_button.text = "Develop"
+	button_row.add_child(develop_button)
+	
+	attack_button = Button.new()
+	attack_button.name = "AttackButton"
+	attack_button.text = "Attack"
+	button_row.add_child(attack_button)
+	
+	info_button = Button.new()
+	info_button.name = "InfoButton"
+	info_button.text = "Info"
+	button_row.add_child(info_button)
+
+func _create_resource_slot(id: String, icon: Texture2D, initial_value: String) -> void:
+	"""Create a resource slot with icon and value label."""
+	var slot = HBoxContainer.new()
+	slot.name = id.capitalize() + "Slot"
+	slot.add_theme_constant_override("separation", 8)
+	
+	var icon_rect = TextureRect.new()
+	icon_rect.name = "Icon"
+	icon_rect.texture = icon
+	icon_rect.custom_minimum_size = Vector2(32, 32)
+	icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	icon_rect.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	slot.add_child(icon_rect)
+	
+	var value_label = Label.new()
+	value_label.name = "Value"
+	value_label.text = initial_value
+	value_label.add_theme_font_size_override("font_size", 18)
+	value_label.add_theme_color_override("font_color", COLOR_CREAM)
+	slot.add_child(value_label)
+	
+	resource_grid.add_child(slot)
+
+func _setup_panel_style() -> void:
+	"""Apply additional styling after node creation."""
+	# Panel is already styled in _create_ui_structure
+	pass
 
 func _connect_signals() -> void:
 	# Connect to EventBus
@@ -95,6 +275,49 @@ func _connect_signals() -> void:
 		attack_button.pressed.connect(_on_attack_pressed)
 	if info_button:
 		info_button.pressed.connect(_on_info_pressed)
+
+# ============================================================================
+# FALLBACK TEXTURES
+# ============================================================================
+
+func _get_default_panel_texture() -> Texture2D:
+	"""Create a simple fallback panel texture if none provided."""
+	var img = Image.create(64, 64, false, Image.FORMAT_RGBA8)
+	# Fill with purple background
+	img.fill(Color("#4a3a6a"))
+	# Draw border
+	for x in range(64):
+		img.set_pixel(x, 0, Color("#d4af37"))
+		img.set_pixel(x, 63, Color("#d4af37"))
+	for y in range(64):
+		img.set_pixel(0, y, Color("#d4af37"))
+		img.set_pixel(63, y, Color("#d4af37"))
+	return ImageTexture.create_from_image(img)
+
+func _get_default_frame_texture() -> Texture2D:
+	"""Create a simple fallback frame texture."""
+	var img = Image.create(32, 32, false, Image.FORMAT_RGBA8)
+	img.fill(Color("#3a2a5a"))
+	# Gold border
+	for x in range(32):
+		img.set_pixel(x, 0, Color("#d4af37"))
+		img.set_pixel(x, 31, Color("#d4af37"))
+	for y in range(32):
+		img.set_pixel(0, y, Color("#d4af37"))
+		img.set_pixel(31, y, Color("#d4af37"))
+	return ImageTexture.create_from_image(img)
+
+func _get_default_portrait_texture() -> Texture2D:
+	"""Create a placeholder portrait texture."""
+	var img = Image.create(96, 144, false, Image.FORMAT_RGBA8)
+	img.fill(Color("#6a5a8a"))
+	return ImageTexture.create_from_image(img)
+
+func _get_default_icon(type: String) -> Texture2D:
+	"""Create a simple placeholder icon."""
+	var img = Image.create(32, 32, false, Image.FORMAT_RGBA8)
+	img.fill(Color("#d4af37"))
+	return ImageTexture.create_from_image(img)
 
 # ============================================================================
 # PANEL DISPLAY
@@ -180,11 +403,11 @@ func _get_portrait_for_family(family_id: String) -> Texture2D:
 	# For now, use placeholders - in real game, load from assets/portraits/
 	match family_id:
 		"blanche":
-			return portrait_texture  # Lady Elara
+			return portrait_texture if portrait_texture else _get_default_portrait_texture()
 		"lyle":
-			return portrait_texture  # Lord Roland (different texture in real game)
+			return portrait_texture if portrait_texture else _get_default_portrait_texture()
 		_:
-			return portrait_texture
+			return portrait_texture if portrait_texture else _get_default_portrait_texture()
 
 func _get_tint_for_family(family_id: String) -> Color:
 	match family_id:
