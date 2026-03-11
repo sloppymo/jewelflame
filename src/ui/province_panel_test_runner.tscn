@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://cjq8x7q8jjpqm"]
+
+[ext_resource type="Script" path="res://src/ui/province_panel_test_runner.gd" id="1_abc123"]
+
+[node name="ProvincePanelTestRunner" type="Node"]
+script = ExtResource("1_abc123")

@@ -1,0 +1,53 @@
+[gd_scene load_steps=3 format=3 uid="uid://b1k2m3n4o5p6q"]
+
+[ext_resource type="Script" path="res://src/ui/province_panel_visual_test.gd" id="1_visualtest"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_portrait"]
+size = Vector2(96, 144)
+
+[node name="VisualTestScene" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_visualtest")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.12, 0.12, 0.18, 1)
+
+[node name="TestLabel" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 40.0
+grow_horizontal = 2
+text = "ProvincePanel Visual Test - Check left side for panel rendering"
+horizontal_alignment = 1
+
+[node name="TestPanel" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_right = 400.0
+grow_vertical = 2
+
+[node name="TestInstructions" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -60.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Expected: Purple panel with gold border, framed portrait, resource icons (gold/food/troops), unit row, dialogue text, action buttons"
+horizontal_alignment = 1
+autowrap_mode = 3
