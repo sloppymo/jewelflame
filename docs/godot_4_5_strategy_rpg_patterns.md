@@ -636,6 +636,433 @@ func recycle_item(item: Control) -> void:
     _available_pool.append(item)
 ```
 
+**Improved Pattern with Data Binding:**
+```gdscript
+func recycle_item(item: Control, new_data: Resource) -> void:
+    # Disconnect old signals
+    if item.pressed.is_connected(_on_item_pressed):
+        item.pressed.disconnect(_on_item_pressed)
+    item.set_data(new_data)
+    item.pressed.connect(_on_item_pressed.bind(new_data.id))
+    item.show()
+```
+
+**Anti-Pattern (Avoid):**
+```gdscript
+# Frame drop city for lists >20 items
+for lord in all_lords:
+    var ui = item_scene.instantiate()
+    add_child(ui)
+    # ...
+    ui.queue_free()  # Stutters the main thread
+```
+
+---
+
+### Pattern: Input Priority Stack for Modal UIs
+**Godot Version:** 4.x | **Complexity:** Medium | **Use Case:** Modal dialogs over hex maps, menu stacks, confirmation popups
+
+**The Rule:** Use `_unhandled_input()` for game-world interactions and `_input()` for UI overlays. Manage a priority stack where modal dialogs consume input before it reaches the map.
+
+```gdscript
+[CATEGORY:INPUT] [COMPLEXITY:MEDIUM] [RISK:INPUT_LEAK]
+
+class_name InputManager extends Node
+    var _modal_stack: Array[Control] = []
+    
+    func push_modal(modal: Control) -> void:
+        _modal_stack.append(modal)
+        modal.tree_exiting.connect(_pop_modal.bind(modal), CONNECT_ONE_SHOT)
+        # Pause game world processing
+        get_tree().paused = true
+    
+    func _pop_modal(modal: Control) -> void:
+        _modal_stack.erase(modal)
+        if _modal_stack.is_empty():
+            get_tree().paused = false
+    
+    func _input(event: InputEvent) -> void:
+        # Modal on top gets first crack
+        if not _modal_stack.is_empty():
+            var top_modal = _modal_stack.back()
+            if top_modal.visible:
+                top_modal._modal_input(event)
+                get_viewport().set_input_as_handled()
+                return
+        
+        # Fall through to game world
+        _unhandled_input(event)
+    
+    # Hex map uses _unhandled_input, so it only receives events not consumed by UI
+    func _unhandled_input(event: InputEvent) -> void:
+        if event is InputEventMouseButton:
+            _handle_map_click(event)
+```
+
+**LLM Context Note:** *For KOEI-style menu-heavy games, implement an input stack. Modal dialogs must consume events before they reach the strategic map to prevent accidental unit movement while browsing menus. Token-efficient summary: [input stack, _unhandled_input, modal priority, get_viewport().set_input_as_handled()].*
+
+---
+
+## SECTION 3: Resource-Driven Data Architecture
+
+### Pattern: Resource as Type-Safe Database Row
+**Godot Version:** 4.x | **Complexity:** Medium | **Use Case:** Lord stats, province configurations, item definitions
+
+**The Rule:** Extend Resource for static game data with `@export_group` for inspector organization. Separate transient runtime state (current HP, temporary buffs) into plain class variables that aren't saved.
+
+```gdscript
+[CATEGORY:DATA_ARCHITECTURE] [COMPLEXITY:MEDIUM] [RISK:DATA_CORRUPTION]
+
+class_name LordData extends Resource
+    enum Allegiance { NEUTRAL, BLANCHE, LYLE, CORYLL }
+    
+    @export_group("Biographical")
+    @export var id: StringName = &"lord_001"
+    @export var display_name: String = "Unknown Lord"
+    @export var allegiance: Allegiance = Allegiance.NEUTRAL
+    @export var portrait: Texture2D
+    
+    @export_group("Base Stats")
+    @export var attack: int = 50
+    @export var defense: int = 50
+    @export var command: int = 50  # Max troop leadership
+    @export_range(0, 100) var loyalty: int = 100
+    
+    # Runtime state - NOT @export, not saved to disk
+    var current_troops: int = 0
+    var is_injured: bool = false
+    var location_province_id: StringName = &""
+    
+    func _validate_property(property: Dictionary) -> void:
+        # Enforce game design constraints in editor
+        if property.name == "attack" and attack > 100:
+            attack = 100
+            push_warning("Attack cannot exceed 100")
+```
+
+**Anti-Pattern (Avoid):**
+```gdscript
+# Mixing serializable and transient data without distinction
+@export var current_hp: int  # Saved to disk - wrong! Should reset on load
+```
+
+**Deep Copy Pattern:**
+When spawning runtime instances from template Resources:
+```gdscript
+func create_lord_instance(template: LordData) -> Lord:
+    var instance = Lord.new()
+    # Duplicate creates unique copy for this instance only
+    instance.data = template.duplicate(true)
+    instance.data.current_troops = calculate_starting_troops(template.command)
+    return instance
+```
+
+---
+
+## SECTION 4: State Machines & Turn-Based Logic
+
+### Pattern: Hierarchical Node-Based State Machine
+**Godot Version:** 4.x | **Complexity:** High | **Use Case:** Turn phases (Council → Domestic → Diplomatic → Military → Resolution)
+
+**The Rule:** Implement states as child Nodes. Toggle `process_mode` to disable inactive states completely. Use virtual methods `enter_state()`/`exit_state()` for setup/teardown.
+
+```gdscript
+[CATEGORY:STATE_MACHINE] [COMPLEXITY:HIGH] [RISK:STATE_CORRUPTION]
+
+class_name TurnStateMachine extends Node
+    signal state_changed(new_state: StringName, old_state: StringName)
+    
+    @onready var current_state: Node = $MonthStartState
+    
+    func _ready() -> void:
+        for child in get_children():
+            child.process_mode = Node.PROCESS_MODE_DISABLED
+        current_state.process_mode = Node.PROCESS_MODE_INHERIT
+        if current_state.has_method(&"enter_state"):
+            current_state.enter_state({})
+    
+    func transition_to(state_name: StringName, data: Dictionary = {}) -> bool:
+        var next_state = get_node_or_null(NodePath(state_name))
+        if not next_state or next_state == current_state:
+            return false
+        
+        # Exit current
+        if current_state.has_method(&"exit_state"):
+            current_state.exit_state()
+        current_state.process_mode = Node.PROCESS_MODE_DISABLED
+        
+        # Enter new
+        current_state = next_state
+        current_state.process_mode = Node.PROCESS_MODE_INHERIT
+        if current_state.has_method(&"enter_state"):
+            current_state.enter_state(data)
+        
+        state_changed.emit(state_name, current_state.name)
+        return true
+```
+
+**State Implementation Example:**
+```gdscript
+class_name DomesticPhaseState extends Node
+    @export var next_state: StringName = &"DiplomaticPhaseState"
+    
+    func enter_state(data: Dictionary) -> void:
+        EventBus.show_domestic_menu.emit()
+        EventBus.province_selected.connect(_on_province_selected)
+    
+    func exit_state() -> void:
+        EventBus.province_selected.disconnect(_on_province_selected)
+    
+    func _on_province_selected(province_id: StringName) -> void:
+        # Show available domestic commands
+        pass
+```
+
+---
+
+### Pattern: Command Pattern for Undo/Redo
+**Godot Version:** 4.x | **Complexity:** High | **Use Case:** Strategy game move undo, turn rewind, A/B testing player decisions
+
+**The Rule:** Encapsulate every mutable action as a Command object with `execute()` and `undo()` methods. Maintain a history stack with pointer for redo support.
+
+```gdscript
+[CATEGORY:STATE_MACHINE] [COMPLEXITY:HIGH] [RISK:DATA_INCONSISTENCY]
+
+class_name Command extends RefCounted
+    func execute() -> bool:
+        return false
+    func undo() -> void:
+        pass
+    func get_description() -> String:
+        return "Command"
+
+class_name MoveTroopsCommand extends Command
+    var lord_id: StringName
+    var from_province: StringName
+    var to_province: StringName
+    var amount: int
+    var _previous_troops: int = -1
+    
+    func _init(l: StringName, from: StringName, to: StringName, amt: int):
+        lord_id = l
+        from_province = from
+        to_province = to
+        amount = amt
+    
+    func execute() -> bool:
+        var lord = LordManager.get_lord(lord_id)
+        if lord.data.current_troops < amount:
+            return false
+        
+        _previous_troops = lord.data.current_troops
+        lord.data.current_troops -= amount
+        ProvinceManager.move_troops(from_province, to_province, amount)
+        return true
+    
+    func undo() -> void:
+        var lord = LordManager.get_lord(lord_id)
+        lord.data.current_troops = _previous_troops
+        ProvinceManager.move_troops(to_province, from_province, amount)
+```
+
+**Command History Manager:**
+```gdscript
+class_name CommandHistory extends Node
+    var _history: Array[Command] = []
+    var _index: int = -1
+    const MAX_HISTORY = 100
+    
+    func execute(cmd: Command) -> bool:
+        if not cmd.execute():
+            return false
+        
+        # Truncate redo history
+        if _index < _history.size() - 1:
+            _history = _history.slice(0, _index + 1)
+        
+        _history.append(cmd)
+        _index += 1
+        
+        if _history.size() > MAX_HISTORY:
+            _history.pop_front()
+            _index -= 1
+        
+        return true
+    
+    func undo() -> void:
+        if _index >= 0:
+            _history[_index].undo()
+            _index -= 1
+    
+    func redo() -> void:
+        if _index < _history.size() - 1:
+            _index += 1
+            _history[_index].execute()
+```
+
+---
+
+## SECTION 5: Rendering & Visual Optimization
+
+### Pattern: SubViewport Integer Scaling
+**Godot Version:** 4.x | **Complexity:** Medium | **Use Case:** SNES-era resolution (256×224, 320×240) with crisp pixel art
+
+**The Rule:** Render to a small SubViewport at native resolution, then scale the SubViewportContainer by integer multiples (2×, 3×, 4×). Never use fractional scaling or camera zoom for pixel-art upscaling.
+
+```gdscript
+[CATEGORY:RENDERING] [COMPLEXITY:MEDIUM] [RISK:VISUAL_GLITCH]
+
+class_name PixelPerfectRenderer extends SubViewportContainer
+    @export var base_resolution: Vector2i = Vector2i(320, 240)
+    
+    func _ready() -> void:
+        stretch = false  # Critical: we handle scaling manually
+        var viewport: SubViewport = $SubViewport
+        viewport.size = base_resolution
+        viewport.canvas_item_default_texture_filter = Viewport.DEFAULT_CANVAS_ITEM_TEXTURE_FILTER_NEAREST
+        
+        # Integer scale to fit window
+        var window_size := DisplayServer.window_get_size()
+        var scale_factor := mini(window_size.x / base_resolution.x, window_size.y / base_resolution.y)
+        scale = Vector2(scale_factor, scale_factor)
+        
+        # Center in window
+        position = (Vector2(window_size) - Vector2(base_resolution) * scale_factor) / 2
+```
+
+---
+
+### Pattern: Z-Index Management for 2.5D Sprite Sorting
+**Godot Version:** 4.x | **Complexity:** Medium | **Use Case:** KOEI-style unit stacking where cavalry appears behind infantry based on Y-position
+
+**The Rule:** Dynamically update `z_index` based on Y-coordinate to create depth in top-down strategy maps.
+
+```gdscript
+[CATEGORY:RENDERING] [COMPLEXITY:MEDIUM] [RISK:Z_FIGHTING]
+
+class_name SortableUnit extends Sprite2D
+    @export var y_sort_offset: int = 0
+    
+    func _process(_delta: float) -> void:
+        # Update Z-index every frame for moving units
+        # Higher Y = closer to camera = higher Z
+        z_index = int(global_position.y) + y_sort_offset
+```
+
+**Alternative for TileMap:**
+Enable `y_sort_enabled` on the TileMap node and use `Node2D.y_sort_enabled` for the scene root to automatically sort children by Y-position.
+
+---
+
+## SECTION 6: Save/Load & Persistence
+
+### Pattern: Safe Serialization (Security-First)
+**Godot Version:** 4.x | **Complexity:** High | **Use Case:** Player save files, modding support
+
+**The Rule:** Never use `ResourceSaver.save()` for player save games (executes embedded scripts on load). Use ConfigFile (ini-style), JSON, or binary marshalling instead.
+
+```gdscript
+[CATEGORY:SERIALIZATION] [COMPLEXITY:HIGH] [RISK:SECURITY_VULNERABILITY]
+
+class_name SecureSaveManager extends Node
+    const SAVE_PATH := "user://saves/campaign.cfg"
+    
+    func save_game(state: GameState) -> Error:
+        var config := ConfigFile.new()
+        
+        # Store primitive types only - no executable code
+        config.set_value("meta", "version", "1.0")
+        config.set_value("meta", "timestamp", Time.get_unix_time_from_system())
+        config.set_value("world", "current_month", state.current_month)
+        config.set_value("world", "current_year", state.current_year)
+        
+        # Serialize arrays of dictionaries (lords, provinces)
+        var lord_data: Array = []
+        for lord in state.lords:
+            lord_data.append({
+                "id": lord.data.id,
+                "current_troops": lord.data.current_troops,
+                "location": lord.data.location_province_id,
+                "loyalty": lord.data.loyalty
+            })
+        config.set_value("lords", "data", lord_data)
+        
+        return config.save(SAVE_PATH)
+    
+    func load_game() -> GameState:
+        var config := ConfigFile.new()
+        var err := config.load(SAVE_PATH)
+        if err != OK:
+            return null
+        
+        var state := GameState.new()
+        state.current_month = config.get_value("world", "current_month", 1)
+        state.current_year = config.get_value("world", "current_year", 1)
+        
+        # Reconstruct runtime objects from primitive data
+        var lord_array: Array = config.get_value("lords", "data", [])
+        for dict in lord_array:
+            var lord = LordManager.spawn_lord(dict["id"])
+            lord.data.current_troops = dict["current_troops"]
+            lord.data.loyalty = dict["loyalty"]
+            # ... reconstruction logic
+        
+        return state
+    
+    # If using Resource format (trusted assets only):
+    # ONLY for developer tools or trusted asset loading
+    var res = ResourceLoader.load(
+        path,
+        "Resource",
+        ResourceLoader.FLAG_TRUST_LOAD_VARIABLES  # Allows script variables but verify path first
+    )
+```
+
+---
+
+## Appendix: LLM System Prompt Enhancement
+
+Copy and paste the following block into the system instructions of Cursor, Claude, or Kimi to enforce these architectural rules globally:
+
+```
+SYSTEM OVERRIDE: GODOT 4.5 ARCHITECTURE RULES
+
+You are building a complex, data-driven strategy RPG (KOEI-style) in Godot 4.5. 
+Enforce these strict architectural guidelines:
+
+1. TYPED DATA: Use Godot 4.4+ Typed Dictionaries (Dictionary[StringName, Resource]) 
+   for all lookups and registries. Use StringName (&"literal") for keys and signals.
+
+2. STATE MACHINES: Implement game states (Turn phases, UI modes) as Nodes with 
+   process_mode toggling (PROCESS_MODE_DISABLED/INHERIT). Never use boolean state 
+   checks in _process.
+
+3. UI POOLING: For lists >20 items, implement object pooling with manual signal 
+   disconnection before recycling. Never queue_free() UI nodes in rapid succession.
+
+4. DATA ARCHITECTURE: Extend Resource for static data (lords, provinces) with 
+   @export_group organization. Extend RefCounted for transient calculations. 
+   Use .duplicate(true) for runtime instances.
+
+5. COMMAND PATTERN: Encapsulate player actions in Command objects with execute()/undo() 
+   methods for strategy game undo functionality.
+
+6. INPUT STACKING: Use _unhandled_input() for game world and _input() with 
+   get_viewport().set_input_as_handled() for modal UI priority.
+
+7. RETRO RENDERING: Use SubViewportContainer with stretch=false and integer scaling 
+   for pixel-art. Never use camera zoom for upscaling.
+
+8. SAFETY: Never load user-provided .tres files. Use ConfigFile or JSON for save games. 
+   Always disconnect signals before queue_free() or object pooling.
+
+9. ASYNC: Use await only in bounded contexts (button presses, state transitions). 
+   Never await in _process or _physics_process without guards.
+
+10. VALIDATION: Use _validate_property() in Resources to enforce game design 
+    constraints in the editor.
+```
+
 ---
 
 ## Document Metadata
