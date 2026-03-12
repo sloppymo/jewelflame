@@ -506,6 +506,138 @@ func unsafe_load(path: String) -> void:
 
 ---
 
+### Pattern: StringName Interning (Technical Detail)
+**Godot Version:** 4.x | **Complexity:** Low | **Use Case:** Signal names, dictionary keys, hot path comparisons
+
+**Technical Correction:** StringName uses string interning (hashed canonical storage), not pointer comparison. This eliminates heap allocations for repeated string literals and accelerates dictionary lookups.
+
+```gdscript
+[CATEGORY:PERFORMANCE] [COMPLEXITY:LOW] [RISK:NONE]
+
+class_name HexGridController extends Node2D
+    # Pre-interned StringName - created once at compile time
+    const CELL_CLICKED := &"cell_clicked"
+    
+    func _input(event: InputEvent) -> void:
+        if event is InputEventMouseButton and event.pressed:
+            var cell := local_to_map(get_local_mouse_position())
+            # Fast O(1) hash comparison instead of string copy
+            EventBus.emit_signal(CELL_CLICKED, cell)
+    
+    func _ready() -> void:
+        # Connecting with StringName avoids runtime string allocation
+        EventBus.connect(CELL_CLICKED, _on_cell_clicked)
+    
+    func _on_cell_clicked(cell: Vector2i) -> void:
+        pass
+```
+
+**Anti-Pattern (Avoid):**
+```gdscript
+# Creates new String object every frame in _input
+emit_signal("cell_clicked", cell)
+```
+
+---
+
+### Pattern: Safe Async Boundaries
+**Godot Version:** 4.x | **Complexity:** Medium | **Use Case:** Turn transitions, AI thinking delays, modal animations
+
+**The Rule:** Avoid unbounded await in _process or physics loops. Coroutines are safe when scoped to state transitions with explicit cleanup, but dangerous when nested in polling functions.
+
+```gdscript
+[CATEGORY:ASYNC] [COMPLEXITY:MEDIUM] [RISK:MEMORY_LEAK]
+
+class_name TurnStateMachine extends Node
+    var _transition_guard: bool = false
+    
+    func transition_to(state_name: StringName) -> void:
+        # Prevent reentrant calls during animation
+        if _transition_guard:
+            return
+        _transition_guard = true
+        
+        # Safe: Await is bounded and followed by state cleanup
+        await _play_transition_animation()
+        _change_state(state_name)
+        _transition_guard = false
+    
+    func _play_transition_animation() -> void:
+        await get_tree().create_timer(0.5).timeout
+```
+
+**Anti-Pattern (Avoid):**
+```gdscript
+# DANGER: Creates new coroutine every frame if condition holds
+func _process(delta: float) -> void:
+    if waiting_for_input:
+        await get_tree().create_timer(0.1).timeout  # Unbounded coroutine growth
+```
+
+**LLM Context Note:** *Await is safe in event handlers and state transitions, but never use it in _process, _physics_process, or inside loops without guards. Use process_mode changes for pausing instead of await loops. Token-efficient summary: [await safety, transition guards, no process awaits].*
+
+---
+
+## SECTION 2: Node Architecture & Scene Composition
+
+### Pattern: UI Object Pooling for Large Rosters
+**Godot Version:** 4.x | **Complexity:** High | **Use Case:** Scrolling lists of 50+ provinces/lords, inventory grids
+
+**The Rule:** Pre-instantiate UI elements up to viewport capacity plus buffer (typically 15-25 nodes). Recycle by updating data and visibility rather than creating/destroying nodes.
+
+```gdscript
+[CATEGORY:UI_ARCHITECTURE] [COMPLEXITY:HIGH] [RISK:MEMORY_LEAK]
+
+class_name RosterList extends ScrollContainer
+    @export var item_scene: PackedScene
+    @export var pool_size: int = 20
+    
+    var _pool: Array[Control] = []
+    var _active_count: int = 0
+    
+    func _ready() -> void:
+        for i in range(pool_size):
+            var item: Control = item_scene.instantiate()
+            item.hide()
+            $VBoxContainer.add_child(item)
+            _pool.append(item)
+    
+    func display_items(data_array: Array[Resource]) -> void:
+        var needed := mini(data_array.size(), pool_size)
+        
+        # Update existing nodes
+        for i in range(needed):
+            _pool[i].set_data(data_array[i])
+            if not _pool[i].visible:
+                _pool[i].show()
+        
+        # Hide excess
+        for i in range(needed, _active_count):
+            _pool[i].hide()
+        
+        _active_count = needed
+    
+    func _exit_tree() -> void:
+        # CRITICAL: Clean up signal connections before pool destruction
+        for item in _pool:
+            if item.has_meta("signal_connected"):
+                item.pressed.disconnect(_on_item_selected)
+```
+
+**Critical Addition – Signal Cleanup:**
+When pooling nodes that emit signals (buttons, interactive elements), you must disconnect signals before hiding or the pooled node will accumulate stale connections:
+
+```gdscript
+func recycle_item(item: Control) -> void:
+    # CRITICAL: Disconnect before returning to pool
+    if item.pressed.is_connected(_on_item_pressed):
+        item.pressed.disconnect(_on_item_pressed)
+    item.hide()
+    _available_pool.append(item)
+```
+
+---
+
 ## Document Metadata
 - **Created:** March 2026
 - **Godot Version:** 4.5
