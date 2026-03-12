@@ -1,0 +1,25 @@
+; Engine Configuration File.
+; Godot version: 4.6.stable
+; Generated manually
+
+[application]
+config/name="Jewelflame"
+config/description="Turn-based strategy game inspired by Gemfire"
+run/main_scene="res://src/ui/demo/game_ui_demo.tscn"
+config/features=PackedStringArray("4.6", "GL Compatibility")
+boot_splash/bg_color=Color(0.141176, 0.141176, 0.141176, 1)
+config/icon="res://icon.svg"
+
+[autoload]
+EventBus="*res://src/autoload/event_bus.gd"
+GameState="*res://src/autoload/game_state.gd"
+
+[display]
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+
+[rendering]
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
