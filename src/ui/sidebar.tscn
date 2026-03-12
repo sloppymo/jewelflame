@@ -1,0 +1,364 @@
+[gd_scene load_steps=4 format=3 uid="uid://c8yvxg3ulq3a"]
+
+[ext_resource type="Script" path="res://src/ui/sidebar.gd" id="1_sidebar"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
+bg_color = Color(0.101961, 0.184314, 0.227451, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card"]
+bg_color = Color(0.176471, 0.352941, 0.352941, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.831373, 0.686275, 0.215686, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[node name="GameSidebar" type="PanelContainer"]
+custom_minimum_size = Vector2(560, 0)
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_right = 560.0
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_bg")
+script = ExtResource("1_sidebar")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="MainContent" type="VBoxContainer" parent="MarginContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 12
+
+# === FACTION HEADER ===
+[node name="FactionHeader" type="HBoxContainer" parent="MarginContainer/MainContent"]
+layout_mode = 2
+alignment = 1
+
+[node name="FactionShield" type="TextureRect" parent="MarginContainer/MainContent/FactionHeader"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(64, 80)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="FactionInfo" type="VBoxContainer" parent="MarginContainer/MainContent/FactionHeader"]
+layout_mode = 2
+alignment = 1
+
+[node name="FactionLabel" type="Label" parent="MarginContainer/MainContent/FactionHeader/FactionInfo"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+theme_override_colors/font_color = Color(0.831373, 0.686275, 0.215686, 1)
+text = "🛡️ BLANCHE"
+horizontal_alignment = 1
+
+[node name="TerritoryLabel" type="Label" parent="MarginContainer/MainContent/FactionHeader/FactionInfo"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.862745, 1)
+text = "5: Petaria"
+horizontal_alignment = 1
+
+[node name="TurnLabel" type="Label" parent="MarginContainer/MainContent/FactionHeader/FactionInfo"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.658824, 0.752941, 0.752941, 1)
+text = "Year 1 - Nov"
+horizontal_alignment = 1
+
+# === DIVIDER 1 ===
+[node name="Divider1" type="Panel" parent="MarginContainer/MainContent"]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+
+[node name="DividerLine" type="ColorRect" parent="MarginContainer/MainContent/Divider1"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.831373, 0.686275, 0.215686, 0.5)
+
+# === CHARACTER SECTION ===
+[node name="CharacterSection" type="CenterContainer" parent="MarginContainer/MainContent"]
+layout_mode = 2
+
+[node name="PortraitCard" type="PanelContainer" parent="MarginContainer/MainContent/CharacterSection"]
+custom_minimum_size = Vector2(120, 160)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+
+[node name="Portrait" type="TextureRect" parent="MarginContainer/MainContent/CharacterSection/PortraitCard"]
+unique_name_in_owner = true
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="CharacterInfo" type="VBoxContainer" parent="MarginContainer/MainContent"]
+layout_mode = 2
+alignment = 1
+
+[node name="NameLabel" type="Label" parent="MarginContainer/MainContent/CharacterInfo"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.862745, 1)
+text = "Lord Karl"
+horizontal_alignment = 1
+
+[node name="TitleLabel" type="Label" parent="MarginContainer/MainContent/CharacterInfo"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.658824, 0.752941, 0.752941, 1)
+text = "Knight of Cobrige"
+horizontal_alignment = 1
+
+[node name="LevelLabel" type="Label" parent="MarginContainer/MainContent/CharacterInfo"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.831373, 0.686275, 0.215686, 1)
+text = "⚔️ Level 5"
+horizontal_alignment = 1
+
+# === DIVIDER 2 ===
+[node name="Divider2" type="Panel" parent="MarginContainer/MainContent"]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+
+[node name="DividerLine" type="ColorRect" parent="MarginContainer/MainContent/Divider2"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.831373, 0.686275, 0.215686, 0.5)
+
+# === RESOURCES SECTION ===
+[node name="ResourcesSection" type="PanelContainer" parent="MarginContainer/MainContent"]
+layout_mode = 2
+
+[node name="ResourcesGrid" type="GridContainer" parent="MarginContainer/MainContent/ResourcesSection"]
+layout_mode = 2
+columns = 2
+theme_override_constants/h_separation = 40
+theme_override_constants/v_separation = 12
+
+# Row 1
+[node name="GoldRow" type="HBoxContainer" parent="MarginContainer/MainContent/ResourcesSection/ResourcesGrid"]
+layout_mode = 2
+
+[node name="GoldIcon" type="TextureRect" parent="MarginContainer/MainContent/ResourcesSection/ResourcesGrid/GoldRow"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="GoldValue" type="Label" parent="MarginContainer/MainContent/ResourcesSection/ResourcesGrid/GoldRow"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.862745, 1)
+text = "497"
+
+[node name="FoodRow" type="HBoxContainer" parent="MarginContainer/MainContent/ResourcesSection/ResourcesGrid"]
+layout_mode = 2
+
+[node name="FoodIcon" type="TextureRect" parent="MarginContainer/MainContent/ResourcesSection/ResourcesGrid/FoodRow"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="FoodValue" type="Label" parent="MarginContainer/MainContent/ResourcesSection/ResourcesGrid/FoodRow"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.862745, 1)
+text = "391"
+
+# Row 2
+[node name="TroopsRow" type="HBoxContainer" parent="MarginContainer/MainContent/ResourcesSection/ResourcesGrid"]
+layout_mode = 2
+
+[node name="TroopsIcon" type="TextureRect" parent="MarginContainer/MainContent/ResourcesSection/ResourcesGrid/TroopsRow"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TroopsValue" type="Label" parent="MarginContainer/MainContent/ResourcesSection/ResourcesGrid/TroopsRow"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.862745, 1)
+text = "0"
+
+[node name="WoodRow" type="HBoxContainer" parent="MarginContainer/MainContent/ResourcesSection/ResourcesGrid"]
+layout_mode = 2
+
+[node name="WoodIcon" type="TextureRect" parent="MarginContainer/MainContent/ResourcesSection/ResourcesGrid/WoodRow"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="WoodValue" type="Label" parent="MarginContainer/MainContent/ResourcesSection/ResourcesGrid/WoodRow"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.862745, 1)
+text = "0"
+
+# Row 3
+[node name="HoldingsRow" type="HBoxContainer" parent="MarginContainer/MainContent/ResourcesSection/ResourcesGrid"]
+layout_mode = 2
+
+[node name="HoldingsIcon" type="TextureRect" parent="MarginContainer/MainContent/ResourcesSection/ResourcesGrid/HoldingsRow"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="HoldingsValue" type="Label" parent="MarginContainer/MainContent/ResourcesSection/ResourcesGrid/HoldingsRow"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.862745, 1)
+text = "45"
+
+[node name="InfluenceRow" type="HBoxContainer" parent="MarginContainer/MainContent/ResourcesSection/ResourcesGrid"]
+layout_mode = 2
+
+[node name="InfluenceIcon" type="TextureRect" parent="MarginContainer/MainContent/ResourcesSection/ResourcesGrid/InfluenceRow"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="InfluenceValue" type="Label" parent="MarginContainer/MainContent/ResourcesSection/ResourcesGrid/InfluenceRow"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.862745, 1)
+text = "12"
+
+# === DIVIDER 3 ===
+[node name="Divider3" type="Panel" parent="MarginContainer/MainContent"]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+
+[node name="DividerLine" type="ColorRect" parent="MarginContainer/MainContent/Divider3"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.831373, 0.686275, 0.215686, 0.5)
+
+# === SECTION TABS ===
+[node name="SectionTabs" type="HBoxContainer" parent="MarginContainer/MainContent"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 20
+
+[node name="MilitaryTab" type="Button" parent="MarginContainer/MainContent/SectionTabs"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "⚔️"
+
+[node name="EconomyTab" type="Button" parent="MarginContainer/MainContent/SectionTabs"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "🏛️"
+
+[node name="DiplomacyTab" type="Button" parent="MarginContainer/MainContent/SectionTabs"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "📯"
+
+[node name="SystemTab" type="Button" parent="MarginContainer/MainContent/SectionTabs"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "⚙️"
+
+# === ACTION BUTTONS ===
+[node name="ActionsGrid" type="GridContainer" parent="MarginContainer/MainContent"]
+layout_mode = 2
+columns = 2
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 8
+
+[node name="ActionButton1" type="Button" parent="MarginContainer/MainContent/ActionsGrid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+text = "⚔️ Attack"
+
+[node name="ActionButton2" type="Button" parent="MarginContainer/MainContent/ActionsGrid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+text = "🛡️ Defend"
+
+[node name="ActionButton3" type="Button" parent="MarginContainer/MainContent/ActionsGrid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+text = "👥 Recruit"
+
+[node name="ActionButton4" type="Button" parent="MarginContainer/MainContent/ActionsGrid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+text = "👁️ Scout"
+
+# === SYSTEM ROW ===
+[node name="SystemRow" type="HBoxContainer" parent="MarginContainer/MainContent"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 20
+
+[node name="SaveButton" type="Button" parent="MarginContainer/MainContent/SystemRow"]
+custom_minimum_size = Vector2(80, 40)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "💾 Save"
+
+[node name="EndTurnButton" type="Button" parent="MarginContainer/MainContent/SystemRow"]
+custom_minimum_size = Vector2(120, 40)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "✓ End Turn"

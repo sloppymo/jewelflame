@@ -1,0 +1,52 @@
+[gd_scene load_steps=2 format=3 uid="uid://messagepanel_v2"]
+
+[ext_resource type="Script" path="res://src/ui/message_panel.gd" id="1_messagepanel"]
+
+[node name="MessagePanel" type="PanelContainer"]
+anchors_preset = 7
+anchor_left = 0.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -70.0
+grow_horizontal = 2
+grow_vertical = 0
+custom_minimum_size = Vector2(0, 70)
+script = ExtResource("1_messagepanel")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 2
+color = Color(0.101961, 0.184314, 0.227451, 1)
+
+[node name="TopBorder" type="ColorRect" parent="."]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+size_flags_vertical = 0
+color = Color(0.831373, 0.686275, 0.215686, 1)
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 40
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 12
+
+[node name="Content" type="HBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 40
+
+[node name="MessageLabel" type="Label" parent="MarginContainer/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.862745, 1)
+vertical_alignment = 1
+text = "Lord Karl, what is your command?"
+
+[node name="ChoicesContainer" type="HBoxContainer" parent="MarginContainer/Content"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 60
+alignment = 1
