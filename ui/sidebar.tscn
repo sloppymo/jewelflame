@@ -13,6 +13,7 @@
 [ext_resource type="Script" path="res://ui/bg_draw.gd" id="11_bg_draw"]
 [ext_resource type="Script" path="res://ui/banner_draw.gd" id="13_banner_draw"]
 [ext_resource type="Script" path="res://ui/portrait_draw.gd" id="14_portrait_draw"]
+[ext_resource type="Texture2D" uid="uid://crk3clpnarf4a" path="res://assets/portraits/house_blanche/lord_blanche.png" id="15_portrait"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_stone_normal"]
 texture = ExtResource("8_btn_normal")
@@ -91,6 +92,7 @@ offset_top = 140.0
 offset_right = 210.0
 offset_bottom = 260.0
 script = ExtResource("14_portrait_draw")
+portrait_texture = ExtResource("15_portrait")
 
 [node name="DividerTop" type="TextureRect" parent="."]
 unique_name_in_owner = true
@@ -103,6 +105,15 @@ offset_bottom = 296.0
 texture = ExtResource("5_divider_ornate")
 stretch_mode = 5
 texture_filter = 1
+
+[node name="ContentBg" type="ColorRect" parent="."]
+z_index = -1
+layout_mode = 0
+offset_left = 48.0
+offset_top = 296.0
+offset_right = 252.0
+offset_bottom = 680.0
+color = Color(0.102, 0.102, 0.18, 1)
 
 [node name="StatsGrid" type="GridContainer" parent="."]
 unique_name_in_owner = true
