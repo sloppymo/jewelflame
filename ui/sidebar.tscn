@@ -20,7 +20,7 @@
 shader = ExtResource("16_divider_shader")
 shader_parameter/threshold = 0.85
 shader_parameter/target_color = Color(1, 1, 1, 1)
-shader_parameter/tolerance = 0.25
+shader_parameter/tolerance = 0.35
 
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_stone_normal"]

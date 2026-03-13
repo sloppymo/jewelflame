@@ -2,7 +2,7 @@ shader_type canvas_item;
 
 uniform float threshold : hint_range(0.0, 1.0) = 0.85;
 uniform vec4 target_color : source_color = vec4(1.0, 1.0, 1.0, 1.0);
-uniform float tolerance : hint_range(0.0, 0.5) = 0.25;
+uniform float tolerance : hint_range(0.0, 0.5) = 0.35;
 
 void fragment() {
     vec4 tex_color = texture(TEXTURE, UV);
