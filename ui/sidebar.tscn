@@ -13,7 +13,7 @@
 [ext_resource type="Script" path="res://ui/bg_draw.gd" id="11_bg_draw"]
 [ext_resource type="Script" path="res://ui/banner_draw.gd" id="13_banner_draw"]
 [ext_resource type="Script" path="res://ui/portrait_draw.gd" id="14_portrait_draw"]
-[ext_resource type="Texture2D" uid="uid://crk3clpnarf4a" path="res://assets/portraits/house_blanche/lord_blanche.png" id="15_portrait"]
+[ext_resource type="Texture2D" uid="uid://c4l4j1lvq7wwm" path="res://assets/portraits/house_blanche/son.png" id="15_portrait"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_stone_normal"]
 texture = ExtResource("8_btn_normal")
@@ -35,14 +35,20 @@ offset_right = 300.0
 offset_bottom = 1080.0
 script = ExtResource("1_script")
 
-[node name="Bg" type="Control" parent="."]
-z_index = -1
+[node name="Bg" type="ColorRect" parent="."]
+z_index = -2
+layout_mode = 0
+offset_right = 300.0
+offset_bottom = 1080.0
+color = Color(0.102, 0.102, 0.18, 1)
+
+[node name="BgDraw" type="Control" parent="Bg"]
 layout_mode = 0
 offset_right = 300.0
 offset_bottom = 1080.0
 script = ExtResource("11_bg_draw")
 
-[node name="Frame" type="NinePatchRect" parent="Bg"]
+[node name="Frame" type="NinePatchRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_left = 0.0
@@ -107,7 +113,6 @@ stretch_mode = 5
 texture_filter = 1
 
 [node name="ContentBg" type="ColorRect" parent="."]
-z_index = -1
 layout_mode = 0
 offset_left = 48.0
 offset_top = 296.0

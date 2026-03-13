@@ -29,6 +29,11 @@ signal save_requested()
 @onready var end_turn_btn: Button = %EndTurnBtn
 
 func _ready():
+	print("=== SIDEBAR INITIALIZING ===")
+	
+	# Validate all textures are loaded
+	_validate_textures()
+	
 	# Constrain content sizes to fit within sidebar
 	_constrain_content_sizes()
 	
@@ -43,6 +48,33 @@ func _ready():
 	# Initialize with first province if available
 	if game_state and game_state.provinces.size() > 0:
 		_update_for_province(1)
+	
+	print("=== SIDEBAR READY ===")
+
+func _validate_textures():
+	print("--- VALIDATING TEXTURES ---")
+	
+	# Check Banner
+	var banner = get_node_or_null("Banner")
+	if banner:
+		var banner_tex = banner.get("banner_texture")
+		print("Banner texture: ", banner_tex)
+		if banner_tex == null:
+			push_error("SIDEBAR: Banner texture is null!")
+	else:
+		push_error("SIDEBAR: Banner node not found!")
+	
+	# Check Portrait
+	var portrait_node = get_node_or_null("Portrait")
+	if portrait_node:
+		var portrait_tex = portrait_node.get("portrait_texture")
+		print("Portrait texture: ", portrait_tex)
+		if portrait_tex == null:
+			push_error("SIDEBAR: Portrait texture is null!")
+	else:
+		push_error("SIDEBAR: Portrait node not found!")
+	
+	print("--- TEXTURE VALIDATION COMPLETE ---")
 
 func _constrain_content_sizes():
 	# Layout is now handled in sidebar.tscn
@@ -89,6 +121,28 @@ func update_resources(resources: Dictionary):
 		mana_value.text = str(resources.mana)
 	if resources.has("influence") and influence_value:
 		influence_value.text = str(resources.influence)
+
+func update_portrait(character_id: String):
+	"""Dynamically swap portrait texture."""
+	var portrait_path = "res://assets/portraits/house_" + character_id + "/lord_" + character_id + ".png"
+	var texture = load(portrait_path)
+	if texture:
+		var portrait_node = get_node_or_null("Portrait")
+		if portrait_node:
+			portrait_node.portrait_texture = texture
+			portrait_node.queue_redraw()
+			print("Portrait updated to: ", portrait_path)
+	else:
+		push_error("Failed to load portrait: " + portrait_path)
+
+func update_stats(gold: int, food: int, troops: int, wood: int, mana: int, influence: int):
+	"""Update all stat labels."""
+	if gold_value: gold_value.text = str(gold)
+	if food_value: food_value.text = str(food)
+	if troops_value: troops_value.text = str(troops)
+	if wood_value: wood_value.text = str(wood)
+	if mana_value: mana_value.text = str(mana)
+	if influence_value: influence_value.text = str(influence)
 
 func _on_province_selected(province_id: int):
 	_update_for_province(province_id)
