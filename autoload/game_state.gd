@@ -189,8 +189,8 @@ func start_battle(attacker_province_id: int, defender_province_id: int) -> Dicti
 		"province_name": defender_province.name,
 		"units": defender_units,
 		"lord": _get_province_lord(defender_province),
-		"has_castle": defender_province.castle_level > 0,
-		"castle_level": defender_province.castle_level,
+		"has_castle": defender_province.get("castle_level", 0) > 0,
+		"castle_level": defender_province.get("castle_level", 0),
 		"terrain": defender_province.terrain_type if defender_province.get("terrain_type") else "plains"
 	}
 	
