@@ -20,7 +20,7 @@ var _typewriter_timer: Timer = null
 
 func _ready():
 	# Force nearest texture filter for pixel-perfect rendering
-	texture_filter = TEXTURE_FILTER_NEAREST
+	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	
 	_setup_typewriter_timer()
 	_hide_continue_indicator()
