@@ -1,0 +1,520 @@
+[gd_scene load_steps=15 format=3 uid="uid://game_sidebar"]
+
+[ext_resource type="Script" path="res://ui/sidebar.gd" id="1_script"]
+[ext_resource type="FontFile" uid="uid://balhubgx82ol0" path="res://assets/fonts/Ishmeria.ttf" id="2_font"]
+[ext_resource type="Texture2D" uid="uid://bjtga1jr37emg" path="res://assets/siderbar_frame_9patch.png" id="3_frame"]
+[ext_resource type="Texture2D" uid="uid://ddljt3rtjxhpf" path="res://assets/banner_frame.png" id="4_banner"]
+[ext_resource type="Texture2D" uid="uid://b6gx2o1ow0f0c" path="res://assets/divider_ornate.png" id="5_divider_ornate"]
+[ext_resource type="Texture2D" uid="uid://csh8ukpgm2deh" path="res://assets/divider_simple.png" id="6_divider_simple"]
+[ext_resource type="Texture2D" uid="uid://bmnpbmhu0qsud" path="res://assets/stat_box_bg.png" id="7_stat_box"]
+[ext_resource type="Texture2D" uid="uid://b3q1jk0pkb4vs" path="res://assets/btn_stone_normal.png" id="8_btn_normal"]
+[ext_resource type="Texture2D" uid="uid://c6e5k2eiksyjl" path="res://assets/btn_stone_pressed.png" id="9_btn_pressed"]
+[ext_resource type="Texture2D" uid="uid://d1n7gpr2lwqc7" path="res://assets/panel_inner_recessed.png" id="10_panel_recessed"]
+[ext_resource type="Script" path="res://ui/bg_draw.gd" id="11_bg_draw"]
+[ext_resource type="Script" path="res://ui/banner_draw.gd" id="13_banner_draw"]
+[ext_resource type="Script" path="res://ui/portrait_draw.gd" id="14_portrait_draw"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_stone_normal"]
+texture = ExtResource("8_btn_normal")
+texture_margin_left = 12.0
+texture_margin_top = 12.0
+texture_margin_right = 12.0
+texture_margin_bottom = 12.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_stone_pressed"]
+texture = ExtResource("9_btn_pressed")
+texture_margin_left = 12.0
+texture_margin_top = 12.0
+texture_margin_right = 12.0
+texture_margin_bottom = 12.0
+
+[node name="GameSidebar" type="Control"]
+layout_mode = 0
+offset_right = 300.0
+offset_bottom = 1080.0
+script = ExtResource("1_script")
+
+[node name="Bg" type="Control" parent="."]
+z_index = -1
+layout_mode = 0
+offset_right = 300.0
+offset_bottom = 1080.0
+script = ExtResource("11_bg_draw")
+
+[node name="Frame" type="NinePatchRect" parent="Bg"]
+layout_mode = 1
+anchors_preset = 15
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("3_frame")
+patch_margin_left = 48
+patch_margin_top = 48
+patch_margin_right = 48
+patch_margin_bottom = 48
+draw_center = false
+texture_filter = 1
+
+[node name="Banner" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 60.0
+offset_top = 60.0
+offset_right = 240.0
+offset_bottom = 120.0
+script = ExtResource("13_banner_draw")
+banner_texture = ExtResource("4_banner")
+family_name = "BLANCHE"
+
+[node name="FamilyName" type="Label" parent="Banner"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 0.0
+offset_top = 15.0
+offset_right = 180.0
+offset_bottom = 45.0
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(1, 0.84, 0, 1)
+text = "BLANCHE"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Portrait" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 90.0
+offset_top = 140.0
+offset_right = 210.0
+offset_bottom = 260.0
+script = ExtResource("14_portrait_draw")
+
+[node name="DividerTop" type="TextureRect" parent="."]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(180, 16)
+layout_mode = 0
+offset_left = 60.0
+offset_top = 280.0
+offset_right = 240.0
+offset_bottom = 296.0
+texture = ExtResource("5_divider_ornate")
+stretch_mode = 5
+texture_filter = 1
+
+[node name="StatsGrid" type="GridContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 60.0
+offset_top = 310.0
+offset_right = 240.0
+offset_bottom = 490.0
+columns = 2
+theme_override_constants/h_separation = 6
+theme_override_constants/v_separation = 6
+
+[node name="GoldBox" type="NinePatchRect" parent="StatsGrid"]
+texture_filter = 1
+custom_minimum_size = Vector2(84, 36)
+layout_mode = 2
+texture = ExtResource("7_stat_box")
+patch_margin_left = 16
+patch_margin_top = 16
+patch_margin_right = 16
+patch_margin_bottom = 16
+
+[node name="HBox" type="HBoxContainer" parent="StatsGrid/GoldBox"]
+layout_mode = 1
+anchors_preset = 15
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 4
+
+[node name="Icon" type="Label" parent="StatsGrid/GoldBox/HBox"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.9, 0.75, 0.2, 1)
+text = "⚜"
+vertical_alignment = 1
+
+[node name="Name" type="Label" parent="StatsGrid/GoldBox/HBox"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.8, 0.75, 0.65, 1)
+text = "Gold"
+vertical_alignment = 1
+
+[node name="GoldValue" type="Label" parent="StatsGrid/GoldBox/HBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.95, 0.9, 0.75, 1)
+text = "2,450"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="FoodBox" type="NinePatchRect" parent="StatsGrid"]
+texture_filter = 1
+custom_minimum_size = Vector2(84, 36)
+layout_mode = 2
+texture = ExtResource("7_stat_box")
+patch_margin_left = 16
+patch_margin_top = 16
+patch_margin_right = 16
+patch_margin_bottom = 16
+
+[node name="HBox" type="HBoxContainer" parent="StatsGrid/FoodBox"]
+layout_mode = 1
+anchors_preset = 15
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 4
+
+[node name="Icon" type="Label" parent="StatsGrid/FoodBox/HBox"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.4, 0.7, 0.3, 1)
+text = "🌾"
+vertical_alignment = 1
+
+[node name="Name" type="Label" parent="StatsGrid/FoodBox/HBox"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.8, 0.75, 0.65, 1)
+text = "Food"
+vertical_alignment = 1
+
+[node name="FoodValue" type="Label" parent="StatsGrid/FoodBox/HBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.95, 0.9, 0.75, 1)
+text = "890"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="TroopsBox" type="NinePatchRect" parent="StatsGrid"]
+texture_filter = 1
+custom_minimum_size = Vector2(84, 36)
+layout_mode = 2
+texture = ExtResource("7_stat_box")
+patch_margin_left = 16
+patch_margin_top = 16
+patch_margin_right = 16
+patch_margin_bottom = 16
+
+[node name="HBox" type="HBoxContainer" parent="StatsGrid/TroopsBox"]
+layout_mode = 1
+anchors_preset = 15
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 4
+
+[node name="Icon" type="Label" parent="StatsGrid/TroopsBox/HBox"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.7, 0.3, 0.3, 1)
+text = "⚔"
+vertical_alignment = 1
+
+[node name="Name" type="Label" parent="StatsGrid/TroopsBox/HBox"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.8, 0.75, 0.65, 1)
+text = "Troops"
+vertical_alignment = 1
+
+[node name="TroopsValue" type="Label" parent="StatsGrid/TroopsBox/HBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.95, 0.9, 0.75, 1)
+text = "1,200"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="WoodBox" type="NinePatchRect" parent="StatsGrid"]
+texture_filter = 1
+custom_minimum_size = Vector2(84, 36)
+layout_mode = 2
+texture = ExtResource("7_stat_box")
+patch_margin_left = 16
+patch_margin_top = 16
+patch_margin_right = 16
+patch_margin_bottom = 16
+
+[node name="HBox" type="HBoxContainer" parent="StatsGrid/WoodBox"]
+layout_mode = 1
+anchors_preset = 15
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 4
+
+[node name="Icon" type="Label" parent="StatsGrid/WoodBox/HBox"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.6, 0.45, 0.3, 1)
+text = "🪵"
+vertical_alignment = 1
+
+[node name="Name" type="Label" parent="StatsGrid/WoodBox/HBox"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.8, 0.75, 0.65, 1)
+text = "Wood"
+vertical_alignment = 1
+
+[node name="WoodValue" type="Label" parent="StatsGrid/WoodBox/HBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.95, 0.9, 0.75, 1)
+text = "340"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="ManaBox" type="NinePatchRect" parent="StatsGrid"]
+texture_filter = 1
+custom_minimum_size = Vector2(84, 36)
+layout_mode = 2
+texture = ExtResource("7_stat_box")
+patch_margin_left = 16
+patch_margin_top = 16
+patch_margin_right = 16
+patch_margin_bottom = 16
+
+[node name="HBox" type="HBoxContainer" parent="StatsGrid/ManaBox"]
+layout_mode = 1
+anchors_preset = 15
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 4
+
+[node name="Icon" type="Label" parent="StatsGrid/ManaBox/HBox"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.3, 0.5, 0.9, 1)
+text = "✦"
+vertical_alignment = 1
+
+[node name="Name" type="Label" parent="StatsGrid/ManaBox/HBox"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.8, 0.75, 0.65, 1)
+text = "Mana"
+vertical_alignment = 1
+
+[node name="ManaValue" type="Label" parent="StatsGrid/ManaBox/HBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.95, 0.9, 0.75, 1)
+text = "50"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="InfluenceBox" type="NinePatchRect" parent="StatsGrid"]
+texture_filter = 1
+custom_minimum_size = Vector2(84, 36)
+layout_mode = 2
+texture = ExtResource("7_stat_box")
+patch_margin_left = 16
+patch_margin_top = 16
+patch_margin_right = 16
+patch_margin_bottom = 16
+
+[node name="HBox" type="HBoxContainer" parent="StatsGrid/InfluenceBox"]
+layout_mode = 1
+anchors_preset = 15
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 4
+
+[node name="Icon" type="Label" parent="StatsGrid/InfluenceBox/HBox"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.7, 0.5, 0.8, 1)
+text = "★"
+vertical_alignment = 1
+
+[node name="Name" type="Label" parent="StatsGrid/InfluenceBox/HBox"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.8, 0.75, 0.65, 1)
+text = "Influence"
+vertical_alignment = 1
+
+[node name="InfluenceValue" type="Label" parent="StatsGrid/InfluenceBox/HBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.95, 0.9, 0.75, 1)
+text = "85"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="DividerBottom" type="TextureRect" parent="."]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(180, 16)
+layout_mode = 0
+offset_left = 60.0
+offset_top = 500.0
+offset_right = 240.0
+offset_bottom = 516.0
+texture = ExtResource("5_divider_ornate")
+stretch_mode = 5
+texture_filter = 1
+
+[node name="CommandGrid" type="GridContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 60.0
+offset_top = 530.0
+offset_right = 240.0
+offset_bottom = 610.0
+columns = 2
+theme_override_constants/h_separation = 6
+theme_override_constants/v_separation = 6
+
+[node name="AttackBtn" type="Button" parent="CommandGrid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(84, 40)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.95, 0.9, 0.75, 1)
+theme_override_styles/normal = SubResource("StyleBoxTexture_stone_normal")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_stone_pressed")
+text = "Attack"
+
+[node name="DefendBtn" type="Button" parent="CommandGrid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(84, 40)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.95, 0.9, 0.75, 1)
+theme_override_styles/normal = SubResource("StyleBoxTexture_stone_normal")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_stone_pressed")
+text = "Defend"
+
+[node name="RecruitBtn" type="Button" parent="CommandGrid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(84, 40)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.95, 0.9, 0.75, 1)
+theme_override_styles/normal = SubResource("StyleBoxTexture_stone_normal")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_stone_pressed")
+text = "Recruit"
+
+[node name="ScoutBtn" type="Button" parent="CommandGrid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(84, 40)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.95, 0.9, 0.75, 1)
+theme_override_styles/normal = SubResource("StyleBoxTexture_stone_normal")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_stone_pressed")
+text = "Scout"
+
+[node name="DividerMid" type="TextureRect" parent="."]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(180, 8)
+layout_mode = 0
+offset_left = 60.0
+offset_top = 620.0
+offset_right = 240.0
+offset_bottom = 628.0
+texture = ExtResource("6_divider_simple")
+stretch_mode = 5
+texture_filter = 1
+
+[node name="SaveBtn" type="Button" parent="."]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(86, 36)
+layout_mode = 0
+offset_left = 60.0
+offset_top = 640.0
+offset_right = 146.0
+offset_bottom = 676.0
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.95, 0.9, 0.75, 1)
+theme_override_styles/normal = SubResource("StyleBoxTexture_stone_normal")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_stone_pressed")
+text = "Save"
+
+[node name="EndTurnBtn" type="Button" parent="."]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(86, 36)
+layout_mode = 0
+offset_left = 154.0
+offset_top = 640.0
+offset_right = 240.0
+offset_bottom = 676.0
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.95, 0.9, 0.75, 1)
+theme_override_styles/normal = SubResource("StyleBoxTexture_stone_normal")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_stone_pressed")
+text = "End Turn"
+
+[connection signal="pressed" from="CommandGrid/AttackBtn" to="." method="_on_attack_pressed"]
+[connection signal="pressed" from="CommandGrid/DefendBtn" to="." method="_on_defend_pressed"]
+[connection signal="pressed" from="CommandGrid/RecruitBtn" to="." method="_on_recruit_pressed"]
+[connection signal="pressed" from="CommandGrid/ScoutBtn" to="." method="_on_scout_pressed"]
+[connection signal="pressed" from="SaveBtn" to="." method="_on_save_pressed"]
+[connection signal="pressed" from="EndTurnBtn" to="." method="_on_end_turn_pressed"]

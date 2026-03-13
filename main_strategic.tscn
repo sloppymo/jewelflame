@@ -1,45 +1,58 @@
-[gd_scene load_steps=4 format=3 uid="uid://main_strategic_new"]
+[gd_scene load_steps=6 format=3 uid="uid://main_strategic_new"]
 
 [ext_resource type="Script" path="res://scenes/strategic/strategic_layer.gd" id="1_strategic_layer"]
-[ext_resource type="PackedScene" uid="uid://strategic_panel" path="res://ui/strategic_panel.tscn" id="2_menu_panel"]
-[ext_resource type="Texture2D" uid="uid://c1sgvgdfo7n5i" path="res://assets/maps/right_panel_map.jpeg" id="3_map_texture"]
+[ext_resource type="PackedScene" path="res://ui/sidebar.tscn" id="2_sidebar"]
+[ext_resource type="PackedScene" path="res://ui/message_panel.tscn" id="3_message_panel"]
+[ext_resource type="Script" path="res://ui/strategic_ui_controller.gd" id="4_ui_controller"]
+[ext_resource type="Texture2D" uid="uid://c1sgvgdfo7n5i" path="res://assets/maps/right_panel_map.jpeg" id="5_map_texture"]
 
 [node name="MainStrategic" type="Node2D"]
 script = ExtResource("1_strategic_layer")
 
+[node name="StrategicUIController" type="Node" parent="."]
+script = ExtResource("4_ui_controller")
+
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
-[node name="LeftBackground" type="ColorRect" parent="CanvasLayer"]
-anchors_preset = 9
-anchor_bottom = 1.0
-offset_right = 500.0
-grow_vertical = 2
-color = Color(0.06, 0.04, 0.15, 1)
+[node name="GameSidebar" parent="CanvasLayer" instance=ExtResource("2_sidebar")]
+unique_name_in_owner = true
+offset_right = 300.0
+offset_bottom = 1080.0
 
-[node name="MapBackground" type="TextureRect" parent="CanvasLayer"]
-anchors_preset = 11
-anchor_left = 0.0
-anchor_top = 0.0
+[node name="MapContainer" type="Control" parent="CanvasLayer"]
+unique_name_in_owner = true
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 480.0
+offset_left = 300.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("3_map_texture")
+
+[node name="MapBackground" type="TextureRect" parent="CanvasLayer/MapContainer"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("5_map_texture")
 expand_mode = 1
 stretch_mode = 6
 
-[node name="HexGridContainer" type="Node2D" parent="CanvasLayer"]
-position = Vector2(550, 100)
+[node name="StrategicMap" type="Node2D" parent="CanvasLayer/MapContainer"]
+unique_name_in_owner = true
+position = Vector2(50, 100)
 
-[node name="StrategicPanel" parent="CanvasLayer" instance=ExtResource("2_menu_panel")]
-anchors_preset = 9
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
+[node name="MessagePanel" parent="CanvasLayer" instance=ExtResource("3_message_panel")]
+unique_name_in_owner = true
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
 anchor_bottom = 1.0
-offset_right = 480.0
-grow_vertical = 2
+offset_top = -100.0
+offset_left = 300.0
+grow_horizontal = 2
+grow_vertical = 0
 
 [node name="ViewMenu" type="Window" parent="CanvasLayer"]
 visible = false
