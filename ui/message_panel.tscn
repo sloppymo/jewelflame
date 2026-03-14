@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://ui/message_panel.gd" id="1_script"]
 [ext_resource type="FontFile" uid="uid://balhubgx82ol0" path="res://assets/fonts/Ishmeria.ttf" id="2_font"]
-[ext_resource type="Texture2D" uid="uid://chbwp84se8oy4" path="res://assets/panel_inner_recessed.png" id="3_panel_recessed"]
+[ext_resource type="Texture2D" uid="uid://bjtga1jr37emg" path="res://assets/siderbar_frame_9patch.png" id="3_frame"]
 
 [node name="MessagePanel" type="NinePatchRect"]
 anchors_preset = 12
@@ -13,11 +13,11 @@ offset_top = -900.0
 offset_left = 600.0
 grow_horizontal = 2
 grow_vertical = 0
-texture = ExtResource("3_panel_recessed")
-patch_margin_left = 20
-patch_margin_top = 20
-patch_margin_right = 20
-patch_margin_bottom = 20
+texture = ExtResource("3_frame")
+patch_margin_left = 48
+patch_margin_top = 48
+patch_margin_right = 48
+patch_margin_bottom = 48
 texture_filter = 1
 script = ExtResource("1_script")
 
