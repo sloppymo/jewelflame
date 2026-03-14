@@ -1,6 +1,6 @@
-[gd_scene load_steps=16 format=3 uid="uid://game_sidebar"]
+[gd_scene format=3 uid="uid://doa4y73vhm7y6"]
 
-[ext_resource type="Script" path="res://ui/sidebar.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://dyt3wjubowgwt" path="res://ui/sidebar.gd" id="1_script"]
 [ext_resource type="FontFile" uid="uid://balhubgx82ol0" path="res://assets/fonts/Ishmeria.ttf" id="2_font"]
 [ext_resource type="Texture2D" uid="uid://bjtga1jr37emg" path="res://assets/siderbar_frame_9patch.png" id="3_frame"]
 [ext_resource type="Texture2D" uid="uid://nakp6tu220an" path="res://assets/banner_frame.png" id="4_banner"]
@@ -9,19 +9,16 @@
 [ext_resource type="Texture2D" uid="uid://bq0fi43islbah" path="res://assets/stat_box_bg.png" id="7_stat_box"]
 [ext_resource type="Texture2D" uid="uid://chokt2dcuywhl" path="res://assets/btn_stone_normal.png" id="8_btn_normal"]
 [ext_resource type="Texture2D" uid="uid://uerwslv22vfg" path="res://assets/btn_stone_pressed.png" id="9_btn_pressed"]
-[ext_resource type="Texture2D" uid="uid://chbwp84se8oy4" path="res://assets/panel_inner_recessed.png" id="10_panel_recessed"]
-[ext_resource type="Script" path="res://ui/bg_draw.gd" id="11_bg_draw"]
-[ext_resource type="Script" path="res://ui/banner_draw.gd" id="13_banner_draw"]
-[ext_resource type="Script" path="res://ui/portrait_draw.gd" id="14_portrait_draw"]
+[ext_resource type="Script" uid="uid://btwq4cuwelw3r" path="res://ui/bg_draw.gd" id="11_bg_draw"]
+[ext_resource type="Script" uid="uid://ce1droblwfnin" path="res://ui/portrait_draw.gd" id="14_portrait_draw"]
 [ext_resource type="Texture2D" uid="uid://c4l4j1lvq7wwm" path="res://assets/portraits/house_blanche/son.png" id="15_portrait"]
-[ext_resource type="Shader" path="res://shaders/divider_transparency.gdshader" id="16_divider_shader"]
+[ext_resource type="Shader" uid="uid://o8yycda2nf2w" path="res://shaders/divider_transparency.gdshader" id="16_divider_shader"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_divider"]
 shader = ExtResource("16_divider_shader")
 shader_parameter/threshold = 0.85
 shader_parameter/target_color = Color(1, 1, 1, 1)
 shader_parameter/tolerance = 0.35
-
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_stone_normal"]
 texture = ExtResource("8_btn_normal")
@@ -37,93 +34,80 @@ texture_margin_top = 12.0
 texture_margin_right = 12.0
 texture_margin_bottom = 12.0
 
-[node name="GameSidebar" type="Control"]
-layout_mode = 0
+[node name="GameSidebar" type="Control" unique_id=1913402012]
+layout_mode = 3
+anchors_preset = 0
 offset_right = 600.0
 offset_bottom = 1080.0
+mouse_filter = 2
 script = ExtResource("1_script")
 
-[node name="Bg" type="ColorRect" parent="."]
+[node name="Bg" type="ColorRect" parent="." unique_id=1939050077]
 z_index = -2
 layout_mode = 0
 offset_right = 600.0
 offset_bottom = 1080.0
 color = Color(0.102, 0.102, 0.18, 1)
 
-[node name="BgDraw" type="Control" parent="Bg"]
-layout_mode = 0
+[node name="BgDraw" type="Control" parent="Bg" unique_id=1968829640]
+anchors_preset = 0
 offset_right = 600.0
 offset_bottom = 1080.0
 script = ExtResource("11_bg_draw")
 
-[node name="Frame" type="NinePatchRect" parent="."]
+[node name="Frame" type="NinePatchRect" parent="." unique_id=1168866381]
+texture_filter = 1
 layout_mode = 1
 anchors_preset = 15
-anchor_left = 0.0
-anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 texture = ExtResource("3_frame")
+draw_center = false
 patch_margin_left = 48
 patch_margin_top = 48
 patch_margin_right = 48
 patch_margin_bottom = 48
-draw_center = false
-texture_filter = 1
 
-[node name="Banner" type="TextureRect" parent="."]
+[node name="Banner" type="TextureRect" parent="." unique_id=470484746]
 unique_name_in_owner = true
+texture_filter = 1
 material = SubResource("ShaderMaterial_divider")
 layout_mode = 0
-offset_left = 150.0
-offset_top = 60.0
-offset_right = 450.0
-offset_bottom = 120.0
+offset_left = 237.0
+offset_top = 59.0
+offset_right = 680.0
+offset_bottom = 265.0
 texture = ExtResource("4_banner")
 expand_mode = 3
 stretch_mode = 5
-texture_filter = 1
 
-[node name="FamilyName" type="Label" parent="Banner"]
+[node name="FamilyName" type="Label" parent="Banner" unique_id=77406411]
 unique_name_in_owner = true
 layout_mode = 0
-offset_left = 0.0
-offset_top = 15.0
-offset_right = 180.0
-offset_bottom = 45.0
+offset_left = 131.0
+offset_top = 83.0
+offset_right = 311.0
+offset_bottom = 113.0
+theme_override_colors/font_color = Color(1, 0.84, 0, 1)
 theme_override_fonts/font = ExtResource("2_font")
 theme_override_font_sizes/font_size = 18
-theme_override_colors/font_color = Color(1, 0.84, 0, 1)
 text = "BLANCHE"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Portrait" type="Control" parent="."]
+[node name="Portrait" type="Control" parent="." unique_id=1531308431]
 unique_name_in_owner = true
-layout_mode = 0
-offset_left = 90.0
-offset_top = 140.0
-offset_right = 210.0
-offset_bottom = 260.0
+anchors_preset = 0
+offset_left = 86.0
+offset_top = 66.0
+offset_right = 325.0
+offset_bottom = 297.0
 script = ExtResource("14_portrait_draw")
 portrait_texture = ExtResource("15_portrait")
 
-[node name="DividerTop" type="TextureRect" parent="."]
-unique_name_in_owner = true
-material = SubResource("ShaderMaterial_divider")
-layout_mode = 0
-offset_left = 150.0
-offset_top = 275.0
-offset_right = 450.0
-offset_bottom = 315.0
-texture = ExtResource("5_divider_ornate")
-expand_mode = 3
-stretch_mode = 5
-texture_filter = 1
-
-[node name="ContentBg" type="ColorRect" parent="."]
+[node name="ContentBg" type="ColorRect" parent="." unique_id=1997101545]
 layout_mode = 0
 offset_left = 48.0
 offset_top = 296.0
@@ -131,18 +115,18 @@ offset_right = 252.0
 offset_bottom = 680.0
 color = Color(0.102, 0.102, 0.18, 1)
 
-[node name="StatsGrid" type="GridContainer" parent="."]
+[node name="StatsGrid" type="GridContainer" parent="." unique_id=677149676]
 unique_name_in_owner = true
 layout_mode = 0
-offset_left = 150.0
-offset_top = 310.0
-offset_right = 450.0
-offset_bottom = 490.0
-columns = 2
+offset_left = 147.0
+offset_top = 338.0
+offset_right = 447.0
+offset_bottom = 518.0
 theme_override_constants/h_separation = 6
 theme_override_constants/v_separation = 6
+columns = 2
 
-[node name="GoldBox" type="NinePatchRect" parent="StatsGrid"]
+[node name="GoldBox" type="NinePatchRect" parent="StatsGrid" unique_id=1452400935]
 texture_filter = 1
 custom_minimum_size = Vector2(84, 36)
 layout_mode = 2
@@ -152,45 +136,43 @@ patch_margin_top = 16
 patch_margin_right = 16
 patch_margin_bottom = 16
 
-[node name="HBox" type="HBoxContainer" parent="StatsGrid/GoldBox"]
+[node name="HBox" type="HBoxContainer" parent="StatsGrid/GoldBox" unique_id=222826875]
 layout_mode = 1
 anchors_preset = 15
-anchor_left = 0.0
-anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 4
 
-[node name="Icon" type="Label" parent="StatsGrid/GoldBox/HBox"]
+[node name="Icon" type="Label" parent="StatsGrid/GoldBox/HBox" unique_id=1686609815]
 layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.75, 0.2, 1)
 theme_override_fonts/font = ExtResource("2_font")
 theme_override_font_sizes/font_size = 16
-theme_override_colors/font_color = Color(0.9, 0.75, 0.2, 1)
 text = "⚜"
 vertical_alignment = 1
 
-[node name="Name" type="Label" parent="StatsGrid/GoldBox/HBox"]
+[node name="Name" type="Label" parent="StatsGrid/GoldBox/HBox" unique_id=290106407]
 layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.75, 0.65, 1)
 theme_override_fonts/font = ExtResource("2_font")
 theme_override_font_sizes/font_size = 12
-theme_override_colors/font_color = Color(0.8, 0.75, 0.65, 1)
 text = "Gold"
 vertical_alignment = 1
 
-[node name="GoldValue" type="Label" parent="StatsGrid/GoldBox/HBox"]
+[node name="GoldValue" type="Label" parent="StatsGrid/GoldBox/HBox" unique_id=1166962402]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.95, 0.9, 0.75, 1)
 theme_override_fonts/font = ExtResource("2_font")
 theme_override_font_sizes/font_size = 14
-theme_override_colors/font_color = Color(0.95, 0.9, 0.75, 1)
 text = "2,450"
 horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="FoodBox" type="NinePatchRect" parent="StatsGrid"]
+[node name="FoodBox" type="NinePatchRect" parent="StatsGrid" unique_id=402484647]
 texture_filter = 1
 custom_minimum_size = Vector2(84, 36)
 layout_mode = 2
@@ -200,45 +182,43 @@ patch_margin_top = 16
 patch_margin_right = 16
 patch_margin_bottom = 16
 
-[node name="HBox" type="HBoxContainer" parent="StatsGrid/FoodBox"]
+[node name="HBox" type="HBoxContainer" parent="StatsGrid/FoodBox" unique_id=1666416255]
 layout_mode = 1
 anchors_preset = 15
-anchor_left = 0.0
-anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 4
 
-[node name="Icon" type="Label" parent="StatsGrid/FoodBox/HBox"]
+[node name="Icon" type="Label" parent="StatsGrid/FoodBox/HBox" unique_id=333735557]
 layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.7, 0.3, 1)
 theme_override_fonts/font = ExtResource("2_font")
 theme_override_font_sizes/font_size = 16
-theme_override_colors/font_color = Color(0.4, 0.7, 0.3, 1)
 text = "🌾"
 vertical_alignment = 1
 
-[node name="Name" type="Label" parent="StatsGrid/FoodBox/HBox"]
+[node name="Name" type="Label" parent="StatsGrid/FoodBox/HBox" unique_id=1644056765]
 layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.75, 0.65, 1)
 theme_override_fonts/font = ExtResource("2_font")
 theme_override_font_sizes/font_size = 12
-theme_override_colors/font_color = Color(0.8, 0.75, 0.65, 1)
 text = "Food"
 vertical_alignment = 1
 
-[node name="FoodValue" type="Label" parent="StatsGrid/FoodBox/HBox"]
+[node name="FoodValue" type="Label" parent="StatsGrid/FoodBox/HBox" unique_id=12602041]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.95, 0.9, 0.75, 1)
 theme_override_fonts/font = ExtResource("2_font")
 theme_override_font_sizes/font_size = 14
-theme_override_colors/font_color = Color(0.95, 0.9, 0.75, 1)
 text = "890"
 horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="TroopsBox" type="NinePatchRect" parent="StatsGrid"]
+[node name="TroopsBox" type="NinePatchRect" parent="StatsGrid" unique_id=1356477601]
 texture_filter = 1
 custom_minimum_size = Vector2(84, 36)
 layout_mode = 2
@@ -248,45 +228,43 @@ patch_margin_top = 16
 patch_margin_right = 16
 patch_margin_bottom = 16
 
-[node name="HBox" type="HBoxContainer" parent="StatsGrid/TroopsBox"]
+[node name="HBox" type="HBoxContainer" parent="StatsGrid/TroopsBox" unique_id=1486586441]
 layout_mode = 1
 anchors_preset = 15
-anchor_left = 0.0
-anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 4
 
-[node name="Icon" type="Label" parent="StatsGrid/TroopsBox/HBox"]
+[node name="Icon" type="Label" parent="StatsGrid/TroopsBox/HBox" unique_id=956240071]
 layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.3, 0.3, 1)
 theme_override_fonts/font = ExtResource("2_font")
 theme_override_font_sizes/font_size = 16
-theme_override_colors/font_color = Color(0.7, 0.3, 0.3, 1)
 text = "⚔"
 vertical_alignment = 1
 
-[node name="Name" type="Label" parent="StatsGrid/TroopsBox/HBox"]
+[node name="Name" type="Label" parent="StatsGrid/TroopsBox/HBox" unique_id=1982017978]
 layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.75, 0.65, 1)
 theme_override_fonts/font = ExtResource("2_font")
 theme_override_font_sizes/font_size = 12
-theme_override_colors/font_color = Color(0.8, 0.75, 0.65, 1)
 text = "Troops"
 vertical_alignment = 1
 
-[node name="TroopsValue" type="Label" parent="StatsGrid/TroopsBox/HBox"]
+[node name="TroopsValue" type="Label" parent="StatsGrid/TroopsBox/HBox" unique_id=223908480]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.95, 0.9, 0.75, 1)
 theme_override_fonts/font = ExtResource("2_font")
 theme_override_font_sizes/font_size = 14
-theme_override_colors/font_color = Color(0.95, 0.9, 0.75, 1)
 text = "1,200"
 horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="WoodBox" type="NinePatchRect" parent="StatsGrid"]
+[node name="WoodBox" type="NinePatchRect" parent="StatsGrid" unique_id=208570275]
 texture_filter = 1
 custom_minimum_size = Vector2(84, 36)
 layout_mode = 2
@@ -296,45 +274,43 @@ patch_margin_top = 16
 patch_margin_right = 16
 patch_margin_bottom = 16
 
-[node name="HBox" type="HBoxContainer" parent="StatsGrid/WoodBox"]
+[node name="HBox" type="HBoxContainer" parent="StatsGrid/WoodBox" unique_id=1032807700]
 layout_mode = 1
 anchors_preset = 15
-anchor_left = 0.0
-anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 4
 
-[node name="Icon" type="Label" parent="StatsGrid/WoodBox/HBox"]
+[node name="Icon" type="Label" parent="StatsGrid/WoodBox/HBox" unique_id=301245203]
 layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.45, 0.3, 1)
 theme_override_fonts/font = ExtResource("2_font")
 theme_override_font_sizes/font_size = 16
-theme_override_colors/font_color = Color(0.6, 0.45, 0.3, 1)
 text = "🪵"
 vertical_alignment = 1
 
-[node name="Name" type="Label" parent="StatsGrid/WoodBox/HBox"]
+[node name="Name" type="Label" parent="StatsGrid/WoodBox/HBox" unique_id=1590815505]
 layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.75, 0.65, 1)
 theme_override_fonts/font = ExtResource("2_font")
 theme_override_font_sizes/font_size = 12
-theme_override_colors/font_color = Color(0.8, 0.75, 0.65, 1)
 text = "Wood"
 vertical_alignment = 1
 
-[node name="WoodValue" type="Label" parent="StatsGrid/WoodBox/HBox"]
+[node name="WoodValue" type="Label" parent="StatsGrid/WoodBox/HBox" unique_id=1976766920]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.95, 0.9, 0.75, 1)
 theme_override_fonts/font = ExtResource("2_font")
 theme_override_font_sizes/font_size = 14
-theme_override_colors/font_color = Color(0.95, 0.9, 0.75, 1)
 text = "340"
 horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="ManaBox" type="NinePatchRect" parent="StatsGrid"]
+[node name="ManaBox" type="NinePatchRect" parent="StatsGrid" unique_id=1483512527]
 texture_filter = 1
 custom_minimum_size = Vector2(84, 36)
 layout_mode = 2
@@ -344,45 +320,43 @@ patch_margin_top = 16
 patch_margin_right = 16
 patch_margin_bottom = 16
 
-[node name="HBox" type="HBoxContainer" parent="StatsGrid/ManaBox"]
+[node name="HBox" type="HBoxContainer" parent="StatsGrid/ManaBox" unique_id=1517470891]
 layout_mode = 1
 anchors_preset = 15
-anchor_left = 0.0
-anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 4
 
-[node name="Icon" type="Label" parent="StatsGrid/ManaBox/HBox"]
+[node name="Icon" type="Label" parent="StatsGrid/ManaBox/HBox" unique_id=271743611]
 layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.5, 0.9, 1)
 theme_override_fonts/font = ExtResource("2_font")
 theme_override_font_sizes/font_size = 16
-theme_override_colors/font_color = Color(0.3, 0.5, 0.9, 1)
 text = "✦"
 vertical_alignment = 1
 
-[node name="Name" type="Label" parent="StatsGrid/ManaBox/HBox"]
+[node name="Name" type="Label" parent="StatsGrid/ManaBox/HBox" unique_id=100563469]
 layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.75, 0.65, 1)
 theme_override_fonts/font = ExtResource("2_font")
 theme_override_font_sizes/font_size = 12
-theme_override_colors/font_color = Color(0.8, 0.75, 0.65, 1)
 text = "Mana"
 vertical_alignment = 1
 
-[node name="ManaValue" type="Label" parent="StatsGrid/ManaBox/HBox"]
+[node name="ManaValue" type="Label" parent="StatsGrid/ManaBox/HBox" unique_id=1468351680]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.95, 0.9, 0.75, 1)
 theme_override_fonts/font = ExtResource("2_font")
 theme_override_font_sizes/font_size = 14
-theme_override_colors/font_color = Color(0.95, 0.9, 0.75, 1)
 text = "50"
 horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="InfluenceBox" type="NinePatchRect" parent="StatsGrid"]
+[node name="InfluenceBox" type="NinePatchRect" parent="StatsGrid" unique_id=1468932539]
 texture_filter = 1
 custom_minimum_size = Vector2(84, 36)
 layout_mode = 2
@@ -392,151 +366,149 @@ patch_margin_top = 16
 patch_margin_right = 16
 patch_margin_bottom = 16
 
-[node name="HBox" type="HBoxContainer" parent="StatsGrid/InfluenceBox"]
+[node name="HBox" type="HBoxContainer" parent="StatsGrid/InfluenceBox" unique_id=1972414804]
 layout_mode = 1
 anchors_preset = 15
-anchor_left = 0.0
-anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 4
 
-[node name="Icon" type="Label" parent="StatsGrid/InfluenceBox/HBox"]
+[node name="Icon" type="Label" parent="StatsGrid/InfluenceBox/HBox" unique_id=733665201]
 layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.5, 0.8, 1)
 theme_override_fonts/font = ExtResource("2_font")
 theme_override_font_sizes/font_size = 16
-theme_override_colors/font_color = Color(0.7, 0.5, 0.8, 1)
 text = "★"
 vertical_alignment = 1
 
-[node name="Name" type="Label" parent="StatsGrid/InfluenceBox/HBox"]
+[node name="Name" type="Label" parent="StatsGrid/InfluenceBox/HBox" unique_id=711351147]
 layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.75, 0.65, 1)
 theme_override_fonts/font = ExtResource("2_font")
 theme_override_font_sizes/font_size = 12
-theme_override_colors/font_color = Color(0.8, 0.75, 0.65, 1)
 text = "Influence"
 vertical_alignment = 1
 
-[node name="InfluenceValue" type="Label" parent="StatsGrid/InfluenceBox/HBox"]
+[node name="InfluenceValue" type="Label" parent="StatsGrid/InfluenceBox/HBox" unique_id=569813250]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.95, 0.9, 0.75, 1)
 theme_override_fonts/font = ExtResource("2_font")
 theme_override_font_sizes/font_size = 14
-theme_override_colors/font_color = Color(0.95, 0.9, 0.75, 1)
 text = "85"
 horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="DividerBottom" type="TextureRect" parent="."]
+[node name="DividerBottom" type="TextureRect" parent="." unique_id=325001020]
 unique_name_in_owner = true
+texture_filter = 1
 material = SubResource("ShaderMaterial_divider")
 layout_mode = 0
-offset_left = 150.0
-offset_top = 495.0
-offset_right = 450.0
-offset_bottom = 535.0
+offset_left = -138.0
+offset_top = 827.0
+offset_right = 735.0
+offset_bottom = 1192.0
 texture = ExtResource("5_divider_ornate")
 expand_mode = 3
 stretch_mode = 5
-texture_filter = 1
 
-[node name="CommandGrid" type="GridContainer" parent="."]
+[node name="CommandGrid" type="GridContainer" parent="." unique_id=703503696]
 unique_name_in_owner = true
 layout_mode = 0
 offset_left = 150.0
 offset_top = 530.0
 offset_right = 450.0
 offset_bottom = 610.0
-columns = 2
 theme_override_constants/h_separation = 6
 theme_override_constants/v_separation = 6
+columns = 2
 
-[node name="AttackBtn" type="Button" parent="CommandGrid"]
+[node name="AttackBtn" type="Button" parent="CommandGrid" unique_id=2142115362]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(84, 40)
 layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.9, 0.75, 1)
 theme_override_fonts/font = ExtResource("2_font")
 theme_override_font_sizes/font_size = 14
-theme_override_colors/font_color = Color(0.95, 0.9, 0.75, 1)
 theme_override_styles/normal = SubResource("StyleBoxTexture_stone_normal")
 theme_override_styles/pressed = SubResource("StyleBoxTexture_stone_pressed")
 text = "Attack"
 
-[node name="DefendBtn" type="Button" parent="CommandGrid"]
+[node name="DefendBtn" type="Button" parent="CommandGrid" unique_id=2073191419]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(84, 40)
 layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.9, 0.75, 1)
 theme_override_fonts/font = ExtResource("2_font")
 theme_override_font_sizes/font_size = 14
-theme_override_colors/font_color = Color(0.95, 0.9, 0.75, 1)
 theme_override_styles/normal = SubResource("StyleBoxTexture_stone_normal")
 theme_override_styles/pressed = SubResource("StyleBoxTexture_stone_pressed")
 text = "Defend"
 
-[node name="RecruitBtn" type="Button" parent="CommandGrid"]
+[node name="RecruitBtn" type="Button" parent="CommandGrid" unique_id=243900145]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(84, 40)
 layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.9, 0.75, 1)
 theme_override_fonts/font = ExtResource("2_font")
 theme_override_font_sizes/font_size = 14
-theme_override_colors/font_color = Color(0.95, 0.9, 0.75, 1)
 theme_override_styles/normal = SubResource("StyleBoxTexture_stone_normal")
 theme_override_styles/pressed = SubResource("StyleBoxTexture_stone_pressed")
 text = "Recruit"
 
-[node name="ScoutBtn" type="Button" parent="CommandGrid"]
+[node name="ScoutBtn" type="Button" parent="CommandGrid" unique_id=2016001113]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(84, 40)
 layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.9, 0.75, 1)
 theme_override_fonts/font = ExtResource("2_font")
 theme_override_font_sizes/font_size = 14
-theme_override_colors/font_color = Color(0.95, 0.9, 0.75, 1)
 theme_override_styles/normal = SubResource("StyleBoxTexture_stone_normal")
 theme_override_styles/pressed = SubResource("StyleBoxTexture_stone_pressed")
 text = "Scout"
 
-[node name="DividerMid" type="TextureRect" parent="."]
+[node name="DividerMid" type="TextureRect" parent="." unique_id=1937956983]
 unique_name_in_owner = true
+texture_filter = 1
 material = SubResource("ShaderMaterial_divider")
 layout_mode = 0
-offset_left = 150.0
-offset_top = 615.0
-offset_right = 450.0
-offset_bottom = 635.0
+offset_left = 28.0
+offset_top = 563.0
+offset_right = 461.0
+offset_bottom = 717.0
 texture = ExtResource("6_divider_simple")
 expand_mode = 3
 stretch_mode = 5
-texture_filter = 1
 
-[node name="SaveBtn" type="Button" parent="."]
+[node name="SaveBtn" type="Button" parent="." unique_id=1269156700]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(86, 36)
 layout_mode = 0
-offset_left = 150.0
-offset_top = 640.0
-offset_right = 146.0
-offset_bottom = 676.0
+offset_left = 129.0
+offset_top = 665.0
+offset_right = 215.0
+offset_bottom = 703.0
+theme_override_colors/font_color = Color(0.95, 0.9, 0.75, 1)
 theme_override_fonts/font = ExtResource("2_font")
 theme_override_font_sizes/font_size = 12
-theme_override_colors/font_color = Color(0.95, 0.9, 0.75, 1)
 theme_override_styles/normal = SubResource("StyleBoxTexture_stone_normal")
 theme_override_styles/pressed = SubResource("StyleBoxTexture_stone_pressed")
 text = "Save"
 
-[node name="EndTurnBtn" type="Button" parent="."]
+[node name="EndTurnBtn" type="Button" parent="." unique_id=1914189503]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(86, 36)
 layout_mode = 0
-offset_left = 154.0
-offset_top = 640.0
-offset_right = 450.0
-offset_bottom = 676.0
+offset_left = 227.0
+offset_top = 666.0
+offset_right = 361.0
+offset_bottom = 704.0
+theme_override_colors/font_color = Color(0.95, 0.9, 0.75, 1)
 theme_override_fonts/font = ExtResource("2_font")
 theme_override_font_sizes/font_size = 12
-theme_override_colors/font_color = Color(0.95, 0.9, 0.75, 1)
 theme_override_styles/normal = SubResource("StyleBoxTexture_stone_normal")
 theme_override_styles/pressed = SubResource("StyleBoxTexture_stone_pressed")
 text = "End Turn"
