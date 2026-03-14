@@ -52,10 +52,7 @@ func _on_province_selected(province_id: int):
 	if game_sidebar:
 		game_sidebar._update_for_province(province_id)
 	
-	# Show message
-	if message_panel:
-		message_panel.show_message("Selected province %d: %s" % [province_id, province.name])
-	
+	# Province info now displayed in sidebar - no need for message
 	print("Province selected: ", province_id, " - ", province.name)
 
 func _on_action_pressed(action: String):
