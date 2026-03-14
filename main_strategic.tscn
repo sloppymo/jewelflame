@@ -16,7 +16,7 @@ script = ExtResource("4_ui_controller")
 
 [node name="GameSidebar" parent="CanvasLayer" instance=ExtResource("2_sidebar")]
 unique_name_in_owner = true
-offset_right = 300.0
+offset_right = 600.0
 offset_bottom = 1080.0
 
 [node name="MapContainer" type="Control" parent="CanvasLayer"]
@@ -24,7 +24,7 @@ unique_name_in_owner = true
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 300.0
+offset_left = 600.0
 grow_horizontal = 2
 grow_vertical = 2
 
@@ -50,7 +50,7 @@ anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_top = -100.0
-offset_left = 300.0
+offset_left = 600.0
 grow_horizontal = 2
 grow_vertical = 0
 
