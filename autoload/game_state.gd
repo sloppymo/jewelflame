@@ -189,9 +189,9 @@ func start_battle(attacker_province_id: int, defender_province_id: int) -> Dicti
 		"province_name": defender_province.name,
 		"units": defender_units,
 		"lord": _get_province_lord(defender_province),
-		"has_castle": defender_province.get("castle_level", 0) > 0,
-		"castle_level": defender_province.get("castle_level", 0),
-		"terrain": defender_province.terrain_type if defender_province.get("terrain_type") else "plains"
+		"has_castle": defender_province.castle_level if "castle_level" in defender_province else false,
+		"castle_level": defender_province.castle_level if "castle_level" in defender_province else 0,
+		"terrain": defender_province.terrain_type
 	}
 	
 	# Store current battle
@@ -348,7 +348,7 @@ func _build_battle_units(province) -> Array:
 
 func _get_province_lord(province) -> CharacterData:
 	"""Get the lord governing a province."""
-	if province.get("governor_id") and not province.governor_id.is_empty():
+	if province.governor_id and not province.governor_id.is_empty():
 		return characters.get(province.governor_id)
 	
 	# Fallback: find any character from this family
