@@ -49,11 +49,14 @@ func _input(event):
 	# Fallback province click detection
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		var mouse_pos = get_global_mouse_position()
+		print("DEBUG: Click at global position: ", mouse_pos)
 		if hex_grid_container:
+			print("DEBUG: Hex grid has ", hex_grid_container.get_child_count(), " children")
 			for child in hex_grid_container.get_children():
 				if child is Area2D:
 					# Check if mouse is within hex bounds (simple distance check)
 					var distance = mouse_pos.distance_to(child.position)
+					print("DEBUG: Checking ", child.name, " at ", child.position, " distance: ", distance)
 					if distance < 50:  # Hex radius
 						var province_id = int(child.name.split("_")[1])
 						print("Province clicked (fallback): ", province_id)
@@ -141,6 +144,7 @@ func _get_province_position(id: int) -> Vector2:
 	return positions.get(id, Vector2(500, 350))
 
 func _on_province_clicked(viewport, event, shape_idx, province_id: int):
+	print("DEBUG: _on_province_clicked called for province ", province_id, " event: ", event)
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		print("Province clicked: ", province_id)
 		EventBus.ProvinceSelected.emit(province_id)
