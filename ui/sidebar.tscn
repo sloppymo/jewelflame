@@ -73,16 +73,18 @@ patch_margin_bottom = 48
 draw_center = false
 texture_filter = 1
 
-[node name="Banner" type="Control" parent="."]
+[node name="Banner" type="TextureRect" parent="."]
 unique_name_in_owner = true
+material = SubResource("ShaderMaterial_divider")
 layout_mode = 0
 offset_left = 60.0
 offset_top = 60.0
 offset_right = 240.0
 offset_bottom = 120.0
-script = ExtResource("13_banner_draw")
-banner_texture = ExtResource("4_banner")
-family_name = "BLANCHE"
+texture = ExtResource("4_banner")
+expand_mode = 3
+stretch_mode = 5
+texture_filter = 1
 
 [node name="FamilyName" type="Label" parent="Banner"]
 unique_name_in_owner = true
