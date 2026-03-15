@@ -21,7 +21,7 @@ const AI_MIN_GARRISON := 50
 const AI_MAX_MOVE_AMOUNT := 50
 
 # Map
-const PROVINCE_COUNT := 5
+const PROVINCE_COUNT := 10
 
 # Movement
 const MAX_TROOPS_PER_MOVE := 100
@@ -41,12 +41,18 @@ const PROVINCE_CARVETI := &"carveti"
 const PROVINCE_COBRIGE := &"cobrige"
 const PROVINCE_BANSHEA := &"banshea"
 const PROVINCE_PETARIA := &"petaria"
+const PROVINCE_WESTFALL := &"westfall"
+const PROVINCE_THORNWOOD := &"thornwood"
+const PROVINCE_NORTHREACH := &"northreach"
+const PROVINCE_EASTMARK := &"eastmark"
+const PROVINCE_HIGHMOORS := &"highmoors"
+const PROVINCE_SOUTHWYN := &"southwyn"
 
-# AI Personalities
+# AI Personalities - Higher attack_threshold = less aggressive
 const AI_PERSONALITIES := {
 	&"blanche": {
 		"name": "Defensive",
-		"attack_threshold": 1.3,
+		"attack_threshold": 2.0,  # Very cautious - needs 2:1 advantage
 		"recruit_threshold": 80,
 		"defense_focus": true,
 		"expansion_focus": false,
@@ -55,7 +61,7 @@ const AI_PERSONALITIES := {
 	},
 	&"coryll": {
 		"name": "Aggressive",
-		"attack_threshold": 0.9,
+		"attack_threshold": 1.5,  # Was 0.9 - now needs clear advantage
 		"recruit_threshold": 120,
 		"defense_focus": false,
 		"expansion_focus": true,
@@ -64,7 +70,7 @@ const AI_PERSONALITIES := {
 	},
 	&"lyle": {
 		"name": "Opportunistic",
-		"attack_threshold": 1.2,
+		"attack_threshold": 1.8,  # Was 1.2 - more cautious opportunism
 		"recruit_threshold": 100,
 		"defense_focus": false,
 		"expansion_focus": true,

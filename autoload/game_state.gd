@@ -145,23 +145,100 @@ func _load_provinces():
 	petaria.base_income = 150
 	petaria.troops = 200
 	petaria.map_position = Vector2(700, 250)
-	petaria.adjacent_province_ids = [&"carveti", &"banshea"]
+	petaria.adjacent_province_ids = [&"carveti", &"banshea", &"eastmark"]
 	petaria.color_code = Color(1.0, 0.0, 1.0)  # Magenta
 	provinces[&"petaria"] = petaria
+	
+	# Westfall - Blanche territory (west)
+	var westfall := ProvinceData.new()
+	westfall.id = &"westfall"
+	westfall.province_name = "Westfall"
+	westfall.defense_level = 1
+	westfall.base_income = 90
+	westfall.troops = 120
+	westfall.map_position = Vector2(50, 300)
+	westfall.adjacent_province_ids = [&"dunmoor", &"thornwood"]
+	westfall.color_code = Color(0.8, 0.8, 0.9)  # Light gray-blue
+	provinces[&"westfall"] = westfall
+	
+	# Thornwood - Neutral/contested (northwest)
+	var thornwood := ProvinceData.new()
+	thornwood.id = &"thornwood"
+	thornwood.province_name = "Thornwood"
+	thornwood.defense_level = 2
+	thornwood.base_income = 100
+	thornwood.troops = 140
+	thornwood.map_position = Vector2(150, 150)
+	thornwood.adjacent_province_ids = [&"westfall", &"dunmoor", &"carveti", &"northreach"]
+	thornwood.color_code = Color(0.4, 0.7, 0.4)  # Forest green
+	provinces[&"thornwood"] = thornwood
+	
+	# Northreach - Coryll territory (north)
+	var northreach := ProvinceData.new()
+	northreach.id = &"northreach"
+	northreach.province_name = "Northreach"
+	northreach.defense_level = 2
+	northreach.base_income = 110
+	northreach.troops = 160
+	northreach.map_position = Vector2(400, 50)
+	northreach.adjacent_province_ids = [&"thornwood", &"carveti"]
+	northreach.color_code = Color(0.9, 0.5, 0.3)  # Orange-red
+	provinces[&"northreach"] = northreach
+	
+	# Eastmark - Lyle territory (east)
+	var eastmark := ProvinceData.new()
+	eastmark.id = &"eastmark"
+	eastmark.province_name = "Eastmark"
+	eastmark.defense_level = 1
+	eastmark.base_income = 130
+	eastmark.troops = 170
+	eastmark.map_position = Vector2(850, 200)
+	eastmark.adjacent_province_ids = [&"petaria", &"banshea", &"highmoors"]
+	eastmark.color_code = Color(0.3, 0.5, 0.9)  # Deep blue
+	provinces[&"eastmark"] = eastmark
+	
+	# Highmoors - Neutral/contested (northeast)
+	var highmoors := ProvinceData.new()
+	highmoors.id = &"highmoors"
+	highmoors.province_name = "Highmoors"
+	highmoors.defense_level = 3
+	highmoors.base_income = 80
+	highmoors.troops = 110
+	highmoors.map_position = Vector2(750, 450)
+	highmoors.adjacent_province_ids = [&"banshea", &"eastmark", &"southwyn"]
+	highmoors.color_code = Color(0.6, 0.5, 0.4)  # Brown
+	provinces[&"highmoors"] = highmoors
+	
+	# Southwyn - Neutral/contested (south)
+	var southwyn := ProvinceData.new()
+	southwyn.id = &"southwyn"
+	southwyn.province_name = "Southwyn"
+	southwyn.defense_level = 1
+	southwyn.base_income = 140
+	southwyn.troops = 130
+	southwyn.map_position = Vector2(450, 550)
+	southwyn.adjacent_province_ids = [&"cobrige", &"banshea", &"highmoors"]
+	southwyn.color_code = Color(0.9, 0.8, 0.5)  # Gold
+	provinces[&"southwyn"] = southwyn
 	
 	print("Loaded %d provinces" % provinces.size())
 
 func _setup_initial_ownership():
-	# Blanche owns Dunmoor
+	# Blanche owns Dunmoor and Westfall (2 provinces)
 	transfer_province_ownership(&"dunmoor", &"", &"blanche")
+	transfer_province_ownership(&"westfall", &"", &"blanche")
 	
-	# Coryll owns Carveti and Banshea
+	# Coryll owns Carveti, Banshea, and Northreach (3 provinces)
 	transfer_province_ownership(&"carveti", &"", &"coryll")
 	transfer_province_ownership(&"banshea", &"", &"coryll")
+	transfer_province_ownership(&"northreach", &"", &"coryll")
 	
-	# Lyle owns Cobrige and Petaria
+	# Lyle owns Cobrige, Petaria, and Eastmark (3 provinces)
 	transfer_province_ownership(&"cobrige", &"", &"lyle")
 	transfer_province_ownership(&"petaria", &"", &"lyle")
+	transfer_province_ownership(&"eastmark", &"", &"lyle")
+	
+	# Thornwood, Highmoors, and Southwyn start neutral (contested)
 
 # ============================================================================
 # PROVINCE OPERATIONS
