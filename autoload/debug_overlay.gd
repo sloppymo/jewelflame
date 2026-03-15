@@ -49,8 +49,13 @@ func _process(_delta):
 	
 	for fid in gs.factions:
 		var f = gs.factions[fid]
-		text += "%s: Gold %d, Provinces %d, Troops %d\n" % [
+		var personality = GameConfig.AI_PERSONALITIES.get(fid, {})
+		var p_name = personality.get("name", "Unknown")
+		var attack_thresh = personality.get("attack_threshold", 1.5)
+		text += "%s (%s, %.1fx): Gold %d, Provinces %d, Troops %d\n" % [
 			f.faction_name, 
+			p_name,
+			attack_thresh,
 			f.gold, 
 			f.owned_province_ids.size(),
 			f.get_total_troops(gs.provinces)

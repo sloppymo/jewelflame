@@ -41,3 +41,34 @@ const PROVINCE_CARVETI := &"carveti"
 const PROVINCE_COBRIGE := &"cobrige"
 const PROVINCE_BANSHEA := &"banshea"
 const PROVINCE_PETARIA := &"petaria"
+
+# AI Personalities
+const AI_PERSONALITIES := {
+	&"blanche": {
+		"name": "Defensive",
+		"attack_threshold": 1.3,
+		"recruit_threshold": 80,
+		"defense_focus": true,
+		"expansion_focus": false,
+		"recruit_bias": 1.2,
+		"description": "Prioritizes strong defenses and maintains large garrisons"
+	},
+	&"coryll": {
+		"name": "Aggressive",
+		"attack_threshold": 0.9,
+		"recruit_threshold": 120,
+		"defense_focus": false,
+		"expansion_focus": true,
+		"recruit_bias": 0.8,
+		"description": "Attacks frequently, focuses on rapid expansion"
+	},
+	&"lyle": {
+		"name": "Opportunistic",
+		"attack_threshold": 1.2,
+		"recruit_threshold": 100,
+		"defense_focus": false,
+		"expansion_focus": true,
+		"recruit_bias": 1.1,
+		"description": "Balances economy and military, exploits weaknesses"
+	}
+}

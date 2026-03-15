@@ -170,11 +170,11 @@ func _update_stats_display(province: ProvinceData):
 	if not province:
 		return
 	
-	# Defense
+	# Defense - now shows percentage bonus
 	if defense_value:
-		var defense_names: Array[String] = ["None", "Low", "Medium", "High", "Very High"]
-		var defense_name: String = defense_names[mini(province.defense_level - 1, 4)]
-		defense_value.text = "%s (%d)" % [defense_name, province.defense_level]
+		var defense_bonus = province.get_defense_bonus()
+		var bonus_percent = int((defense_bonus - 1.0) * 100)
+		defense_value.text = "Level %d (+%d%%)" % [province.defense_level, bonus_percent]
 	
 	# Income
 	if income_value:
@@ -284,10 +284,21 @@ func _on_defend_pressed():
 			var cost: int = province.get_development_cost()
 			var faction: FactionData = gs.get_current_faction()
 			if faction.gold >= cost:
+				var current_bonus = province.get_defense_bonus()
+				var current_percent = int((current_bonus - 1.0) * 100)
+				
 				faction.gold -= cost
 				province.upgrade_defense()
 				_update_stats_display(province)
-				show_event_message("Upgraded %s defense to level %d!" % [province.province_name, province.defense_level])
+				
+				var new_bonus = province.get_defense_bonus()
+				var new_percent = int((new_bonus - 1.0) * 100)
+				
+				show_event_message(
+					"Upgraded %s defense!\n" % province.province_name +
+					"Cost: %d gold\n" % cost +
+					"Bonus: +%d%% → +%d%%" % [current_percent, new_percent]
+				)
 			else:
 				_show_error("Not enough gold (need %d)" % cost)
 		else:
