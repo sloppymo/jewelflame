@@ -27,6 +27,7 @@ func _connect_signals():
 	var tm = get_node_or_null("/root/TurnManager")
 	var cr = get_node_or_null("/root/CombatResolver")
 	var em = get_node_or_null("/root/EventManager")
+	var gs = get_node_or_null("/root/GameState")
 	
 	# Connect to TurnManager signals
 	if tm:
@@ -47,6 +48,10 @@ func _connect_signals():
 	# Connect to EventManager
 	if em:
 		em.event_triggered.connect(_on_event_triggered)
+	
+	# Connect to GameState for ownership changes
+	if gs:
+		gs.province_ownership_changed.connect(_on_province_ownership_changed)
 
 func _on_turn_ended(turn_number: int):
 	_update_turn_indicator("Turn %d - Processing..." % turn_number)
@@ -113,6 +118,25 @@ func _on_event_triggered(event_id: StringName, faction_id: StringName, message: 
 	var gs = get_node_or_null("/root/GameState")
 	if sidebar and gs and faction_id == gs.player_faction_id:
 		sidebar.show_event_message(message)
+
+func _on_province_ownership_changed(province_id: StringName, old_owner: StringName, new_owner: StringName):
+	print("Province %s captured: %s → %s" % [province_id, old_owner, new_owner])
+	
+	# Refresh all province colors to show new ownership
+	if province_manager:
+		province_manager.refresh_all_province_colors()
+	
+	# Show ownership summary in console
+	if province_manager:
+		var summary = province_manager.get_ownership_summary()
+		print("\n=== PROVINCE OWNERSHIP ===")
+		for owner in summary:
+			var owner_name = "Unclaimed"
+			var gs = get_node_or_null("/root/GameState")
+			if gs and owner != &"" and gs.factions.has(owner):
+				owner_name = gs.factions[owner].faction_name
+			print("%s: %d provinces" % [owner_name, summary[owner]])
+		print("==========================\n")
 
 func _update_turn_indicator(text: String):
 	if turn_indicator:

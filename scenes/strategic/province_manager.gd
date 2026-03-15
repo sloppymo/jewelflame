@@ -113,3 +113,28 @@ func _on_province_hovered(node: ProvinceNode, is_hovered: bool):
 func pulse_province(id: StringName):
 	if province_nodes.has(id):
 		province_nodes[id].pulse_highlight()
+
+func refresh_all_province_colors():
+	"""Refresh colors for all provinces - call after ownership changes"""
+	for node in province_nodes.values():
+		node._update_owner_color()
+		node._update_label()
+
+func get_provinces_by_owner(faction_id: StringName) -> Array[ProvinceNode]:
+	"""Get all province nodes owned by a faction"""
+	var result: Array[ProvinceNode] = []
+	for node in province_nodes.values():
+		if node.data and node.data.owner_faction_id == faction_id:
+			result.append(node)
+	return result
+
+func get_ownership_summary() -> Dictionary[StringName, int]:
+	"""Get count of provinces per faction"""
+	var summary: Dictionary[StringName, int] = {}
+	for node in province_nodes.values():
+		if node.data:
+			var owner = node.data.owner_faction_id
+			if not summary.has(owner):
+				summary[owner] = 0
+			summary[owner] += 1
+	return summary

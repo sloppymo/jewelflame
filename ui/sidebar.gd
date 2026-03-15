@@ -151,17 +151,21 @@ func _update_for_province(data: ProvinceData):
 	if province_name:
 		province_name.text = data.province_name
 	
-	# Update ruler name
+	# Update ruler name with faction color
 	if ruler_name:
 		if data.has_owner():
 			var gs = get_node_or_null("/root/GameState")
 			if gs and gs.factions.has(data.owner_faction_id):
 				var faction: FactionData = gs.factions[data.owner_faction_id]
 				ruler_name.text = faction.faction_name
+				# Color code by faction
+				ruler_name.add_theme_color_override("font_color", faction.color)
 			else:
 				ruler_name.text = "Unclaimed"
+				ruler_name.add_theme_color_override("font_color", Color.GRAY)
 		else:
 			ruler_name.text = "Unclaimed"
+			ruler_name.add_theme_color_override("font_color", Color.GRAY)
 	
 	# Update stats
 	_update_stats_display(data)
