@@ -1,16 +1,17 @@
-[gd_scene load_steps=6 format=3 uid="uid://main_strategic_new"]
+[gd_scene load_steps=7 format=3 uid="uid://main_strategic_new"]
 
 [ext_resource type="Script" path="res://scenes/strategic/strategic_layer.gd" id="1_strategic_layer"]
 [ext_resource type="PackedScene" path="res://ui/sidebar.tscn" id="2_sidebar"]
-[ext_resource type="PackedScene" path="res://ui/message_panel.tscn" id="3_message_panel"]
+[ext_resource type="Script" path="res://scenes/strategic/province_manager.gd" id="3_province_manager"]
 [ext_resource type="Script" path="res://ui/strategic_ui_controller.gd" id="4_ui_controller"]
 [ext_resource type="Texture2D" uid="uid://c1sgvgdfo7n5i" path="res://assets/maps/right_panel_map.jpeg" id="5_map_texture"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_1"]
 
 [node name="MainStrategic" type="Node2D"]
 script = ExtResource("1_strategic_layer")
 
-[node name="StrategicUIController" type="Node" parent="."]
-script = ExtResource("4_ui_controller")
+
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
@@ -41,61 +42,50 @@ texture = ExtResource("5_map_texture")
 expand_mode = 1
 stretch_mode = 6
 
-[node name="StrategicMap" type="Node2D" parent="CanvasLayer/MapContainer"]
+[node name="ProvinceManager" type="Node2D" parent="CanvasLayer/MapContainer"]
 unique_name_in_owner = true
-position = Vector2(50, 100)
+script = ExtResource("3_province_manager")
 
-[node name="MessagePanel" parent="CanvasLayer" instance=ExtResource("3_message_panel")]
-unique_name_in_owner = true
-anchors_preset = 12
-anchor_top = 1.0
+[node name="ProvinceContainer" type="Node2D" parent="CanvasLayer/MapContainer/ProvinceManager"]
+
+[node name="Connections" type="Node2D" parent="CanvasLayer/MapContainer/ProvinceManager"]
+z_index = -1
+
+[node name="TurnIndicator" type="Label" parent="CanvasLayer"]
+anchors_preset = 10
 anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = -100.0
 offset_left = 600.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = 40.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 24
+text = "Turn 1 - Player's Turn"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="FactionsInfo" type="VBoxContainer" parent="CanvasLayer"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -300.0
+offset_top = 50.0
+offset_right = -10.0
+offset_bottom = 200.0
+grow_horizontal = 0
+
+[node name="HelpText" type="Label" parent="CanvasLayer"]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 300.0
+offset_top = -40.0
+offset_right = 600.0
+offset_bottom = -10.0
 grow_horizontal = 2
 grow_vertical = 0
-
-[node name="ViewMenu" type="Window" parent="CanvasLayer"]
-visible = false
-initial_position = 2
-size = Vector2i(200, 220)
-unresizable = true
-
-[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/ViewMenu"]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/margin_left = 8
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 8
-theme_override_constants/margin_bottom = 8
-
-[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/ViewMenu/MarginContainer"]
-layout_mode = 2
-theme_override_constants/separation = 8
-
-[node name="OneBtn" type="Button" parent="CanvasLayer/ViewMenu/MarginContainer/VBoxContainer"]
-layout_mode = 2
-text = "One - Individual Lord"
-
-[node name="ManyBtn" type="Button" parent="CanvasLayer/ViewMenu/MarginContainer/VBoxContainer"]
-layout_mode = 2
-text = "Many - Family Roster"
-
-[node name="LandBtn" type="Button" parent="CanvasLayer/ViewMenu/MarginContainer/VBoxContainer"]
-layout_mode = 2
-text = "Land - Province Data"
-
-[node name="FifthBtn" type="Button" parent="CanvasLayer/ViewMenu/MarginContainer/VBoxContainer"]
-layout_mode = 2
-text = "5th Unit - Monster Inventory"
-
-[node name="HSeparator" type="HSeparator" parent="CanvasLayer/ViewMenu/MarginContainer/VBoxContainer"]
-layout_mode = 2
-
-[node name="CloseBtn" type="Button" parent="CanvasLayer/ViewMenu/MarginContainer/VBoxContainer"]
-layout_mode = 2
-text = "Close"
+theme_override_font_sizes/font_size = 14
+text = "Select a province | F12: Debug | Space: End Turn"
+horizontal_alignment = 1
