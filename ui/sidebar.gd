@@ -61,7 +61,8 @@ func _ready():
 	
 	# Initialize with first province if available
 	if gs.provinces.size() > 0:
-		var first_id: StringName = gs.provinces.keys()[0]
+		var keys: Array = gs.provinces.keys()
+		var first_id: StringName = keys[0]
 		_update_for_province(gs.provinces[first_id])
 	
 	_update_ui()

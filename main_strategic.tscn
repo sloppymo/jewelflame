@@ -3,10 +3,7 @@
 [ext_resource type="Script" path="res://scenes/strategic/strategic_layer.gd" id="1_strategic_layer"]
 [ext_resource type="PackedScene" path="res://ui/sidebar.tscn" id="2_sidebar"]
 [ext_resource type="Script" path="res://scenes/strategic/province_manager.gd" id="3_province_manager"]
-[ext_resource type="Script" path="res://ui/strategic_ui_controller.gd" id="4_ui_controller"]
 [ext_resource type="Texture2D" uid="uid://c1sgvgdfo7n5i" path="res://assets/maps/right_panel_map.jpeg" id="5_map_texture"]
-
-[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_1"]
 
 [node name="MainStrategic" type="Node2D"]
 script = ExtResource("1_strategic_layer")
