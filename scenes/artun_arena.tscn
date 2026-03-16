@@ -1,0 +1,84 @@
+[gd_scene load_steps=3 format=3 uid="uid://artun_arena"]
+
+[ext_resource type="PackedScene" uid="uid://artun_fighter" path="res://scenes/characters/Artun_Fighter.tscn" id="1_fighter"]
+
+[sub_resource type="GDScript" id="GDScript_arena"]
+script/source = "extends Node2D
+
+var fighters: Array = []
+
+func _ready():
+	# Get all fighters
+	fighters = $Fighters.get_children()
+	
+	# Update health bars
+	for fighter in fighters:
+		fighter.get_node(\"HealthBar\").value = fighter.health
+		fighter.get_node(\"NameLabel\").text = \"Artun \" + str(fighter.team + 1)
+
+func _process(delta):
+	# Update health bars
+	for fighter in fighters:
+		if is_instance_valid(fighter):
+			var hp_percent = float(fighter.health) / 100.0 * 100
+			fighter.get_node(\"HealthBar\").value = max(0, hp_percent)
+			
+			if fighter.current_state == 4:  # DEAD
+				fighter.get_node(\"NameLabel\").text = \"Artun \" + str(fighter.team + 1) + \" (DEAD)\""
+
+[node name="ArtunArena" type="Node2D"]
+script = SubResource("GDScript_arena")
+
+[node name="Background" type="ColorRect" parent="."]
+offset_left = -1000.0
+offset_top = -1000.0
+offset_right = 2000.0
+offset_bottom = 2000.0
+color = Color(0.1, 0.12, 0.15, 1)
+
+[node name="ArenaFloor" type="ColorRect" parent="."]
+offset_left = 100.0
+offset_top = 100.0
+offset_right = 1100.0
+offset_bottom = 700.0
+color = Color(0.2, 0.25, 0.3, 1)
+
+[node name="Title" type="Label" parent="."]
+offset_left = 100.0
+offset_top = 50.0
+offset_right = 1100.0
+offset_bottom = 90.0
+theme_override_font_sizes/font_size = 28
+text = "⚔️ ARTUN BATTLE ROYALE ⚔️"
+horizontal_alignment = 1
+
+[node name="Fighters" type="Node2D" parent="."]
+
+[node name="Artun1" parent="Fighters" instance=ExtResource("1_fighter")]
+position = Vector2(250, 250)
+team = 0
+
+[node name="Artun2" parent="Fighters" instance=ExtResource("1_fighter")]
+position = Vector2(950, 250)
+team = 1
+
+[node name="Artun3" parent="Fighters" instance=ExtResource("1_fighter")]
+position = Vector2(250, 550)
+team = 2
+
+[node name="Artun4" parent="Fighters" instance=ExtResource("1_fighter")]
+position = Vector2(950, 550)
+team = 3
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(600, 400)
+zoom = Vector2(0.8, 0.8)
+
+[node name="Instructions" type="Label" parent="."]
+offset_left = 100.0
+offset_top = 720.0
+offset_right = 1100.0
+offset_bottom = 750.0
+theme_override_font_sizes/font_size = 14
+text = "Watch them fight! They seek each other out, attack, or flee when low health."
+horizontal_alignment = 1

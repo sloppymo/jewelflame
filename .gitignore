@@ -24,3 +24,5 @@ test_*
 *_broken.*
 *_typo.*
 __pycache__/
+*.linux
+download?platform=linux

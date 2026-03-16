@@ -1,7 +1,7 @@
 extends "res://resources/data_classes/character_data.gd"
 class_name LordData
 @export var age: int = 25
-# is_captured, capture_family_id, loyalty inherited from CharacterData
+# is_captured, captured_by, loyalty inherited from CharacterData
 @export var desertion_chance: float = 0.1
 @export var monthly_loyalty_drift: int = 0
 
@@ -37,7 +37,7 @@ func to_dict() -> Dictionary:
 		"age": age,
 		"loyalty": loyalty,
 		"is_captured": is_captured,
-		"capture_family_id": capture_family_id,
+		"captured_by": captured_by,
 		"desertion_chance": desertion_chance,
 		"monthly_loyalty_drift": monthly_loyalty_drift,
 		"attack_rating": attack_rating,
@@ -53,7 +53,7 @@ func from_dict(data: Dictionary) -> void:
 	age = data.get("age", 25)
 	loyalty = data.get("loyalty", 100)
 	is_captured = data.get("is_captured", false)
-	capture_family_id = data.get("capture_family_id", "")
+	captured_by = StringName(data.get("captured_by", ""))
 	desertion_chance = data.get("desertion_chance", 0.1)
 	monthly_loyalty_drift = data.get("monthly_loyalty_drift", 0)
 	attack_rating = data.get("attack_rating", 50)

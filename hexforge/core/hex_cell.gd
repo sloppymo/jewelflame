@@ -288,7 +288,7 @@ static func from_json(json_string: String):
 ## Returns a new HexCell with the same data (deep copy of properties)
 ## New cell has occupant_id = "" (occupant not copied)
 ## Used for undo/redo or predictive pathfinding
-func duplicate_data():
+func duplicate_data() -> HexCell:
     var new_cell = new(axial_coord.x, axial_coord.y)
     new_cell.terrain_type = terrain_type
     new_cell.elevation = elevation

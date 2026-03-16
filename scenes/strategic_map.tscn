@@ -114,7 +114,7 @@ layout_mode = 2
 
 [node name="WeatherEffects" type="Node2D" parent="Map_Layer"]
 
-[node name="Animation_Layer" type="Node2D" parent="."]
+[node name="Animation_Layer" type="Node2D" parent="."
 
 [node name="AttackArrows" type="Node2D" parent="Animation_Layer"]
 

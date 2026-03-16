@@ -105,8 +105,33 @@ func resolve_battle(attacker_id: StringName, defender_id: StringName,
 	var result := BattleResult.new(attacker_id, defender_id, source_id, target_id,
 								  attacker_won, attacker_losses, defender_losses, troops_moved)
 	
+	# Handle lord capture if province was taken
+	if attacker_won:
+		_capture_province_governor(target_id, attacker_id)
+	
 	# Update GameState
 	GameState.record_battle_result(result)
 	battle_resolved.emit(result)
 	
 	return result
+
+func _capture_province_governor(province_id: StringName, captor_faction_id: StringName) -> void:
+	var lm = LordManager
+	if lm == null:
+		return
+	
+	var governor = lm.get_province_governor(province_id)
+	if governor == null:
+		return
+	
+	# Don't capture if already belongs to captor's faction
+	if governor.family_id == captor_faction_id:
+		return
+	
+	# Capture the governor
+	lm.capture_lord(governor.id, captor_faction_id, province_id)
+	
+	# Remove governor from province
+	var gs = GameState
+	if gs and gs.provinces.has(province_id):
+		gs.provinces[province_id].governor_id = &""

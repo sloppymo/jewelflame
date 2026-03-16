@@ -30,6 +30,11 @@ const MIN_GARRISON_SIZE := 1
 # Events
 const EVENT_CHANCE := 0.3  # 30% chance per turn
 
+# Lord/Noble System
+const LORD_RECRUIT_COST := 80
+const LORD_RELEASE_LOYALTY_PENALTY := 30
+const LORD_BASE_LOYALTY := 60
+
 # Faction IDs
 const FACTION_BLANCHE := &"blanche"
 const FACTION_CORYLL := &"coryll"

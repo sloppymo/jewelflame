@@ -10,14 +10,18 @@ signal action_started(action_name: String)
 signal action_completed(action_name: String, success: bool)
 signal end_turn_requested()
 
+const TurnManager = preload("res://autoload/turn_manager.gd")
 const FactionData = preload("res://resources/data_classes/faction_data.gd")
 const ProvinceData = preload("res://resources/data_classes/province_data.gd")
+const CharacterData = preload("res://resources/data_classes/character_data.gd")
+const GameConfig = preload("res://autoload/game_config.gd")
 
 # ============================================================================
 # NODES
 # ============================================================================
 @onready var province_name: Label = %ProvinceName
 @onready var ruler_name: Label = %RulerName
+@onready var portrait: Control = %Portrait  # Will cast to TextureRect or custom portrait control
 
 @onready var defense_value: Label = %DefenseValue
 @onready var income_value: Label = %IncomeValue
@@ -29,6 +33,9 @@ const ProvinceData = preload("res://resources/data_classes/province_data.gd")
 @onready var recruit_btn: Button = %RecruitBtn
 @onready var scout_btn: Button = %ScoutBtn
 @onready var end_turn_btn: Button = %EndTurnBtn
+@onready var undo_btn: Button = %UndoBtn
+@onready var redo_btn: Button = %RedoBtn
+@onready var captured_btn: Button = %CapturedBtn
 
 @onready var event_message_label: Label = %EventMessageLabel
 
@@ -56,8 +63,8 @@ func _ready():
 		push_error("Sidebar: Required autoloads not found")
 		return
 	
-	# Connect signals deferred (button connections are in .tscn file)
-	call_deferred("_connect_signals")
+	# Connect signals (button connections are already in .tscn file)
+	_connect_signals()
 	
 	# Initialize with first province if available
 	if gs.provinces.size() > 0:
@@ -71,31 +78,45 @@ func _ready():
 func _connect_signals():
 	var tm = get_node_or_null("/root/TurnManager")
 	var gs = get_node_or_null("/root/GameState")
+	var cp = get_node_or_null("/root/CommandProcessor")
 	
 	if tm:
 		tm.player_turn_started.connect(_on_player_turn_started)
 		tm.state_changed.connect(_on_state_changed)
+		tm.turn_ended.connect(_on_turn_ended)
 	
 	if gs:
 		gs.province_selected.connect(_on_province_selected)
+	
+	# Connect to CommandProcessor for command execution feedback
+	if cp:
+		cp.command_executed.connect(_on_command_executed)
+		cp.command_failed.connect(_on_command_failed)
+		cp.history_changed.connect(_on_history_changed)
+	
+	# Connect to EventBus for battle results
+	EventBus.BattleResolved.connect(_on_battle_resolved)
+	
+	# Connect to LordManager for capture events
+	var lm = get_node_or_null("/root/LordManager")
+	if lm:
+		lm.lord_captured.connect(_on_lord_captured)
+		lm.lord_recruited.connect(_on_lord_recruited)
 
 # ============================================================================
 # STATE HANDLERS
 # ============================================================================
 func _on_state_changed(new_state, _old_state):
-	# Compare using integer values of enum
-	var player_turn_value = 1
-	var ai_turn_value = 2
-	var game_over_value = 5
-	
-	if new_state == player_turn_value:
-		_set_buttons_enabled(true)
-	elif new_state == ai_turn_value:
-		_set_buttons_enabled(false)
-		reset_mode()
-	elif new_state == game_over_value:
-		_set_buttons_enabled(false)
-		show_event_message("Game Over!")
+	# Use proper enum comparisons for type safety
+	match new_state:
+		TurnManager.State.PLAYER_TURN:
+			_set_buttons_enabled(true)
+		TurnManager.State.AI_TURN:
+			_set_buttons_enabled(false)
+			reset_mode()
+		TurnManager.State.GAME_OVER:
+			_set_buttons_enabled(false)
+			show_event_message("Game Over!")
 
 func _set_buttons_enabled(enabled: bool):
 	if attack_btn:
@@ -108,10 +129,19 @@ func _set_buttons_enabled(enabled: bool):
 		scout_btn.disabled = not enabled
 	if end_turn_btn:
 		end_turn_btn.disabled = not enabled
+	# Undo/Redo buttons update separately based on command history
+	_update_undo_redo_buttons()
 
 func _on_player_turn_started():
 	reset_mode()
 	_update_ui()
+
+func _on_turn_ended(_turn_number: int):
+	# Clear command history at end of turn
+	var cp = get_node_or_null("/root/CommandProcessor")
+	if cp:
+		cp.clear_history()
+	_update_undo_redo_buttons()
 
 # ============================================================================
 # PROVINCE SELECTION
@@ -152,24 +182,64 @@ func _update_for_province(data: ProvinceData):
 	if province_name:
 		province_name.text = data.province_name
 	
-	# Update ruler name with faction color
-	if ruler_name:
-		if data.has_owner():
-			var gs = get_node_or_null("/root/GameState")
-			if gs and gs.factions.has(data.owner_faction_id):
-				var faction: FactionData = gs.factions[data.owner_faction_id]
+	# Update governor/noble info
+	_update_governor_display(data)
+	
+	# Update stats
+	_update_stats_display(data)
+
+func _update_governor_display(province: ProvinceData):
+	if ruler_name == null:
+		return
+	
+	var lm = get_node_or_null("/root/LordManager")
+	var gs = get_node_or_null("/root/GameState")
+	
+	if lm == null or gs == null:
+		ruler_name.text = "No Governor"
+		ruler_name.add_theme_color_override("font_color", Color.GRAY)
+		return
+	
+	# Get the governor
+	var governor: CharacterData = null
+	if province.has_governor():
+		governor = lm.get_character(province.governor_id)
+	
+	if governor != null:
+		# Show governor name
+		ruler_name.text = governor.name
+		
+		# Color by faction
+		if gs.factions.has(governor.family_id):
+			var faction: FactionData = gs.factions[governor.family_id]
+			ruler_name.add_theme_color_override("font_color", faction.color)
+		else:
+			ruler_name.add_theme_color_override("font_color", Color.WHITE)
+		
+		# Update portrait if available
+		_update_portrait(governor.portrait_path)
+	else:
+		# No governor - show faction name or "No Governor"
+		if province.has_owner():
+			if gs.factions.has(province.owner_faction_id):
+				var faction: FactionData = gs.factions[province.owner_faction_id]
 				ruler_name.text = faction.faction_name
-				# Color code by faction
 				ruler_name.add_theme_color_override("font_color", faction.color)
 			else:
-				ruler_name.text = "Unclaimed"
+				ruler_name.text = "Unknown"
 				ruler_name.add_theme_color_override("font_color", Color.GRAY)
 		else:
 			ruler_name.text = "Unclaimed"
 			ruler_name.add_theme_color_override("font_color", Color.GRAY)
-	
-	# Update stats
-	_update_stats_display(data)
+		
+		_update_portrait("")  # Clear portrait
+
+func _update_portrait(portrait_path: String):
+	# This would update the portrait texture
+	# The portrait node is a custom control that handles its own drawing
+	# For now, we emit a signal or call a method on it if available
+	if portrait != null and portrait.has_method("set_portrait"):
+		portrait.set_portrait(portrait_path)
 
 func _update_stats_display(province: ProvinceData):
 	if not province:
@@ -256,6 +326,7 @@ func _on_attack_pressed():
 		_show_error("Not your turn")
 		return
 	
+	# Use CommandProcessor for validation and execution
 	current_action = "attack"
 	current_mode = ActionMode.SELECT_SOURCE
 	action_started.emit("attack")
@@ -282,32 +353,34 @@ func _on_defend_pressed():
 	if gs == null:
 		return
 	
-	# Defend/Develop - upgrade defense level
-	if gs.selected_province_id != &"":
-		var province: ProvinceData = gs.get_province(gs.selected_province_id)
-		if province and _can_be_source(province):
-			var cost: int = province.get_development_cost()
-			var faction: FactionData = gs.get_current_faction()
-			if faction.gold >= cost:
-				var current_bonus = province.get_defense_bonus()
-				var current_percent = int((current_bonus - 1.0) * 100)
-				
-				faction.gold -= cost
-				province.upgrade_defense()
-				_update_stats_display(province)
-				
-				var new_bonus = province.get_defense_bonus()
-				var new_percent = int((new_bonus - 1.0) * 100)
-				
-				show_event_message(
-					"Upgraded %s defense!\n" % province.province_name +
-					"Cost: %d gold\n" % cost +
-					"Bonus: +%d%% → +%d%%" % [current_percent, new_percent]
-				)
-			else:
-				_show_error("Not enough gold (need %d)" % cost)
-		else:
-			_show_error("Select one of your provinces first")
+	if gs.selected_province_id == &"":
+		_show_error("Select one of your provinces first")
+		return
+	
+	var province: ProvinceData = gs.get_province(gs.selected_province_id)
+	if province == null:
+		_show_error("Select one of your provinces first")
+		return
+	
+	# Direct implementation (CommandProcessor has issues)
+	var current_faction = gs.get_current_faction()
+	if current_faction == null or not current_faction.owns_province(province.id):
+		_show_error("Do not own this province")
+		return
+	
+	var cost: int = province.get_development_cost()
+	if current_faction.gold < cost:
+		_show_error("Not enough gold (need %d)" % cost)
+		return
+	
+	if province.defense_level >= 5:
+		_show_error("Province at max defense level")
+		return
+	
+	current_faction.gold -= cost
+	province.upgrade_defense()
+	_update_stats_display(province)
+	show_event_message("Upgraded defense of %s!" % province.province_name)
 
 func _on_recruit_pressed():
 	var tm = get_node_or_null("/root/TurnManager")
@@ -319,21 +392,32 @@ func _on_recruit_pressed():
 	if gs == null:
 		return
 	
-	# Recruit troops in selected province
-	if gs.selected_province_id != &"":
-		var province: ProvinceData = gs.get_province(gs.selected_province_id)
-		if province and _can_be_source(province):
-			var cost: int = 10 * 10  # RECRUIT_COST * 10
-			var faction: FactionData = gs.get_current_faction()
-			if faction.gold >= cost:
-				faction.gold -= cost
-				province.troops += 10
-				_update_stats_display(province)
-				show_event_message("Recruited 10 troops in %s!" % province.province_name)
-			else:
-				_show_error("Not enough gold (need %d)" % cost)
-		else:
-			_show_error("Select one of your provinces first")
+	if gs.selected_province_id == &"":
+		_show_error("Select one of your provinces first")
+		return
+	
+	var province: ProvinceData = gs.get_province(gs.selected_province_id)
+	if province == null:
+		_show_error("Select one of your provinces first")
+		return
+	
+	# Direct implementation
+	const RECRUIT_AMOUNT: int = 10
+	const RECRUIT_COST: int = 100
+	
+	var current_faction = gs.get_current_faction()
+	if current_faction == null or not current_faction.owns_province(province.id):
+		_show_error("Do not own this province")
+		return
+	
+	if current_faction.gold < RECRUIT_COST:
+		_show_error("Not enough gold (need %d)" % RECRUIT_COST)
+		return
+	
+	current_faction.gold -= RECRUIT_COST
+	province.troops += RECRUIT_AMOUNT
+	_update_stats_display(province)
+	show_event_message("Recruited %d troops in %s!" % [RECRUIT_AMOUNT, province.province_name])
 
 func _on_scout_pressed():
 	var tm = get_node_or_null("/root/TurnManager")
@@ -352,6 +436,77 @@ func _on_end_turn_pressed():
 		return
 	tm.end_player_turn()
 	end_turn_requested.emit()
+
+func _on_undo_pressed():
+	var cp = get_node_or_null("/root/CommandProcessor")
+	if cp:
+		if cp.undo():
+			show_event_message("Action undone")
+		else:
+			_show_error("Cannot undo")
+	_update_undo_redo_buttons()
+
+func _on_redo_pressed():
+	var cp = get_node_or_null("/root/CommandProcessor")
+	if cp:
+		if cp.redo():
+			show_event_message("Action redone")
+		else:
+			_show_error("Cannot redo")
+	_update_undo_redo_buttons()
+
+func _on_save_pressed():
+	var sm = get_node_or_null("/root/SaveManager")
+	if sm:
+		if sm.save_game(1):
+			show_event_message("Game saved!")
+		else:
+			_show_error("Failed to save game")
+	else:
+		_show_error("SaveManager not available")
+
+func _on_captured_pressed():
+	var lm = get_node_or_null("/root/LordManager")
+	var gs = get_node_or_null("/root/GameState")
+	if lm == null or gs == null:
+		return
+	
+	var captured = lm.get_captured_lords(gs.player_faction_id)
+	
+	if captured.is_empty():
+		show_event_message("No captured nobles.\n\nDefeat enemy forces to capture their rulers!")
+		return
+	
+	# Build message with captured nobles
+	var msg = "CAPTURED NOBLES:\n\n"
+	for lord in captured:
+		var original_faction = ""
+		if gs.factions.has(lord.family_id):
+			original_faction = gs.factions[lord.family_id].faction_name
+		
+		msg += "• %s\n" % lord.name
+		msg += "  Leadership: %d | Command: %d | Charm: %d\n" % [lord.leadership, lord.command, lord.charm]
+		if not original_faction.is_empty():
+			msg += "  Originally from %s\n" % original_faction
+		msg += "  [Recruit for 80 gold]\n\n"
+	
+	msg += "Click 'Recruit' to add them to your faction!"
+	show_event_message(msg)
+	
+	# TODO: Create a proper dialog for recruiting
+	# For now, just show the first available captive as recruitable
+	if not captured.is_empty():
+		var first_captive = captured[0]
+		# Auto-recruit for testing (remove this in production)
+		# lm.recruit_lord(first_captive.id, gs.player_faction_id)
+
+func _update_undo_redo_buttons():
+	var cp = get_node_or_null("/root/CommandProcessor")
+	
+	if undo_btn:
+		undo_btn.disabled = (cp == null) or not cp.can_undo()
+	if redo_btn:
+		redo_btn.disabled = (cp == null) or not cp.can_redo()
 
 # ============================================================================
 # ACTION EXECUTION
@@ -374,21 +529,21 @@ func _execute_action():
 
 func _execute_attack(source: ProvinceData, target: ProvinceData):
 	var gs = get_node_or_null("/root/GameState")
-	if gs == null:
-		return
-	
-	var attacker_id: StringName = gs.get_current_faction().id
-	
-	if not target.has_owner():
-		_show_error("Target has no owner")
-		return
-	
-	var defender_id := target.owner_faction_id
-	
+	var cp = get_node_or_null("/root/CommandProcessor")
 	var cr = get_node_or_null("/root/CombatResolver")
-	if cr == null:
-		_show_error("CombatResolver not available")
+	
+	if gs == null or cr == null:
 		return
+	
+	if cp != null and cp.can_attack(source.id, target.id):
+		# Use CommandProcessor
+		if not cp.execute_attack(source.id, target.id):
+			_show_error("Attack failed")
+		return
+	
+	# Direct implementation fallback
+	var attacker_id: StringName = gs.get_current_faction().id
+	var defender_id := target.owner_faction_id
 	
 	var result = cr.resolve_battle(attacker_id, defender_id, source.id, target.id)
 	
@@ -397,18 +552,29 @@ func _execute_attack(source: ProvinceData, target: ProvinceData):
 		_update_stats_display(source)
 
 func _execute_move(source: ProvinceData, target: ProvinceData):
+	var gs = get_node_or_null("/root/GameState")
+	var cp = get_node_or_null("/root/CommandProcessor")
+	
+	if gs == null:
+		return
+	
 	# Calculate move amount (simplified: move half, keep minimum)
 	var amount: int = mini(maxi(source.troops - 1, 0), 100)
 	if amount <= 0:
 		_show_error("Not enough troops to move")
 		return
 	
+	if cp != null and cp.can_move(source.id, target.id, amount):
+		# Use CommandProcessor
+		if cp.execute_move(source.id, target.id, amount):
+			show_event_message("Moved %d troops from %s to %s" % [amount, source.province_name, target.province_name])
+			_update_stats_display(source)
+		return
+	
+	# Direct implementation fallback
 	source.troops -= amount
 	target.troops += amount
-	
-	var gs = get_node_or_null("/root/GameState")
-	if gs:
-		gs.troops_moved.emit(source.id, target.id, amount)
+	gs.troops_moved.emit(source.id, target.id, amount)
 	show_event_message("Moved %d troops from %s to %s" % [amount, source.province_name, target.province_name])
 	_update_stats_display(source)
 
@@ -466,6 +632,60 @@ func _show_error(msg: String):
 	show_event_message("Error: " + msg)
 
 # ============================================================================
+# COMMAND SYSTEM FEEDBACK
+# ============================================================================
+
+func _on_history_changed(_history_size: int, _redo_size: int):
+	_update_undo_redo_buttons()
+
+func _on_command_executed(command):
+	# Refresh UI after command execution
+	_update_ui()
+	
+	# Show success message based on command type (using duck typing)
+	var cmd_name = command.get_description()
+	if cmd_name.begins_with("Move"):
+		show_event_message(cmd_name)
+
+func _on_command_failed(_command, error: String):
+	_show_error(error)
+
+func _on_battle_resolved(result: Dictionary):
+	_show_battle_result(result)
+	_update_ui()
+
+func _on_lord_captured(lord_id: StringName, captor_faction_id: StringName, province_id: StringName):
+	var lm = get_node_or_null("/root/LordManager")
+	var gs = get_node_or_null("/root/GameState")
+	if lm == null or gs == null:
+		return
+	
+	var lord = lm.get_character(lord_id)
+	var province = gs.get_province(province_id)
+	var captor = gs.get_faction(captor_faction_id)
+	
+	if lord and province and captor:
+		var msg = "%s captured!\n%s has taken %s prisoner." % [lord.name, captor.faction_name, lord.name]
+		show_event_message(msg)
+		
+		# If player captured someone, show additional info
+		if captor_faction_id == gs.player_faction_id:
+			msg += "\n\nYou can recruit %s for %d gold or release them." % [lord.name, GameConfig.LORD_RECRUIT_COST]
+			show_event_message(msg)
+
+func _on_lord_recruited(lord_id: StringName, new_faction_id: StringName):
+	var lm = get_node_or_null("/root/LordManager")
+	var gs = get_node_or_null("/root/GameState")
+	if lm == null or gs == null:
+		return
+	
+	var lord = lm.get_character(lord_id)
+	var faction = gs.get_faction(new_faction_id)
+	
+	if lord and faction:
+		show_event_message("%s has joined %s!" % [lord.name, faction.faction_name])
+
+# ============================================================================
 # EVENT MESSAGE (Typewriter)
 # ============================================================================
 func show_event_message(message: String, typing_speed: float = 0.02) -> void:
@@ -473,13 +693,17 @@ func show_event_message(message: String, typing_speed: float = 0.02) -> void:
 		return
 	
 	# Stop any existing animation
-	if _typing_tween:
+	if _typing_tween != null and _typing_tween.is_valid():
 		_typing_tween.kill()
 	
 	event_message_label.text = ""
 	
 	# Create typewriter animation
 	_typing_tween = create_tween()
+	if _typing_tween == null:
+		# Fallback if tween creation fails
+		event_message_label.text = message
+		return
 	
 	for i in range(message.length()):
 		_typing_tween.tween_callback(func():
@@ -491,6 +715,6 @@ func show_event_message(message: String, typing_speed: float = 0.02) -> void:
 func clear_event_message() -> void:
 	if event_message_label:
 		event_message_label.text = ""
-	if _typing_tween:
+	if _typing_tween != null and _typing_tween.is_valid():
 		_typing_tween.kill()
-		_typing_tween = null
+	_typing_tween = null

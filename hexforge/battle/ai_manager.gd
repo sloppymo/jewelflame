@@ -2,7 +2,7 @@
 ## Handles AI opponent decision making
 ## Part of HexForge battle system
 
-class_name AIManager
+class_name BattleAIManager
 extends Node
 
 const HexMath = preload("res://hexforge/core/hex_math.gd")

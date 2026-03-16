@@ -7,18 +7,21 @@ func _ready():
 
 func save_game(slot: int) -> bool:
 	var save_data = {
-		"version": "1.0",
+		"version": "1.1",
 		"timestamp": Time.get_unix_time_from_system(),
 		"provinces": [],
-		"families": [],
-		"characters": []
+		"factions": [],
+		"characters": [],
+		"player_faction_id": String(GameState.player_faction_id),
+		"current_month": GameState.current_month,
+		"current_year": GameState.current_year
 	}
 	
 	for province in GameState.provinces.values():
 		save_data.provinces.append(province.to_dict())
 	
-	for family in GameState.families.values():
-		save_data.families.append(family.to_dict())
+	for faction in GameState.factions.values():
+		save_data.factions.append(faction.to_dict())
 	
 	for character in GameState.characters.values():
 		save_data.characters.append(character.to_dict())
@@ -56,7 +59,7 @@ func load_game(slot: int) -> bool:
 	var data = json.data
 	
 	GameState.provinces.clear()
-	GameState.families.clear()
+	GameState.factions.clear()
 	GameState.characters.clear()
 	
 	for p_dict in data.provinces:
@@ -64,15 +67,22 @@ func load_game(slot: int) -> bool:
 		p.from_dict(p_dict)
 		GameState.provinces[p.id] = p
 	
-	for f_dict in data.families:
-		var f = FamilyData.new()
+	# Load factions (new system, replaces families)
+	var loaded_factions = data.get("factions", data.get("families", []))
+	for f_dict in loaded_factions:
+		var f = FactionData.new()
 		f.from_dict(f_dict)
-		GameState.families[f.id] = f
+		GameState.factions[f.id] = f
 	
 	for c_dict in data.characters:
 		var c = CharacterData.new()
 		c.from_dict(c_dict)
 		GameState.characters[c.id] = c
+	
+	# Restore additional game state
+	GameState.player_faction_id = StringName(data.get("player_faction_id", "blanche"))
+	GameState.current_month = data.get("current_month", 1)
+	GameState.current_year = data.get("current_year", 1)
 	
 	EventBus.GameLoaded.emit(slot)
 	print("Game loaded from ", path)

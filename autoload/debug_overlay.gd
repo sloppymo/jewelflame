@@ -4,6 +4,10 @@ const ProvinceData = preload("res://resources/data_classes/province_data.gd")
 
 @onready var label: Label
 
+# Cached references to avoid repeated lookups
+var _turn_manager: TurnManager = null
+var _game_state: GameState = null
+
 func _ready():
 	# Create the label dynamically
 	label = Label.new()
@@ -21,13 +25,25 @@ func _ready():
 	label.text = "DEBUG MODE"
 	# z_index is set on the label, not CanvasLayer
 	label.z_index = 100
+	
+	# Cache references
+	_cache_autoloads()
+
+func _cache_autoloads() -> void:
+	if _turn_manager == null:
+		_turn_manager = get_node_or_null("/root/TurnManager")
+	if _game_state == null:
+		_game_state = get_node_or_null("/root/GameState")
 
 func _process(_delta):
 	if not OS.is_debug_build():
 		return
 	
-	var tm = get_node_or_null("/root/TurnManager")
-	var gs = get_node_or_null("/root/GameState")
+	# Use cached references
+	_cache_autoloads()
+	
+	var tm := _turn_manager
+	var gs := _game_state
 	
 	if tm == null or gs == null:
 		return
@@ -47,9 +63,9 @@ func _process(_delta):
 	
 	var text := "Turn: %d | State: %s\n" % [turn_number, state_name]
 	
-	for fid in gs.factions:
-		var f = gs.factions[fid]
-		var personality = GameConfig.AI_PERSONALITIES.get(fid, {})
+	for fid: StringName in gs.factions:
+		var f: FactionData = gs.factions[fid]
+		var personality: Dictionary = GameConfig.AI_PERSONALITIES.get(fid, {})
 		var p_name = personality.get("name", "Unknown")
 		var attack_thresh = personality.get("attack_threshold", 1.5)
 		text += "%s (%s, %.1fx): Gold %d, Provinces %d, Troops %d\n" % [

@@ -1,8 +1,39 @@
 extends Control
 
 @export var portrait_texture: Texture2D
+var _current_path: String = ""
 
 func _ready():
+	queue_redraw()
+
+func set_portrait(path: String) -> void:
+	if path.is_empty():
+		portrait_texture = null
+		_current_path = ""
+		queue_redraw()
+		return
+	
+	if path == _current_path:
+		return  # Already showing this portrait
+	
+	# Check if file exists before loading
+	if not FileAccess.file_exists(path):
+		push_warning("Portrait file not found: " + path)
+		portrait_texture = null
+		_current_path = ""
+		queue_redraw()
+		return
+	
+	# Load the texture
+	var tex = load(path)
+	if tex is Texture2D:
+		portrait_texture = tex
+		_current_path = path
+	else:
+		push_warning("Failed to load portrait as Texture2D: " + path)
+		portrait_texture = null
+		_current_path = ""
+	
 	queue_redraw()
 
 func _draw():

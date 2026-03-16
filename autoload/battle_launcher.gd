@@ -38,11 +38,11 @@ func launch_battle(attacker_province_id: int, defender_province_id: int,
 	
 	var attacker_data = {
 		"province_id": attacker_province_id,
-		"province_name": attacker_province.name,
-		"family_id": attacker_province.owner_id,
+		"province_name": attacker_province.province_name,
+		"family_id": attacker_province.owner_faction_id,
 		"lord": attacker_lord,
 		"units": attacker_units,
-		"total_soldiers": attacker_province.soldiers,
+		"total_soldiers": attacker_province.troops,
 		"time_of_day": _get_time_of_day()
 	}
 	
@@ -52,11 +52,11 @@ func launch_battle(attacker_province_id: int, defender_province_id: int,
 	
 	var defender_data = {
 		"province_id": defender_province_id,
-		"province_name": defender_province.name,
-		"family_id": defender_province.owner_id,
+		"province_name": defender_province.province_name,
+		"family_id": defender_province.owner_faction_id,
 		"lord": defender_lord,
 		"units": defender_units,
-		"total_soldiers": defender_province.soldiers,
+		"total_soldiers": defender_province.troops,
 		"terrain": defender_province.terrain_type if defender_province.get("terrain_type") else "grass",
 		"personality": _get_ai_personality(defender_province.owner_id)
 	}
@@ -68,7 +68,7 @@ func launch_battle(attacker_province_id: int, defender_province_id: int,
 	battle.battle_ended.connect(_on_battle_ended)
 	
 	# Change to battle scene using safe transition
-	print("BattleLauncher: Started battle - %s vs %s" % [attacker_province.name, defender_province.name])
+	print("BattleLauncher: Started battle - %s vs %s" % [attacker_province.province_name, defender_province.province_name])
 	
 	# Store current scene for return
 	previous_scene_path = get_tree().current_scene.scene_file_path
@@ -151,7 +151,7 @@ func _apply_battle_results(result: Dictionary) -> void:
 		defender_province.food -= loot_food
 		
 		print("BattleLauncher: %s conquered %s! Loot: %d gold, %d food" % [
-			attacker_province.name, defender_province.name, loot_gold, loot_food
+			attacker_province.province_name, defender_province.province_name, loot_gold, loot_food
 		])
 		
 		# Handle lord capture

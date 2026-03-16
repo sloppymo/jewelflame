@@ -447,12 +447,42 @@ theme_override_styles/normal = SubResource("StyleBoxTexture_stone_normal")
 theme_override_styles/pressed = SubResource("StyleBoxTexture_stone_pressed")
 text = "END TURN"
 
+[node name="UndoBtn" type="Button" parent="." unique_id=1920020445]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 260.0
+offset_top = 903.0
+offset_right = 340.0
+offset_bottom = 947.0
+theme_override_colors/font_color = Color(0.95, 0.9, 0.75, 1)
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxTexture_stone_normal")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_stone_pressed")
+disabled = true
+text = "↩ Undo"
+
+[node name="RedoBtn" type="Button" parent="." unique_id=1920020446]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 260.0
+offset_top = 955.0
+offset_right = 340.0
+offset_bottom = 999.0
+theme_override_colors/font_color = Color(0.95, 0.9, 0.75, 1)
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxTexture_stone_normal")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_stone_pressed")
+disabled = true
+text = "↪ Redo"
+
 [node name="SaveBtn" type="Button" parent="." unique_id=1694515340]
 unique_name_in_owner = true
 layout_mode = 0
-offset_left = 540.0
+offset_left = 500.0
 offset_top = 30.0
-offset_right = 580.0
+offset_right = 540.0
 offset_bottom = 70.0
 theme_override_colors/font_color = Color(0.95, 0.9, 0.75, 1)
 theme_override_fonts/font = ExtResource("2_font")
@@ -460,6 +490,20 @@ theme_override_font_sizes/font_size = 10
 theme_override_styles/normal = SubResource("StyleBoxTexture_stone_normal")
 theme_override_styles/pressed = SubResource("StyleBoxTexture_stone_pressed")
 text = "💾"
+
+[node name="CapturedBtn" type="Button" parent="." unique_id=1694515341]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 450.0
+offset_top = 30.0
+offset_right = 495.0
+offset_bottom = 70.0
+theme_override_colors/font_color = Color(0.95, 0.9, 0.75, 1)
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 10
+theme_override_styles/normal = SubResource("StyleBoxTexture_stone_normal")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_stone_pressed")
+text = "👑"
 
 [node name="Dock" type="Sprite2D" parent="." unique_id=491691003]
 top_level = true
@@ -482,3 +526,6 @@ texture = ExtResource("3_frame")
 [connection signal="pressed" from="ScoutBtn" to="." method="_on_scout_pressed"]
 [connection signal="pressed" from="EndTurnBtn" to="." method="_on_end_turn_pressed"]
 [connection signal="pressed" from="SaveBtn" to="." method="_on_save_pressed"]
+[connection signal="pressed" from="CapturedBtn" to="." method="_on_captured_pressed"]
+[connection signal="pressed" from="UndoBtn" to="." method="_on_undo_pressed"]
+[connection signal="pressed" from="RedoBtn" to="." method="_on_redo_pressed"]

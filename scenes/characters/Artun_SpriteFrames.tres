@@ -1,0 +1,9 @@
+[gd_resource type="SpriteFrames" load_steps=2 format=3 uid="uid://artun_frames"]
+
+[ext_resource type="Texture2D" uid="uid://artun_sprites" path="res://assets/Old Town - Citizens v0.1/Masc. Citizens/Artun/Artun.png" id="1_sheet"]
+
+[resource]
+animations = []
+# Note: Animations must be created in Godot Editor using SpriteFrames editor
+# Grid Size: 16x16 pixels
+# Frame coordinates will be set in editor

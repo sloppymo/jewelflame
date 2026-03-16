@@ -4,7 +4,7 @@ extends Node
 # These signals are emitted and connected by other systems, not by EventBus itself
 
 @warning_ignore("unused_signal")
-signal ProvinceSelected(id: int)
+signal ProvinceSelected(id: StringName)
 
 @warning_ignore("unused_signal")
 signal GameSaved(slot: int)
@@ -13,10 +13,10 @@ signal GameSaved(slot: int)
 signal GameLoaded(slot: int)
 
 @warning_ignore("unused_signal")
-signal ProvinceDataChanged(id: int, field: String, value: Variant)
+signal ProvinceDataChanged(id: StringName, field: String, value: Variant)
 
 @warning_ignore("unused_signal")
-signal ProvinceExhausted(id: int, exhausted: bool)
+signal ProvinceExhausted(id: StringName, exhausted: bool)
 
 @warning_ignore("unused_signal")
 signal TurnEnded(month: int, year: int)
@@ -25,16 +25,16 @@ signal TurnEnded(month: int, year: int)
 signal TurnCompleted(month: int, year: int)
 
 @warning_ignore("unused_signal")
-signal FamilyTurnStarted(family_id: String)
+signal FamilyTurnStarted(family_id: StringName)
 
 @warning_ignore("unused_signal")
-signal LordTurnStarted(lord_id: String)
+signal LordTurnStarted(lord_id: StringName)
 
 @warning_ignore("unused_signal")
 signal BattleResolved(result: Dictionary)
 
 @warning_ignore("unused_signal")
-signal TroopsMoved(from_id: int, to_id: int, count: int)
+signal TroopsMoved(from_id: StringName, to_id: StringName, count: int)
 
 @warning_ignore("unused_signal")
 signal HarvestReportReady(province_yields: Dictionary)
