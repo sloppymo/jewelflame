@@ -1,0 +1,237 @@
+[gd_scene load_steps=4 format=3 uid="uid://dragon_force_battle"]
+
+[ext_resource type="Script" path="res://dragon_force/dragon_force_battle.gd" id="1_battle"]
+[ext_resource type="Script" path="res://dragon_force/dragon_force_ui.gd" id="2_ui"]
+
+[sub_resource type="TileSet" id="TileSet_battle"]
+
+[node name="DragonForceBattle" type="Node2D"]
+script = ExtResource("1_battle")
+
+[node name="Background" type="ColorRect" parent="."]
+offset_left = -400.0
+offset_top = -300.0
+offset_right = 1200.0
+offset_bottom = 900.0
+color = Color(0.15, 0.25, 0.15, 1)
+
+[node name="TileMap" type="TileMap" parent="."]
+tile_set = SubResource("TileSet_battle")
+format = 2
+layer_0/tile_data = PackedInt32Array()
+
+[node name="GroundDetails" type="Node2D" parent="."]
+
+[node name="EffectsContainer" type="Node2D" parent="."]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(400, 300)
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+script = ExtResource("2_ui")
+
+[node name="UI" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="TopBar" type="Panel" parent="CanvasLayer/UI"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 50.0
+grow_horizontal = 2
+
+[node name="BattleTitle" type="Label" parent="CanvasLayer/UI/TopBar"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -100.0
+offset_top = -13.0
+offset_right = 100.0
+offset_bottom = 13.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "BATTLE"
+horizontal_alignment = 1
+
+[node name="FormationPanel" type="Panel" parent="CanvasLayer/UI"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = -110.0
+offset_right = 210.0
+offset_bottom = -10.0
+grow_vertical = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/UI/FormationPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="FormationLabel" type="Label" parent="CanvasLayer/UI/FormationPanel/VBoxContainer"]
+layout_mode = 2
+text = "FORMATION"
+horizontal_alignment = 1
+
+[node name="MeleeBtn" type="Button" parent="CanvasLayer/UI/FormationPanel/VBoxContainer"]
+layout_mode = 2
+text = "1: MELEE (Aggressive)"
+
+[node name="StandbyBtn" type="Button" parent="CanvasLayer/UI/FormationPanel/VBoxContainer"]
+layout_mode = 2
+text = "2: STANDBY (Defensive)"
+
+[node name="AdvanceBtn" type="Button" parent="CanvasLayer/UI/FormationPanel/VBoxContainer"]
+layout_mode = 2
+text = "3: ADVANCE (Move)"
+
+[node name="RetreatBtn" type="Button" parent="CanvasLayer/UI/FormationPanel/VBoxContainer"]
+layout_mode = 2
+text = "4: RETREAT (Flee)"
+
+[node name="SpellPanel" type="Panel" parent="CanvasLayer/UI"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -160.0
+offset_top = -110.0
+offset_right = -10.0
+offset_bottom = -10.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/UI/SpellPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="SpellLabel" type="Label" parent="CanvasLayer/UI/SpellPanel/VBoxContainer"]
+layout_mode = 2
+text = "SPELL"
+horizontal_alignment = 1
+
+[node name="MPBar" type="ProgressBar" parent="CanvasLayer/UI/SpellPanel/VBoxContainer"]
+layout_mode = 2
+max_value = 50.0
+value = 0.0
+
+[node name="SpellBtn" type="Button" parent="CanvasLayer/UI/SpellPanel/VBoxContainer"]
+layout_mode = 2
+text = "FIREBALL (20 MP)"
+
+[node name="StatusLabel" type="Label" parent="CanvasLayer/UI/SpellPanel/VBoxContainer"]
+layout_mode = 2
+text = "Charging..."
+horizontal_alignment = 1
+
+[node name="InfoPanel" type="Panel" parent="CanvasLayer/UI"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -150.0
+offset_top = 60.0
+offset_right = 150.0
+offset_bottom = 150.0
+grow_horizontal = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/UI/InfoPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="SelectedLabel" type="Label" parent="CanvasLayer/UI/InfoPanel/VBoxContainer"]
+layout_mode = 2
+text = "Selected: None"
+horizontal_alignment = 1
+
+[node name="TroopsLabel" type="Label" parent="CanvasLayer/UI/InfoPanel/VBoxContainer"]
+layout_mode = 2
+text = "Troops: 0"
+horizontal_alignment = 1
+
+[node name="HPLabel" type="Label" parent="CanvasLayer/UI/InfoPanel/VBoxContainer"]
+layout_mode = 2
+text = "HP: 0/0"
+horizontal_alignment = 1
+
+[node name="ModeLabel" type="Label" parent="CanvasLayer/UI/InfoPanel/VBoxContainer"]
+layout_mode = 2
+text = "Mode: SELECT"
+horizontal_alignment = 1
+
+[node name="BattleResultPanel" type="Panel" parent="CanvasLayer/UI"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -150.0
+offset_right = 200.0
+offset_bottom = 150.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/UI/BattleResultPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="ResultLabel" type="Label" parent="CanvasLayer/UI/BattleResultPanel/VBoxContainer"]
+layout_mode = 2
+text = "VICTORY!"
+horizontal_alignment = 1
+
+[node name="StatsLabel" type="Label" parent="CanvasLayer/UI/BattleResultPanel/VBoxContainer"]
+layout_mode = 2
+text = "Troops remaining: 50"
+horizontal_alignment = 1
+
+[node name="ReturnBtn" type="Button" parent="CanvasLayer/UI/BattleResultPanel/VBoxContainer"]
+layout_mode = 2
+text = "Return to Map"

@@ -1,0 +1,7 @@
+[gd_scene load_steps=3 format=3 uid="uid://c8yvxg3ulq3a2"]
+
+[ext_resource type="PackedScene" uid="uid://dk37kwpfhf5aq" path="res://dragon_force/general_unit.tscn" id="1_abc12"]
+[ext_resource type="Script" path="res://dragon_force/special_unit.gd" id="2_def34"]
+
+[node name="SpecialUnit" instance=ExtResource("1_abc12")]
+script = ExtResource("2_def34")

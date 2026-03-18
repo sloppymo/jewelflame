@@ -1,0 +1,50 @@
+[gd_scene load_steps=4 format=3 uid="uid://general_unit_dragon"]
+
+[ext_resource type="Script" path="res://dragon_force/general_unit.gd" id="1_unit"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_unit"]
+radius = 12.0
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_sprite"]
+width = 16
+height = 16
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+
+[node name="GeneralUnit" type="CharacterBody2D"]
+z_index = 10
+script = ExtResource("1_unit")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_unit")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = SubResource("GradientTexture2D_sprite")
+
+[node name="TroopManager" type="Node2D" parent="."]
+z_index = -1
+
+[node name="SelectionRing" type="ColorRect" parent="."]
+visible = false
+offset_left = -16.0
+offset_top = -16.0
+offset_right = 16.0
+offset_bottom = 16.0
+color = Color(1, 1, 0, 0.3)
+
+[node name="HealthBar" type="ProgressBar" parent="."]
+visible = false
+offset_left = -16.0
+offset_top = -28.0
+offset_right = 16.0
+offset_bottom = -24.0
+max_value = 100.0
+value = 100.0
+show_percentage = false
+
+[node name="TroopLabel" type="Label" parent="."]
+offset_left = -15.0
+offset_top = -42.0
+offset_right = 15.0
+offset_bottom = -28.0
+horizontal_alignment = 1
