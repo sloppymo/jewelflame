@@ -1,0 +1,25 @@
+[gd_scene load_steps=3 format=3 uid="uid://knight_fighter"]
+
+[ext_resource type="Script" path="res://scenes/characters/Knight_Combat.gd" id="1_script"]
+
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_collision"]
+radius = 12.0
+
+[node name="KnightFighter" type="AnimatedSprite2D"]
+z_index = 10
+scale = Vector2(2, 2)
+offset = Vector2(0, -8)
+
+animation = &"idle_s"
+script = ExtResource("1_script")
+
+[node name="HealthBar" type="ProgressBar" parent="."]
+visible = false
+offset_left = -20.0
+offset_top = -25.0
+offset_right = 20.0
+offset_bottom = -17.0
+max_value = 100.0
+value = 100.0
+show_percentage = false
