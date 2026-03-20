@@ -49,7 +49,10 @@ func build_sprite_frames():
 		return
 	
 	var sf = SpriteFrames.new()
-	var dirs = ["s", "n", "se", "ne", "e", "w", "sw", "nw"]
+	
+	# CORRECTED direction mapping based on sprite sheet analysis
+	# Row order in sprite sheet: s, n, e, w, se, nw, sw, ne
+	var dirs = ["s", "n", "e", "w", "se", "nw", "sw", "ne"]
 	
 	# Non-combat animations (4 frames each)
 	# Idle: rows 0-7, Walk: rows 8-15, Run: rows 16-23
@@ -60,17 +63,30 @@ func build_sprite_frames():
 		_add_anim(sf, nc_tex, "run_" + dir, i + 16, 4, 12.0, true)
 	
 	# Death: rows 24-30 (7 directions, no nw)
-	var death_dirs = ["s", "n", "se", "ne", "e", "w", "sw"]
-	for i in range(7):
+	# Using same direction order as other animations
+	var death_dirs = ["s", "n", "e", "w", "se", "sw"]  # 6 directions fit in rows 24-29
+	# Row 30 might be unused or duplicate - verify visually
+	for i in range(6):
 		_add_anim(sf, nc_tex, "death_" + death_dirs[i], i + 24, 4, 8.0, false)
 	
-	# Combat animations (8 frames each)
-	# Attack Light: rows 0-7, Attack Heavy: rows 8-15, Hurt: rows 16-23
+	# Combat animations - use only valid frames (skip cols 1, 3, 6 which are mostly empty)
+	# Valid frames: 0, 2, 4, 5, 7 (5 frames instead of 8)
+	var valid_frames = [0, 2, 4, 5, 7]
+	
+	# Attack Light: rows 0-7
 	for i in range(8):
 		var dir = dirs[i]
-		_add_anim(sf, c_tex, "attack_light_" + dir, i, 8, 12.0, false)
-		_add_anim(sf, c_tex, "attack_heavy_" + dir, i + 8, 8, 10.0, false)
-		_add_anim(sf, c_tex, "hurt_" + dir, i + 16, 8, 8.0, false)
+		_add_anim_filtered(sf, c_tex, "attack_light_" + dir, i, valid_frames, 12.0, false)
+	
+	# Attack Heavy: rows 8-15
+	for i in range(8):
+		var dir = dirs[i]
+		_add_anim_filtered(sf, c_tex, "attack_heavy_" + dir, i + 8, valid_frames, 10.0, false)
+	
+	# Hurt: rows 16-23
+	for i in range(8):
+		var dir = dirs[i]
+		_add_anim_filtered(sf, c_tex, "hurt_" + dir, i + 16, valid_frames, 8.0, false)
 	
 	sprite_frames = sf
 	print("Built SpriteFrames with ", sf.get_animation_names().size(), " animations")
@@ -80,6 +96,17 @@ func _add_anim(sf, atlas, name, row, frames, speed, loop):
 	sf.set_animation_speed(name, speed)
 	sf.set_animation_loop(name, loop)
 	for col in range(frames):
+		var tex = AtlasTexture.new()
+		tex.atlas = atlas
+		tex.region = Rect2(col * 16, row * 16, 16, 16)
+		sf.add_frame(name, tex)
+
+func _add_anim_filtered(sf, atlas, name, row, frame_indices, speed, loop):
+	"""Add animation using only specific frame indices (skips empty/transition frames)."""
+	sf.add_animation(name)
+	sf.set_animation_speed(name, speed)
+	sf.set_animation_loop(name, loop)
+	for col in frame_indices:
 		var tex = AtlasTexture.new()
 		tex.atlas = atlas
 		tex.region = Rect2(col * 16, row * 16, 16, 16)
