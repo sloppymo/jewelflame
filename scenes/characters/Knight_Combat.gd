@@ -29,6 +29,9 @@ var bark_messages: Array = [
 ]
 
 func _ready():
+	# CRITICAL: Set nearest filter for pixel art to prevent bleeding
+	texture_filter = TEXTURE_FILTER_NEAREST
+	
 	add_to_group("knight_combat")
 	add_to_group("artun_combat")
 	call_deferred("find_targets")
