@@ -69,8 +69,6 @@ func _add_anim_filtered(sf, atlas, name, row, frame_indices, speed, loop):
 		var tex = AtlasTexture.new()
 		tex.atlas = atlas
 		tex.region = Rect2(col * 16, row * 16, 16, 16)
-		# CRITICAL: Set filter to nearest for pixel art
-		tex.set_texture_filter(CanvasItem.TEXTURE_FILTER_NEAREST)
 		sf.add_frame(name, tex)
 
 func cycle_direction():
