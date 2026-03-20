@@ -1,0 +1,95 @@
+[gd_scene load_steps=2 format=3 uid="uid://knight_validation"]
+
+[ext_resource type="Script" path="res://tests/knight_validation.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://units/knight_unit.tscn" id="2_knight"]
+
+[node name="KnightValidation" type="Node2D"]
+script = ExtResource("1_script")
+
+[node name="KnightUnit" parent="." instance=ExtResource("2_knight")]
+position = Vector2(576, 324)
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -200.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = 400.0
+grow_horizontal = 0
+theme_override_constants/separation = 10
+
+[node name="TitleLabel" type="Label" parent="CanvasLayer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Knight Validation"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="CanvasLayer/VBoxContainer"]
+layout_mode = 2
+
+[node name="StatusLabel" type="Label" parent="CanvasLayer/VBoxContainer"]
+layout_mode = 2
+text = "Troops: 5/5 | Damage: 20 | Facing: S"
+horizontal_alignment = 1
+
+[node name="DirectionLabel" type="Label" parent="CanvasLayer/VBoxContainer"]
+layout_mode = 2
+text = "Dir: S (auto)"
+horizontal_alignment = 1
+
+[node name="HSeparator2" type="HSeparator" parent="CanvasLayer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Damage20Button" type="Button" parent="CanvasLayer/VBoxContainer"]
+layout_mode = 2
+text = "Damage 20 HP (Lose 1 Troop)"
+
+[node name="Damage40Button" type="Button" parent="CanvasLayer/VBoxContainer"]
+layout_mode = 2
+text = "Damage 40 HP (Lose 2 Troops)"
+
+[node name="KillButton" type="Button" parent="CanvasLayer/VBoxContainer"]
+layout_mode = 2
+text = "Kill Unit (Instakill)"
+
+[node name="HSeparator3" type="HSeparator" parent="CanvasLayer/VBoxContainer"]
+layout_mode = 2
+
+[node name="TestDirButton" type="Button" parent="CanvasLayer/VBoxContainer"]
+layout_mode = 2
+text = "Test Directions (Cycle)"
+
+[node name="AttackButton" type="Button" parent="CanvasLayer/VBoxContainer"]
+layout_mode = 2
+text = "Test Attack"
+
+[node name="HSeparator4" type="HSeparator" parent="CanvasLayer/VBoxContainer"]
+layout_mode = 2
+
+[node name="MoveNEButton" type="Button" parent="CanvasLayer/VBoxContainer"]
+layout_mode = 2
+text = "Move NE (Test Walk)"
+
+[node name="StopButton" type="Button" parent="CanvasLayer/VBoxContainer"]
+layout_mode = 2
+text = "Stop (Test Idle)"
+
+[node name="HSeparator5" type="HSeparator" parent="CanvasLayer/VBoxContainer"]
+layout_mode = 2
+
+[node name="ResetButton" type="Button" parent="CanvasLayer/VBoxContainer"]
+layout_mode = 2
+text = "Reset Unit (Respawn)"
+
+[connection signal="pressed" from="CanvasLayer/VBoxContainer/Damage20Button" to="." method="_on_damage_20_pressed"]
+[connection signal="pressed" from="CanvasLayer/VBoxContainer/Damage40Button" to="." method="_on_damage_40_pressed"]
+[connection signal="pressed" from="CanvasLayer/VBoxContainer/KillButton" to="." method="_on_kill_unit_pressed"]
+[connection signal="pressed" from="CanvasLayer/VBoxContainer/TestDirButton" to="." method="_on_test_directions_pressed"]
+[connection signal="pressed" from="CanvasLayer/VBoxContainer/AttackButton" to="." method="_on_attack_pressed"]
+[connection signal="pressed" from="CanvasLayer/VBoxContainer/MoveNEButton" to="." method="_on_move_northeast_pressed"]
+[connection signal="pressed" from="CanvasLayer/VBoxContainer/StopButton" to="." method="_on_stop_pressed"]
+[connection signal="pressed" from="CanvasLayer/VBoxContainer/ResetButton" to="." method="_on_reset_unit_pressed"]
