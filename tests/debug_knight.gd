@@ -18,7 +18,7 @@ func build_sprite_frames():
 	
 	var sf = SpriteFrames.new()
 	
-	# CORRECTED direction mapping based on sprite sheet analysis
+	# Direction mapping based on sprite sheet analysis
 	# Row order: s, n, e, w, se, nw, sw, ne
 	var dirs = ["s", "n", "e", "w", "se", "nw", "sw", "ne"]
 	
@@ -34,19 +34,16 @@ func build_sprite_frames():
 	for i in range(6):
 		_add_anim(sf, nc_tex, "death_" + death_dirs[i], i + 24, 4, 8.0, false)
 	
-	# Combat animations - use different frame sets to avoid white artifacts
-	# Attack light: cols 0, 2 are clean (skip 4,5,7 which have artifacts)
-	var attack_light_frames = [0, 2]
-	# Attack heavy: cols 0, 1, 2, 3 are mostly clean (avoid 4-7 with white artifacts)
-	var attack_heavy_frames = [0, 1, 2, 3]
-	# Hurt: use same as attack light
-	var hurt_frames = [0, 2, 4]
+	# FIXED: Combat animations - use frames with substantial content only
+	# Frame analysis shows cols 0, 2, 5, 7 have main content
+	# Cols 1, 3, 4, 6 are thin transition frames that cause artifacts
+	var combat_frames = [0, 2, 5, 7]
 	
 	for i in range(8):
 		var dir = dirs[i]
-		_add_anim_filtered(sf, c_tex, "attack_light_" + dir, i, attack_light_frames, 12.0, false)
-		_add_anim_filtered(sf, c_tex, "attack_heavy_" + dir, i + 8, attack_heavy_frames, 10.0, false)
-		_add_anim_filtered(sf, c_tex, "hurt_" + dir, i + 16, hurt_frames, 8.0, false)
+		_add_anim_filtered(sf, c_tex, "attack_light_" + dir, i, combat_frames, 12.0, false)
+		_add_anim_filtered(sf, c_tex, "attack_heavy_" + dir, i + 8, combat_frames, 10.0, false)
+		_add_anim_filtered(sf, c_tex, "hurt_" + dir, i + 16, combat_frames, 8.0, false)
 	
 	sprite_frames = sf
 	print("Built ", sf.get_animation_names().size(), " animations")
