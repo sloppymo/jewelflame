@@ -1,0 +1,103 @@
+{
+  "_description": "Jewelflame sprite sheet configuration. Read by sprite_sheet_utils.py.",
+  "_version": "1.1",
+  "_note": "direction_order confirmed by pixel mass analysis, not assumed.",
+
+  "project_settings": {
+    "godot_project_root": "/home/sloppymo/jewelflame",
+    "res_prefix": "res://assets/Citizens - Guards - Warriors/Warriors",
+    "output_animations_dir": "res://assets/animations",
+    "default_texture_filter": "nearest",
+    "gpu_pixel_snap": true,
+    "filter_clip_on_atlas_textures": true
+  },
+
+  "direction_order": {
+    "_note": "Confirmed by pixel mass center analysis. Do NOT use generic references.",
+    "non_combat_8dir_within_group": ["s", "n", "se", "ne", "e", "w", "sw", "nw"],
+    "swordshield_combat_4dir": ["s", "n", "w", "e"],
+    "archer_combat_shoot_4dir": ["e", "w", "s", "n"],
+    "archer_combat_hurt_2dir": ["e", "w"],
+    "archer_combat_death_2dir": ["s", "n"]
+  },
+
+  "sprite_sheets": [
+    {
+      "name": "swordshield_non_combat",
+      "unit": "SwordShieldFighter",
+      "file": "Sword_and_Shield_Fighter_Non-Combat.png",
+      "res_path": "res://assets/Citizens - Guards - Warriors/Warriors/Sword_and_Shield_Fighter_Non-Combat.png",
+      "output_tres": "res://assets/animations/swordshield_non_combat.tres",
+      "frame": {"width": 16, "height": 16},
+      "grid": {"cols": 4, "rows": 31},
+      "animation_groups": [
+        {"name": "idle",  "start_row": 0,  "row_count": 8, "fps": 6,  "loop": true},
+        {"name": "walk",  "start_row": 8,  "row_count": 8, "fps": 8,  "loop": true},
+        {"name": "walk2", "start_row": 16, "row_count": 8, "fps": 8,  "loop": true},
+        {"name": "death", "start_row": 24, "row_count": 7, "fps": 6,  "loop": false,
+         "_note": "7 rows not 8 — one direction missing. Row 28 is static corpse (diff=3.3)."}
+      ],
+      "special_rows": {
+        "28": {"name": "death_corpse", "fps": 2, "loop": false, "note": "near-static, pixel_diff=3.3"},
+        "29": {"name": "death_prone_s", "fps": 6, "loop": false},
+        "30": {"name": "death_prone_n", "fps": 6, "loop": false}
+      }
+    },
+    {
+      "name": "swordshield_combat",
+      "unit": "SwordShieldFighter",
+      "file": "Sword_and_Shield_Fighter_Combat.png",
+      "res_path": "res://assets/Citizens - Guards - Warriors/Warriors/Sword_and_Shield_Fighter_Combat.png",
+      "output_tres": "res://assets/animations/swordshield_combat.tres",
+      "frame": {"width": 32, "height": 32},
+      "grid": {"cols": 4, "rows": 20},
+      "_note": "32x32 to accommodate sword+shield reach. 5 groups x 4 directions.",
+      "animation_groups": [
+        {"name": "attack1",  "start_row": 0,  "row_count": 4, "fps": 10, "loop": false},
+        {"name": "attack2",  "start_row": 4,  "row_count": 4, "fps": 10, "loop": false},
+        {"name": "attack3",  "start_row": 8,  "row_count": 4, "fps": 8,  "loop": false},
+        {"name": "hurt",     "start_row": 12, "row_count": 4, "fps": 8,  "loop": false},
+        {"name": "special",  "start_row": 16, "row_count": 4, "fps": 8,  "loop": false,
+         "_note": "Orange/fire palette. Verify in-engine: magic attack or status effect."}
+      ]
+    },
+    {
+      "name": "archer_non_combat",
+      "unit": "Archer",
+      "file": "Archer_Non-Combat.png",
+      "res_path": "res://assets/Citizens - Guards - Warriors/Warriors/Archer_Non-Combat.png",
+      "output_tres": "res://assets/animations/archer_non_combat.tres",
+      "frame": {"width": 16, "height": 16},
+      "grid": {"cols": 4, "rows": 31},
+      "animation_groups": [
+        {"name": "idle",  "start_row": 0,  "row_count": 8, "fps": 6,  "loop": true},
+        {"name": "walk",  "start_row": 8,  "row_count": 8, "fps": 8,  "loop": true},
+        {"name": "walk2", "start_row": 16, "row_count": 8, "fps": 8,  "loop": true},
+        {"name": "death", "start_row": 24, "row_count": 7, "fps": 6,  "loop": false}
+      ],
+      "special_rows": {
+        "28": {"name": "death_corpse",  "fps": 2, "loop": false, "note": "pixel_diff=3.3"},
+        "29": {"name": "death_prone_s", "fps": 6, "loop": false},
+        "30": {"name": "death_prone_n", "fps": 6, "loop": false}
+      }
+    },
+    {
+      "name": "archer_combat",
+      "unit": "Archer",
+      "file": "Archer_Combat.png",
+      "res_path": "res://assets/Citizens - Guards - Warriors/Warriors/Archer_Combat.png",
+      "output_tres": "res://assets/animations/archer_combat.tres",
+      "frame": {"width": 32, "height": 32},
+      "grid": {"cols": 4, "rows": 8},
+      "_note": "32x32 to accommodate bow reach. Mirror rows confirmed: R01=flip(R00), R05=flip(R04).",
+      "animation_groups": [
+        {"name": "shoot", "start_row": 0, "row_count": 4, "fps": 10, "loop": false,
+         "damage_frame": 2,
+         "_note": "Frames 0-1=aim, frames 2-3=release. White arrow pixels at frames 2-3."},
+        {"name": "hurt",  "start_row": 4, "row_count": 2, "fps": 8,  "loop": false,
+         "_note": "Only 2 directions (e, w). R05 is horizontal mirror of R04."},
+        {"name": "death", "start_row": 6, "row_count": 2, "fps": 6,  "loop": false}
+      ]
+    }
+  ]
+}

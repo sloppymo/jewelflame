@@ -1,8 +1,8 @@
 extends AnimatedSprite2D
 
 @export var team: int = 0
-@export var walk_speed: float = 80.0
-@export var health: int = 250
+@export var walk_speed: float = 40.0  # 50% slower (was 80)
+@export var health: int = 500  # 2x health (was 250)
 @export var attack_damage: int = 20
 @export var attack_range: float = 50.0
 @export var detection_range: float = 400.0
@@ -14,20 +14,6 @@ var target: Node2D = null
 var all_fighters: Array = []
 var state_timer: float = 0.0
 
-# Bark system
-var bark_label: Label = null
-var bark_timer: float = 0.0
-var bark_messages: Array = [
-	"For honor!",
-	"Charge!",
-	"Yield!",
-	"Have at thee!",
-	"To arms!",
-	"En garde!",
-	"For the kingdom!",
-	"Stand down!"
-]
-
 func _ready():
 	# CRITICAL: Set nearest filter for pixel art to prevent bleeding
 	texture_filter = TEXTURE_FILTER_NEAREST
@@ -35,7 +21,6 @@ func _ready():
 	add_to_group("knight_combat")
 	add_to_group("artun_combat")
 	call_deferred("find_targets")
-	call_deferred("setup_bark_label")
 	
 	# Build SpriteFrames programmatically
 	build_sprite_frames()
@@ -116,31 +101,6 @@ func _add_anim_filtered(sf, atlas, name, row, frame_indices, speed, loop):
 		tex.region = Rect2(col * 16, row * 16, 16, 16)
 		sf.add_frame(name, tex)
 
-func setup_bark_label():
-	bark_label = Label.new()
-	bark_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	bark_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	bark_label.add_theme_font_size_override("font_size", 10)
-	bark_label.modulate = Color(1, 1, 1)
-	bark_label.visible = false
-	
-	var empty_style = StyleBoxEmpty.new()
-	bark_label.add_theme_stylebox_override("normal", empty_style)
-	
-	add_child(bark_label)
-
-func show_bark(message: String = ""):
-	if message == "":
-		message = bark_messages[randi() % bark_messages.size()]
-	
-	if bark_label:
-		bark_label.text = message
-		bark_label.visible = true
-		bark_label.modulate.a = 1.0
-		bark_timer = 1.5
-		bark_label.reset_size()
-		bark_label.position = Vector2(-bark_label.size.x / 2, -50)
-
 func find_targets():
 	all_fighters = get_tree().get_nodes_in_group("artun_combat")
 	all_fighters.erase(self)
@@ -183,19 +143,6 @@ func change_state(new_state: State):
 			play(_get_animation_name("walk", current_direction))
 
 func _process(delta):
-	if bark_timer > 0:
-		bark_timer -= delta
-		if bark_label:
-			if bark_timer <= 0.3:
-				bark_label.modulate.a = bark_timer / 0.3
-			else:
-				bark_label.modulate.a = 1.0
-			bark_label.position = Vector2(-bark_label.size.x / 2, -50)
-			
-			if bark_timer <= 0:
-				bark_label.visible = false
-				bark_label.modulate.a = 1.0
-	
 	if current_state == State.DEAD:
 		return
 	
@@ -219,9 +166,8 @@ func _update_idle(_delta):
 	target = find_closest_enemy()
 	
 	if target and global_position.distance_to(target.global_position) < detection_range:
-		if health < 60 and randf() < 0.3:
+		if health < 120 and randf() < 0.3:  # Adjusted for 2x health
 			change_state(State.FLEEING)
-			show_bark("Fall back!")
 		else:
 			change_state(State.WALKING)
 	else:
@@ -240,7 +186,6 @@ func _update_walking(delta):
 	
 	if dist < attack_range:
 		change_state(State.ATTACKING)
-		show_bark()
 		return
 	
 	var dir = global_position.direction_to(target.global_position)
@@ -261,15 +206,13 @@ func _update_attacking(delta):
 	
 	# Wait for animation to finish (8 frames at 12 fps = 0.67s) - give it extra time
 	if state_timer >= 0.8 and not is_playing():
-		if health < 50 and randf() < 0.3:
+		if health < 100 and randf() < 0.3:  # Adjusted for 2x health
 			change_state(State.FLEEING)
-			show_bark("Withdraw!")
 		else:
 			change_state(State.IDLE)
 	elif state_timer >= 1.5:
-		if health < 50 and randf() < 0.3:
+		if health < 100 and randf() < 0.3:  # Adjusted for 2x health
 			change_state(State.FLEEING)
-			show_bark("Withdraw!")
 		else:
 			change_state(State.IDLE)
 
@@ -277,11 +220,9 @@ func _update_hurt(_delta):
 	if not is_playing() or state_timer >= 0.4:
 		if health <= 0:
 			spawn_death_blood()
-			show_bark("Nooo...")
 			change_state(State.DEAD)
-		elif health < 60 and randf() < 0.4:
+		elif health < 120 and randf() < 0.4:  # Adjusted for 2x health
 			change_state(State.FLEEING)
-			show_bark("Flee!")
 		else:
 			change_state(State.IDLE)
 
@@ -386,9 +327,5 @@ func take_damage(damage: int):
 	modulate = Color(1.5, 1.5, 1.5)
 	await get_tree().create_timer(0.08).timeout
 	modulate = Color(1, 1, 1)
-	
-	if randf() < 0.5:
-		var hurt_barks = ["Oof!", "Argh!", "Ugh!", "Gah!"]
-		show_bark(hurt_barks[randi() % hurt_barks.size()])
 	
 	change_state(State.HURT)

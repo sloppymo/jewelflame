@@ -70,6 +70,17 @@ func _deal_damage():
 	
 	_lose_troops(randi() % 2 + 1)
 
+func _spawn_attack_effect(pos: Vector2):
+	var effect = ColorRect.new()
+	effect.size = Vector2(10, 10)
+	effect.color = Color(1.0, 0.9, 0.3, 0.7)
+	effect.position = pos - effect.size / 2
+	get_parent().add_child(effect)
+	
+	var tween = create_tween()
+	tween.tween_property(effect, "modulate:a", 0.0, 0.3)
+	tween.tween_callback(effect.queue_free)
+
 func _spawn_trample_effect(pos: Vector2):
 	var effect = ColorRect.new()
 	effect.size = Vector2(6, 6)

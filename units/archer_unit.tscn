@@ -1,0 +1,38 @@
+[gd_scene load_steps=5 format=3 uid="uid://archer_unit_scene"]
+
+[ext_resource type="Script" path="res://units/archer_unit.gd" id="1_script"]
+[ext_resource type="SpriteFrames" path="res://assets/animations/archer_non_combat.tres" id="2_nc_frames"]
+
+[sub_resource type="CircleShape2D" id="1_circle"]
+radius = 40.0
+
+[node name="ArcherUnit" type="CharacterBody2D"]
+script = ExtResource("1_script")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("1_circle")
+
+[node name="Troop_0" type="AnimatedSprite2D" parent="."]
+scale = Vector2(4, 4)
+sprite_frames = ExtResource("2_nc_frames")
+animation = &"idle_s"
+
+[node name="Troop_1" type="AnimatedSprite2D" parent="."]
+scale = Vector2(4, 4)
+sprite_frames = ExtResource("2_nc_frames")
+animation = &"idle_s"
+
+[node name="Troop_2" type="AnimatedSprite2D" parent="."]
+scale = Vector2(4, 4)
+sprite_frames = ExtResource("2_nc_frames")
+animation = &"idle_s"
+
+[node name="Troop_3" type="AnimatedSprite2D" parent="."]
+scale = Vector2(4, 4)
+sprite_frames = ExtResource("2_nc_frames")
+animation = &"idle_s"
+
+[node name="Troop_4" type="AnimatedSprite2D" parent="."]
+scale = Vector2(4, 4)
+sprite_frames = ExtResource("2_nc_frames")
+animation = &"idle_s"

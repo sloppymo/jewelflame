@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3 uid="uid://heavy_knight_test"]
+
+[ext_resource type="PackedScene" path="res://units/heavy_knight.tscn" id="1_unit"]
+[ext_resource type="Script" path="res://tests/heavy_knight_test.gd" id="2_script"]
+
+[node name="HeavyKnightTest" type="Node2D"]
+script = ExtResource("2_script")
+
+[node name="HUD" type="Label" parent="."]
+position = Vector2(10, 10)
+text = "[W/A/S/D] move  [Shift] run  [Z] attack  [X] thrust  [C] block  [V] roll  [H] hurt  [K] die  [T] toggle dash  [R] reset"
+
+[node name="HeavyKnight" parent="." instance=ExtResource("1_unit")]
+position = Vector2(200, 200)

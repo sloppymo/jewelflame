@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "/home/sloppymo/jewelflame/logs/.77df4cfcdd47ff02ac888bacd58f9eca42e4b01b-audit.json",
+    "files": [
+        {
+            "date": 1774041146816,
+            "name": "/home/sloppymo/jewelflame/logs/mcp-puppeteer-2026-03-20.log",
+            "hash": "3882fb39f156e24901189ce97f2053fd49da0a354062cd90f947d5f81059a385"
+        }
+    ],
+    "hashType": "sha256"
+}

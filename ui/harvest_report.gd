@@ -14,10 +14,10 @@ func show_harvest_report(province_yields: Dictionary):
 	# List each province's harvest
 	for province_id in province_yields:
 		var province = GameState.provinces[province_id]
-		var yield = province_yields[province_id]
-		total_yield += yield
+		var province_yield = province_yields[province_id]
+		total_yield += province_yield
 		
-		report_text += "%s: [color=green]+%d[/color] food\n" % [province.name, yield]
+		report_text += "%s: [color=green]+%d[/color] food\n" % [province.name, province_yield]
 	
 	# Total summary
 	report_text += "\n[b]Total Harvest: %d food[/b]" % total_yield

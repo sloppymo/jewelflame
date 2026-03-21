@@ -122,10 +122,10 @@ func _input(event):
 				print("  Search result: ", result)
 			KEY_5:
 				print("\n[MANUAL TEST] Testing Random Event")
-				var event = RandomEvents.try_trigger_random_event()
-				if event.is_empty():
+				var random_event = RandomEvents.try_trigger_random_event()
+				if random_event.is_empty():
 					print("  No event (80% chance)")
 				else:
-					print("  Event: ", event.get("message"))
+					print("  Event: ", random_event.get("message"))
 			KEY_ESCAPE:
 				get_tree().quit()

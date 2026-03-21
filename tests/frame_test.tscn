@@ -1,0 +1,32 @@
+[gd_scene load_steps=2 format=3 uid="uid://frame_test"]
+
+[ext_resource type="Script" path="res://tests/frame_test.gd" id="1_script"]
+
+[node name="FrameTest" type="Node2D"]
+script = ExtResource("1_script")
+
+[node name="Background" type="ColorRect" parent="."]
+z_index = -1
+offset_left = -1000.0
+offset_top = -1000.0
+offset_right = 3000.0
+offset_bottom = 3000.0
+color = Color(0.2, 0.2, 0.25, 1)
+
+[node name="Title" type="Label" parent="."]
+offset_left = 400.0
+offset_top = 50.0
+offset_right = 900.0
+offset_bottom = 100.0
+theme_override_font_sizes/font_size = 24
+text = "Frame Test - Row 0 (Attack Light South)"
+horizontal_alignment = 1
+
+[node name="Instructions" type="Label" parent="."]
+offset_left = 400.0
+offset_top = 100.0
+offset_right = 900.0
+offset_bottom = 150.0
+theme_override_font_sizes/font_size = 14
+text = "Press SPACE to cycle through rows 0-7"
+horizontal_alignment = 1

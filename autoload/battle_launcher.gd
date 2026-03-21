@@ -3,7 +3,7 @@ extends Node
 # Battle Launcher - Connects Strategic Map to Tactical Battle
 # Call launch_battle() from province_panel.gd when Attack is clicked
 
-const TacticalBattleScene = preload("res://scenes/tactical/tactical_battle_hexforge.tscn")
+const MassBattleScene = preload("res://scenes/combat/mass_battle.tscn")
 
 # Store pre-battle state for return
 var previous_scene_path: String = ""
@@ -62,7 +62,7 @@ func launch_battle(attacker_province_id: int, defender_province_id: int,
 	}
 	
 	# Create battle instance
-	var battle = TacticalBattleScene.instantiate()
+	var battle = MassBattleScene.instantiate()
 	battle.attacker_data = attacker_data
 	battle.defender_data = defender_data
 	battle.battle_ended.connect(_on_battle_ended)
@@ -81,7 +81,7 @@ func _on_battle_ended(result: Dictionary) -> void:
 	
 	battle_result = result
 	
-	print("BattleLauncher: Battle ended - Winner: ", result.get("winner", "unknown"))
+	print("BattleLauncher: Battle ended - Attacker won: ", result.get("attacker_won", false))
 	
 	# Apply battle results to game state
 	_apply_battle_results(result)
@@ -121,7 +121,7 @@ func _apply_battle_results(result: Dictionary) -> void:
 	
 	var attacker_id = result.get("attacker_province_id", -1)
 	var defender_id = result.get("defender_province_id", -1)
-	var winner = result.get("winner", "")
+	var attacker_won = result.get("attacker_won", false)
 	
 	if attacker_id == -1 or defender_id == -1:
 		return
@@ -137,7 +137,7 @@ func _apply_battle_results(result: Dictionary) -> void:
 	defender_province.soldiers = result.get("defender_remaining", 0)
 	
 	# Handle province conquest
-	if winner == "attacker":
+	if attacker_won:
 		# Transfer ownership
 		var old_owner = defender_province.owner_id
 		defender_province.owner_id = attacker_province.owner_id

@@ -281,9 +281,9 @@ func _update_portrait(lord):
 		var texture = load(lord.portrait_path)
 		if texture:
 			lord_portrait.texture = texture
-			lord_portrait.texture_filter = TEXTURE_FILTER_NEAREST
-			lord_portrait.expand_mode = EXPAND_MODE_KEEP_SIZE
-			lord_portrait.stretch_mode = STRETCH_MODE_KEEP_ASPECT_CENTERED
+			lord_portrait.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+			lord_portrait.expand_mode = TextureRect.EXPAND_MODE_KEEP_SIZE
+			lord_portrait.stretch_mode = TextureRect.STRETCH_MODE_KEEP_ASPECT_CENTERED
 			print("Loaded portrait for: ", lord.name)
 		else:
 			push_warning("Failed to load portrait: " + lord.portrait_path)

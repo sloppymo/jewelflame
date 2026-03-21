@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3 uid="uid://archer_test_scene"]
+
+[ext_resource type="PackedScene" path="res://units/archer_unit.tscn" id="1_unit"]
+[ext_resource type="Script" path="res://tests/archer_test.gd" id="2_script"]
+
+[node name="ArcherTest" type="Node2D"]
+script = ExtResource("2_script")
+
+[node name="HUD" type="Label" parent="."]
+position = Vector2(10, 10)
+text = "Keys: [1] -1 troop  [2] -2 troops  [3] shoot  [4] hurt  [R] reset  [LClick] move  [RClick] fire-at"
+
+[node name="ArcherUnit" parent="." instance=ExtResource("1_unit")]
+position = Vector2(200, 200)

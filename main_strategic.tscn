@@ -1,15 +1,16 @@
-[gd_scene load_steps=10 format=3 uid="uid://dy7vihp6w7t0j"]
+[gd_scene load_steps=12 format=3 uid="uid://dy7vihp6w7t0j"]
 
 [ext_resource type="Script" uid="uid://dcp67livumlo6" path="res://scenes/strategic/strategic_layer.gd" id="1_strategic_layer"]
 [ext_resource type="PackedScene" uid="uid://ctk6qipa85nvl" path="res://ui/sidebar.tscn" id="2_sidebar"]
 [ext_resource type="Script" uid="uid://cyexy7nm85k44" path="res://scenes/strategic/province_manager.gd" id="3_province_manager"]
 [ext_resource type="Texture2D" uid="uid://c1sgvgdfo7n5i" path="res://assets/maps/right_panel_map.jpeg" id="5_map_texture"]
-[ext_resource type="PackedScene" uid="uid://artun_fighter" path="res://scenes/characters/Artun_Fighter.tscn" id="6_fighter"]
-[ext_resource type="PackedScene" uid="uid://grym_fighter" path="res://scenes/characters/Grym_Fighter.tscn" id="7_grym"]
-[ext_resource type="PackedScene" uid="uid://hark_fighter" path="res://scenes/characters/Hark_Fighter.tscn" id="8_hark"]
-[ext_resource type="PackedScene" uid="uid://janik_fighter" path="res://scenes/characters/Janik_Fighter.tscn" id="9_janik"]
-[ext_resource type="PackedScene" uid="uid://nyro_fighter" path="res://scenes/characters/Nyro_Fighter.tscn" id="10_nyro"]
-[ext_resource type="PackedScene" uid="uid://serek_fighter" path="res://scenes/characters/Serek_Fighter.tscn" id="11_serek"]
+[ext_resource type="PackedScene" uid="uid://knight_fighter" path="res://scenes/characters/Knight_Fighter.tscn" id="6_fighter"]
+[ext_resource type="PackedScene" path="res://scenes/characters/Grym_Fighter.tscn" id="7_grym"]
+[ext_resource type="PackedScene" path="res://scenes/characters/Hark_Fighter.tscn" id="8_hark"]
+[ext_resource type="PackedScene" path="res://scenes/characters/Janik_Fighter.tscn" id="9_janik"]
+[ext_resource type="PackedScene" path="res://scenes/characters/Nyro_Fighter.tscn" id="10_nyro"]
+[ext_resource type="PackedScene" path="res://scenes/characters/Serek_Fighter.tscn" id="11_serek"]
+[ext_resource type="Script" path="res://scenes/strategic/knight_spawner.gd" id="12_spawner"]
 
 [node name="MainStrategic" type="Node2D" unique_id=1904389101]
 script = ExtResource("1_strategic_layer")
@@ -17,6 +18,7 @@ script = ExtResource("1_strategic_layer")
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=915571584]
 
 [node name="GameSidebar" parent="CanvasLayer" unique_id=124426401 instance=ExtResource("2_sidebar")]
+visible = false
 unique_name_in_owner = true
 
 [node name="MapContainer" type="Control" parent="CanvasLayer" unique_id=1916245219]
@@ -41,6 +43,17 @@ mouse_filter = 2
 texture = ExtResource("5_map_texture")
 expand_mode = 1
 stretch_mode = 6
+visible = false
+
+[node name="TestBackground" type="ColorRect" parent="CanvasLayer/MapContainer" unique_id=999888777]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.15, 0.15, 0.2, 1)
+mouse_filter = 2
 
 [node name="ProvinceManager" type="Node2D" parent="CanvasLayer/MapContainer" unique_id=755658972]
 unique_name_in_owner = true
@@ -51,75 +64,74 @@ script = ExtResource("3_province_manager")
 [node name="Connections" type="Node2D" parent="CanvasLayer/MapContainer/ProvinceManager" unique_id=1140353745]
 z_index = -1
 
-[node name="Artun1" parent="CanvasLayer/MapContainer" instance=ExtResource("6_fighter")]
+[node name="Artun1" parent="CanvasLayer/MapContainer" unique_id=743557099 instance=ExtResource("6_fighter")]
 position = Vector2(750, 200)
 scale = Vector2(2.5, 2.5)
-team = 0
 
-[node name="Artun2" parent="CanvasLayer/MapContainer" instance=ExtResource("6_fighter")]
+[node name="Artun2" parent="CanvasLayer/MapContainer" unique_id=783732857 instance=ExtResource("6_fighter")]
 position = Vector2(1050, 300)
 scale = Vector2(2.5, 2.5)
 team = 1
 
-[node name="Artun3" parent="CanvasLayer/MapContainer" instance=ExtResource("6_fighter")]
+[node name="Artun3" parent="CanvasLayer/MapContainer" unique_id=473840053 instance=ExtResource("6_fighter")]
 position = Vector2(800, 500)
 scale = Vector2(2.5, 2.5)
 team = 2
 
-[node name="Artun4" parent="CanvasLayer/MapContainer" instance=ExtResource("6_fighter")]
+[node name="Artun4" parent="CanvasLayer/MapContainer" unique_id=1091488252 instance=ExtResource("6_fighter")]
 position = Vector2(1000, 600)
 scale = Vector2(2.5, 2.5)
 team = 3
 
-[node name="Grym1" parent="CanvasLayer/MapContainer" instance=ExtResource("7_grym")]
+[node name="Grym1" parent="CanvasLayer/MapContainer" unique_id=1410132685 instance=ExtResource("7_grym")]
 position = Vector2(850, 250)
 scale = Vector2(2.5, 2.5)
-team = 0
 
-[node name="Grym2" parent="CanvasLayer/MapContainer" instance=ExtResource("7_grym")]
+[node name="Grym2" parent="CanvasLayer/MapContainer" unique_id=556453279 instance=ExtResource("7_grym")]
 position = Vector2(950, 450)
 scale = Vector2(2.5, 2.5)
 team = 1
 
-[node name="Hark1" parent="CanvasLayer/MapContainer" instance=ExtResource("8_hark")]
+[node name="Hark1" parent="CanvasLayer/MapContainer" unique_id=1567753411 instance=ExtResource("8_hark")]
 position = Vector2(720, 350)
 scale = Vector2(2.5, 2.5)
 team = 2
 
-[node name="Hark2" parent="CanvasLayer/MapContainer" instance=ExtResource("8_hark")]
+[node name="Hark2" parent="CanvasLayer/MapContainer" unique_id=1418505808 instance=ExtResource("8_hark")]
 position = Vector2(1100, 200)
 scale = Vector2(2.5, 2.5)
 team = 3
 
-[node name="Janik1" parent="CanvasLayer/MapContainer" instance=ExtResource("9_janik")]
+[node name="Janik1" parent="CanvasLayer/MapContainer" unique_id=726495361 instance=ExtResource("9_janik")]
 position = Vector2(780, 550)
 scale = Vector2(2.5, 2.5)
-team = 0
 
-[node name="Janik2" parent="CanvasLayer/MapContainer" instance=ExtResource("9_janik")]
+[node name="Janik2" parent="CanvasLayer/MapContainer" unique_id=1663484356 instance=ExtResource("9_janik")]
 position = Vector2(900, 150)
 scale = Vector2(2.5, 2.5)
 team = 1
 
-[node name="Nyro1" parent="CanvasLayer/MapContainer" instance=ExtResource("10_nyro")]
+[node name="Nyro1" parent="CanvasLayer/MapContainer" unique_id=2098676496 instance=ExtResource("10_nyro")]
 position = Vector2(1050, 500)
 scale = Vector2(2.5, 2.5)
 team = 2
 
-[node name="Nyro2" parent="CanvasLayer/MapContainer" instance=ExtResource("10_nyro")]
+[node name="Nyro2" parent="CanvasLayer/MapContainer" unique_id=1739556922 instance=ExtResource("10_nyro")]
 position = Vector2(680, 280)
 scale = Vector2(2.5, 2.5)
 team = 3
 
-[node name="Serek1" parent="CanvasLayer/MapContainer" instance=ExtResource("11_serek")]
+[node name="Serek1" parent="CanvasLayer/MapContainer" unique_id=153007084 instance=ExtResource("11_serek")]
 position = Vector2(920, 580)
 scale = Vector2(2.5, 2.5)
-team = 0
 
-[node name="Serek2" parent="CanvasLayer/MapContainer" instance=ExtResource("11_serek")]
+[node name="Serek2" parent="CanvasLayer/MapContainer" unique_id=1253914407 instance=ExtResource("11_serek")]
 position = Vector2(880, 400)
 scale = Vector2(2.5, 2.5)
 team = 1
+
+[node name="KnightSpawner" type="Node2D" parent="CanvasLayer/MapContainer" unique_id=999999999]
+script = ExtResource("12_spawner")
 
 [node name="TurnIndicator" type="Label" parent="CanvasLayer" unique_id=359822125]
 anchors_preset = 10
@@ -132,9 +144,11 @@ grow_horizontal = 2
 theme_override_font_sizes/font_size = 24
 text = "Turn 1 - Player's Turn"
 horizontal_alignment = 1
+visible = false
 vertical_alignment = 1
 
 [node name="FactionsInfo" type="VBoxContainer" parent="CanvasLayer" unique_id=1391982422]
+visible = false
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
@@ -159,3 +173,4 @@ grow_vertical = 0
 theme_override_font_sizes/font_size = 14
 text = "Select a province | F12: Debug | Space: End Turn"
 horizontal_alignment = 1
+visible = false

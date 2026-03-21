@@ -1,0 +1,327 @@
+[gd_scene load_steps=4 format=3 uid="uid://mass_battle_scene"]
+
+[ext_resource type="Script" path="res://scenes/combat/mass_battle_controller.gd" id="1_controller"]
+[ext_resource type="Script" path="res://scenes/combat/mass_battle_ui.gd" id="2_ui"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.06, 0.04, 0.15, 0.9)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.8, 0.7, 0.3, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button"]
+bg_color = Color(0.2, 0.15, 0.1, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.6, 0.5, 0.2, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button_hover"]
+bg_color = Color(0.3, 0.25, 0.15, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.9, 0.8, 0.4, 1)
+
+[node name="MassBattle" type="Node2D" groups=["mass_battle"]]
+script = ExtResource("1_controller")
+
+[node name="Background" type="ColorRect" parent="."]
+offset_right = 1280.0
+offset_bottom = 720.0
+color = Color(0.15, 0.12, 0.08, 1)
+
+[node name="Ground" type="StaticBody2D" parent="."]
+
+[node name="GroundVisual" type="ColorRect" parent="Ground"]
+offset_top = 400.0
+offset_right = 1280.0
+offset_bottom = 720.0
+color = Color(0.25, 0.2, 0.15, 1)
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(640, 360)
+
+[node name="SelectionBox" type="ColorRect" parent="."]
+visible = false
+modulate = Color(0, 1, 0, 0.3)
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+script = ExtResource("2_ui")
+
+[node name="Control" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+
+[node name="TopBar" type="Panel" parent="CanvasLayer/Control"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 50.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="PauseButton" type="Button" parent="CanvasLayer/Control/TopBar"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 20.0
+offset_top = -18.0
+offset_right = 120.0
+offset_bottom = 18.0
+theme_override_styles/normal = SubResource("StyleBoxFlat_button")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_hover")
+theme_override_font_sizes/font_size = 14
+text = "▶ RESUME"
+
+[node name="PauseLabel" type="Label" parent="CanvasLayer/Control/TopBar"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -50.0
+offset_top = -15.0
+offset_right = 50.0
+offset_bottom = 15.0
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(1, 1, 0, 1)
+text = "PAUSED"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="StatusLabel" type="Label" parent="CanvasLayer/Control/TopBar"]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -350.0
+offset_top = -15.0
+offset_right = -20.0
+offset_bottom = 15.0
+theme_override_font_sizes/font_size = 14
+text = "Attackers: 4 groups | Defenders: 4 groups"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="TurnLabel" type="Label" parent="CanvasLayer/Control/TopBar"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = -150.0
+offset_top = -15.0
+offset_right = 150.0
+offset_bottom = 15.0
+theme_override_font_sizes/font_size = 16
+text = "Battle of Province"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BottomPanel" type="Panel" parent="CanvasLayer/Control"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -70.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="SelectButton" type="Button" parent="CanvasLayer/Control/BottomPanel"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 20.0
+offset_top = -25.0
+offset_right = 100.0
+offset_bottom = 25.0
+theme_override_styles/normal = SubResource("StyleBoxFlat_button")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_hover")
+theme_override_font_sizes/font_size = 14
+text = "Select"
+
+[node name="MoveButton" type="Button" parent="CanvasLayer/Control/BottomPanel"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 120.0
+offset_top = -25.0
+offset_right = 200.0
+offset_bottom = 25.0
+theme_override_styles/normal = SubResource("StyleBoxFlat_button")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_hover")
+theme_override_font_sizes/font_size = 14
+text = "Move"
+
+[node name="AttackButton" type="Button" parent="CanvasLayer/Control/BottomPanel"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 220.0
+offset_top = -25.0
+offset_right = 300.0
+offset_bottom = 25.0
+theme_override_styles/normal = SubResource("StyleBoxFlat_button")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_hover")
+theme_override_font_sizes/font_size = 14
+text = "Attack"
+
+[node name="HoldButton" type="Button" parent="CanvasLayer/Control/BottomPanel"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 320.0
+offset_top = -25.0
+offset_right = 400.0
+offset_bottom = 25.0
+theme_override_styles/normal = SubResource("StyleBoxFlat_button")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_hover")
+theme_override_font_sizes/font_size = 14
+text = "Hold"
+
+[node name="AutoCheckBox" type="CheckBox" parent="CanvasLayer/Control/BottomPanel"]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -280.0
+offset_top = -20.0
+offset_right = -140.0
+offset_bottom = 20.0
+theme_override_font_sizes/font_size = 14
+text = "Auto-Command"
+
+[node name="RetreatButton" type="Button" parent="CanvasLayer/Control/BottomPanel"]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -120.0
+offset_top = -25.0
+offset_right = -20.0
+offset_bottom = 25.0
+theme_override_styles/normal = SubResource("StyleBoxFlat_button")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_hover")
+theme_override_font_sizes/font_size = 14
+text = "Retreat"
+
+[node name="GroupInfoPanel" type="Panel" parent="CanvasLayer/Control"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = -160.0
+offset_right = 200.0
+offset_bottom = -80.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="GroupInfo" type="Label" parent="CanvasLayer/Control/GroupInfoPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+theme_override_font_sizes/font_size = 14
+text = "No groups selected"
+autowrap_mode = 2
+
+[node name="Instructions" type="Label" parent="CanvasLayer/Control"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -250.0
+offset_top = -100.0
+offset_right = 250.0
+offset_bottom = -75.0
+theme_override_font_sizes/font_size = 14
+text = "PAUSED - Click groups to select | Issue orders | SPACE to resume"
+horizontal_alignment = 1
+
+[node name="VictoryPanel" type="Panel" parent="CanvasLayer/Control"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -250.0
+offset_top = -150.0
+offset_right = 250.0
+offset_bottom = 150.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="VictoryLabel" type="Label" parent="CanvasLayer/Control/VictoryPanel"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 20.0
+offset_bottom = 60.0
+theme_override_font_sizes/font_size = 36
+theme_override_colors/font_color = Color(0, 1, 0, 1)
+text = "VICTORY!"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ResultLabel" type="Label" parent="CanvasLayer/Control/VictoryPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 80.0
+offset_right = -20.0
+offset_bottom = -60.0
+theme_override_font_sizes/font_size = 16
+text = "Casualties: 0"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="ContinueButton" type="Button" parent="CanvasLayer/Control/VictoryPanel"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -75.0
+offset_top = -50.0
+offset_right = 75.0
+offset_bottom = -10.0
+theme_override_styles/normal = SubResource("StyleBoxFlat_button")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_hover")
+theme_override_font_sizes/font_size = 18
+text = "Continue"

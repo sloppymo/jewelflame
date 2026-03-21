@@ -47,53 +47,57 @@ func _ready():
 	print("BattleScene: LEFT CLICK = Select | DRAG = Box Select | RIGHT CLICK = Move")
 
 func _spawn_units():
-	"""Spawn 2 player units and 2 enemy units (including 1 special each)."""
+	"""Spawn 3v3 mixed unit types for variety testing."""
 	
-	# Player Unit 1 - Erin (Left) - SPECIAL UNIT
-	var erin = preload("res://dragon_force/special_unit.tscn").instantiate()
-	erin.unit_name = "Erin Blanche"
-	erin.team = 0
-	erin.max_hp = 150
-	erin.max_troops = 10
-	erin.global_position = Vector2(150, 250)
-	add_child(erin)
-	player_units.append(erin)
-	erin.unit_selected.connect(_on_unit_selected)
-	erin.unit_died.connect(_on_unit_died)
+	# Helper function to spawn a unit with script
+	var _spawn_unit = func(scene_path: String, script_path: String, name: String, 
+						  team_id: int, pos: Vector2, is_player: bool) -> Node2D:
+		var unit = load(scene_path).instantiate()
+		if script_path != "":
+			unit.set_script(load(script_path))
+		unit.unit_name = name
+		unit.team = team_id
+		unit.global_position = pos
+		add_child(unit)
+		
+		if is_player:
+			player_units.append(unit)
+			unit.unit_selected.connect(_on_unit_selected)
+		else:
+			enemy_units.append(unit)
+		unit.unit_died.connect(_on_unit_died)
+		return unit
 	
-	# Player Unit 2 - Sarah (Right of Erin) - Regular unit
-	var sarah = preload("res://dragon_force/general_unit.tscn").instantiate()
-	sarah.unit_name = "Sarah Blanche"
-	sarah.team = 0
-	sarah.max_hp = 100
-	sarah.max_troops = 10
-	sarah.global_position = Vector2(150, 350)
-	add_child(sarah)
-	player_units.append(sarah)
-	sarah.unit_selected.connect(_on_unit_selected)
-	sarah.unit_died.connect(_on_unit_died)
+	# PLAYER TEAM (3 units)
+	# 1. Special Unit - Erin (cleave attacks)
+	_spawn_unit.call("res://dragon_force/general_unit.tscn", 
+					"res://dragon_force/special_unit.gd",
+					"Erin Blanche", 0, Vector2(150, 200), true)
 	
-	# Enemy Unit 1 - Marcus - SPECIAL UNIT
-	var marcus = preload("res://dragon_force/special_unit.tscn").instantiate()
-	marcus.unit_name = "Marcus Coryll"
-	marcus.team = 1
-	marcus.max_hp = 150
-	marcus.max_troops = 10
-	marcus.global_position = Vector2(650, 250)
-	add_child(marcus)
-	enemy_units.append(marcus)
-	marcus.unit_died.connect(_on_unit_died)
+	# 2. Cavalry - Sarah (fast, charge attacks)
+	_spawn_unit.call("res://dragon_force/general_unit.tscn",
+					"res://dragon_force/cavalry_unit.gd",
+					"Sarah Blanche", 0, Vector2(150, 300), true)
 	
-	# Enemy Unit 2 - Elena - Regular unit
-	var elena = preload("res://dragon_force/general_unit.tscn").instantiate()
-	elena.unit_name = "Elena Coryll"
-	elena.team = 1
-	elena.max_hp = 100
-	elena.max_troops = 10
-	elena.global_position = Vector2(650, 350)
-	add_child(elena)
-	enemy_units.append(elena)
-	elena.unit_died.connect(_on_unit_died)
+	# 3. Archer - Generic Archer (ranged)
+	_spawn_unit.call("res://dragon_force/general_unit.tscn",
+					"res://dragon_force/archer_unit.gd",
+					"Blanche Archer", 0, Vector2(100, 400), true)
+	
+	# ENEMY TEAM (3 units)
+	# 1. Monster - Marcus (tank, fear, splash)
+	_spawn_unit.call("res://dragon_force/general_unit.tscn",
+					"res://dragon_force/monster_unit.gd",
+					"Marcus Coryll", 1, Vector2(650, 200), false)
+	
+	# 2. Regular - Elena
+	_spawn_unit.call("res://dragon_force/general_unit.tscn", "",
+					"Elena Coryll", 1, Vector2(650, 300), false)
+	
+	# 3. Cavalry - Enemy Rider
+	_spawn_unit.call("res://dragon_force/general_unit.tscn",
+					"res://dragon_force/cavalry_unit.gd",
+					"Coryll Rider", 1, Vector2(700, 400), false)
 	
 	# Start enemy AI
 	_start_enemy_ai()

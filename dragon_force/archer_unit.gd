@@ -84,7 +84,7 @@ func _spawn_arrow_effect(target_pos: Vector2):
 		fade.tween_callback(arrow.queue_free)
 	)
 
-func _find_nearest_enemy() -> Node2D:
+func _find_nearest_enemy():
 	"""Override to prefer enemies within range."""
 	var nearest: Node2D = null
 	var nearest_dist = 10000.0

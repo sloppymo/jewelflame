@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://mass_battle_test"]
+
+[ext_resource type="Script" path="res://scenes/combat/mass_battle_test.gd" id="1_test"]
+
+[node name="MassBattleTest" type="Node2D"]
+script = ExtResource("1_test")

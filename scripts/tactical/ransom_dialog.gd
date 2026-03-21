@@ -108,16 +108,16 @@ func _show_lord_info():
 		var texture = load(captured_lord.portrait_path)
 		if texture:
 			portrait.texture = texture
-			portrait.texture_filter = TEXTURE_FILTER_NEAREST
+			portrait.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	
 	# Calculate suggested ransom based on lord's stats
-	if captured_lord.has_method("get"):
-		var base = captured_lord.get("attack_rating", 50) + captured_lord.get("defense_rating", 50)
-		demand_gold = base
-		demand_food = int(base * 1.5)
-	else:
-		demand_gold = 50
-		demand_food = 75
+	var attack = captured_lord.get("attack_rating") if captured_lord.has_method("get") else 0
+	var defense = captured_lord.get("defense_rating") if captured_lord.has_method("get") else 0
+	if attack == null: attack = 50
+	if defense == null: defense = 50
+	var base = attack + defense
+	demand_gold = base
+	demand_food = int(base * 1.5)
 	
 	# Set slider ranges
 	if gold_slider:

@@ -1,0 +1,61 @@
+{
+  "version": 1,
+  "skills": {
+    "ddg-web-search": {
+      "version": "1.0.0",
+      "installedAt": 1773958207839
+    },
+    "search-web": {
+      "version": "1.0.0",
+      "installedAt": 1773958265463
+    },
+    "local-web-search-skill": {
+      "version": "0.1.0",
+      "installedAt": 1773958287593
+    },
+    "supabase": {
+      "version": "1.0.0",
+      "installedAt": 1773958406737
+    },
+    "supabase-query": {
+      "version": "1.0.0",
+      "installedAt": 1773958414540
+    },
+    "skill-creator": {
+      "version": "0.1.0",
+      "installedAt": 1773958473628
+    },
+    "github": {
+      "version": "1.0.0",
+      "installedAt": 1773958480220
+    },
+    "tmux": {
+      "version": "1.0.0",
+      "installedAt": 1773958501250
+    },
+    "browser": {
+      "version": "1.0.0",
+      "installedAt": 1773958511987
+    },
+    "session-logs": {
+      "version": "1.0.0",
+      "installedAt": 1773958562115
+    },
+    "video-frames": {
+      "version": "1.0.0",
+      "installedAt": 1773958581104
+    },
+    "auto-model-selector": {
+      "version": "1.0.1",
+      "installedAt": 1773958687749
+    },
+    "model-router-manager": {
+      "version": "1.0.0",
+      "installedAt": 1773958700552
+    },
+    "model-switcher": {
+      "version": "1.0.2",
+      "installedAt": 1773958710413
+    }
+  }
+}
