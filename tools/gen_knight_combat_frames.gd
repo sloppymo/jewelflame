@@ -31,7 +31,7 @@ func _run() -> void:
 	var fh := 32
 
 	# Direction order in the sheet
-	var dirs := ["s", "n", "se", "ne", "e", "w", "sw", "nw"]
+	var dirs: Array[String] = ["s", "n", "se", "ne", "e", "w", "sw", "nw"]
 
 	# [anim_base, start_row, fps]
 	var anim_groups: Array = [
@@ -46,7 +46,7 @@ func _run() -> void:
 		var fps       : float  = group[2]
 
 		for i in range(8):
-			var dir := dirs[i]
+			var dir: String = dirs[i]
 			var anim_name := base_name + "_" + dir
 			var row := base_row + i
 
