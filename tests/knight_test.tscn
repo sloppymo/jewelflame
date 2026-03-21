@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=3 uid="uid://knight_test"]
+
+[ext_resource type="PackedScene" path="res://units/knight_unit.tscn" id="1_unit"]
+[ext_resource type="Script" path="res://tests/knight_test.gd" id="2_script"]
+
+[node name="KnightTest" type="Node2D"]
+script = ExtResource("2_script")
+
+[node name="HUD" type="Label" parent="."]
+offset_left = 10.0
+offset_top = 10.0
+text = "[1] -1 troop  [2] -2 troops  [3] attack  [4] hurt  [R] reset  [Click] move"
+
+[node name="KnightUnit" parent="." instance=ExtResource("1_unit")]
+position = Vector2(400, 300)
