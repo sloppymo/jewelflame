@@ -47,7 +47,7 @@ offset_top = 580.0
 offset_right = 1260.0
 offset_bottom = 700.0
 theme_override_font_sizes/font_size = 12
-text = "[1/2/3/4] Switch Unit
+text = "[1/2/3/4/5] Switch Unit
 [Up/Down] Prev/Next Anim
 [PageUp/Down] +/-10 Anims
 [Space] Play

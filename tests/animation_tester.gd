@@ -2,7 +2,7 @@ extends Node2D
 
 ## Universal Animation Tester - Test all units and their animations
 
-enum UnitType { SWORDSHIELD, ARCHER, KNIGHT, HEAVY_KNIGHT }
+enum UnitType { SWORDSHIELD, ARCHER, KNIGHT, HEAVY_KNIGHT, PALADIN }
 
 var current_unit: UnitType = UnitType.SWORDSHIELD
 var current_anim_index: int = 0
@@ -38,6 +38,15 @@ var unit_configs := {
 		"co_path": "res://assets/animations/heavy_knight_combat.tres",
 		"thrust_nd": "res://assets/animations/heavy_knight_thrust_nodash.tres",
 		"thrust_d": "res://assets/animations/heavy_knight_thrust_dash.tres",
+		"frame_size": "24x24 / 32x32",
+		"directions": "4-dir (down,up,right,left) + thrust 4-dir"
+	},
+	UnitType.PALADIN: {
+		"name": "Paladin",
+		"nc_path": "res://assets/animations/paladin_non_combat.tres",
+		"co_path": "res://assets/animations/paladin_combat.tres",
+		"thrust_nd": "res://assets/animations/paladin_thrust_nodash.tres",
+		"thrust_d": "res://assets/animations/paladin_thrust_dash.tres",
 		"frame_size": "24x24 / 32x32",
 		"directions": "4-dir (down,up,right,left) + thrust 4-dir"
 	}
@@ -159,6 +168,8 @@ func _unhandled_input(event: InputEvent):
 				_switch_unit(UnitType.KNIGHT)
 			KEY_4:
 				_switch_unit(UnitType.HEAVY_KNIGHT)
+			KEY_5:
+				_switch_unit(UnitType.PALADIN)
 			
 			# Animation navigation
 			KEY_UP:
