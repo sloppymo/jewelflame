@@ -27,9 +27,13 @@ EventBus="*res://autoload/event_bus.gd"
 GameState="*res://autoload/game_state.gd"
 SaveManager="*res://autoload/save_manager.gd"
 BattleLauncher="*res://autoload/battle_launcher.gd"
+BattleResolver="*res://autoload/battle_resolver.gd"
+BattleTransition="*res://src/systems/battle_transition.gd"
 LordManager="*res://autoload/lord_manager.gd"
 CommandProcessor="*res://strategic/commands/command_processor.gd"
 PauseManager="*res://autoload/pause_manager.gd"
+CameraShaker="*res://autoload/camera_shaker.gd"
+AudioManager="*res://autoload/audio_manager.gd"
 StrategicGraph="*res://strategic/strategic_graph.gd"
 
 [display]

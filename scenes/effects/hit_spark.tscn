@@ -1,0 +1,60 @@
+[gd_scene load_steps=6 format=3 uid="uid://hit_spark_effect_001"]
+
+[ext_resource type="Script" path="res://scenes/effects/impact_fx.gd" id="1_impact"]
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_spark"]
+emission_shape = 1
+emission_sphere_radius = 8.0
+particle_flag_disable_z = true
+direction = Vector3(0, 0, 0)
+spread = 180.0
+gravity = Vector3(0, 0, 0)
+initial_velocity_min = 50.0
+initial_velocity_max = 120.0
+angular_velocity_min = -360.0
+angular_velocity_max = 360.0
+orbit_velocity_min = 0.0
+orbit_velocity_max = 0.0
+angle_min = -90.0
+angle_max = 90.0
+scale_min = 2.0
+scale_max = 4.0
+color = Color(1.0, 0.95, 0.5, 1.0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_spark"]
+width = 4
+height = 4
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+
+[sub_resource type="Gradient" id="Gradient_spark_flash"]
+colors = PackedColorArray(1, 1, 0.8, 1, 1, 0.6, 0.2, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_spark_flash"]
+gradient = SubResource("Gradient_spark_flash")
+width = 48
+height = 48
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+
+[node name="HitSpark" type="Node2D"]
+script = ExtResource("1_impact")
+lifetime = 0.5
+fade_out = 0.3
+shake_strength = 0.15
+shake_duration = 0.1
+shake_priority = 1
+
+[node name="Particles" type="GPUParticles2D" parent="."]
+amount = 12
+process_material = SubResource("ParticleProcessMaterial_spark")
+texture = SubResource("GradientTexture2D_spark")
+lifetime = 0.5
+one_shot = true
+explosiveness = 1.0
+randomness = 0.3
+
+[node name="Sprite" type="Sprite2D" parent="."]
+modulate = Color(1, 1, 1, 1)
+scale = Vector2(2, 2)
+texture = SubResource("GradientTexture2D_spark_flash")

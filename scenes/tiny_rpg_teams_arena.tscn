@@ -1,0 +1,267 @@
+[gd_scene load_steps=22 format=3 uid="uid://tiny_rpg_teams_arena"]
+
+[ext_resource type="PackedScene" uid="uid://swordsman_001" path="res://scenes/characters/tiny_rpg_full/Swordsman.tscn" id="1_swordsman"]
+[ext_resource type="PackedScene" uid="uid://soldier_full_001" path="res://scenes/characters/tiny_rpg_full/Soldier.tscn" id="2_soldier"]
+[ext_resource type="PackedScene" uid="uid://knight_tiny_001" path="res://scenes/characters/tiny_rpg_full/Knight.tscn" id="3_knight"]
+[ext_resource type="PackedScene" uid="uid://armored_axeman_001" path="res://scenes/characters/tiny_rpg_full/Armored_Axeman.tscn" id="4_axeman"]
+[ext_resource type="PackedScene" uid="uid://armored_orc_001" path="res://scenes/characters/tiny_rpg_full/Armored_Orc.tscn" id="5_armored_orc"]
+[ext_resource type="PackedScene" uid="uid://orc_full_001" path="res://scenes/characters/tiny_rpg_full/Orc.tscn" id="6_orc"]
+[ext_resource type="PackedScene" uid="uid://elite_orc_001" path="res://scenes/characters/tiny_rpg_full/Elite_Orc.tscn" id="7_elite_orc"]
+[ext_resource type="PackedScene" path="res://scenes/characters/tiny_rpg_full/Archer.tscn" id="8_archer"]
+[ext_resource type="PackedScene" path="res://scenes/characters/tiny_rpg_full/Wizard.tscn" id="9_wizard"]
+[ext_resource type="PackedScene" path="res://scenes/characters/tiny_rpg_full/Priest.tscn" id="10_priest"]
+[ext_resource type="PackedScene" path="res://scenes/characters/tiny_rpg_full/Lancer.tscn" id="11_lancer"]
+[ext_resource type="PackedScene" path="res://scenes/characters/tiny_rpg_full/Slime.tscn" id="12_slime"]
+[ext_resource type="PackedScene" uid="uid://werebear_tiny_001" path="res://scenes/characters/tiny_rpg_full/Werebear.tscn" id="13_werebear"]
+[ext_resource type="PackedScene" uid="uid://werewolf_tiny_001" path="res://scenes/characters/tiny_rpg_full/Werewolf.tscn" id="14_werewolf"]
+[ext_resource type="PackedScene" path="res://scenes/characters/tiny_rpg_full/Orc_Rider.tscn" id="15_orc_rider"]
+[ext_resource type="PackedScene" path="res://scenes/characters/tiny_rpg_full/Skeleton_Archer.tscn" id="16_skeleton_archer"]
+[ext_resource type="PackedScene" uid="uid://greatsword_skeleton_tiny_001" path="res://scenes/characters/tiny_rpg_full/Greatsword_Skeleton.tscn" id="17_greatsword_skeleton"]
+[ext_resource type="PackedScene" uid="uid://knights_templar_001" path="res://scenes/characters/tiny_rpg_full/Knights_Templar.tscn" id="18_templar"]
+[ext_resource type="PackedScene" uid="uid://skeleton_full_001" path="res://scenes/characters/tiny_rpg_full/Skeleton.tscn" id="19_skeleton"]
+
+[sub_resource type="GDScript" id="GDScript_arena"]
+script/source = "extends Node2D
+
+@onready var teams: Node2D = $Teams
+
+func _ready():
+	# Enable AI for all fighters
+	for team in teams.get_children():
+		for fighter in team.get_children():
+			if fighter.has_method(\"set\"):
+				fighter.ai_enabled = true
+				fighter.add_to_group(\"team_\" + str(fighter.team))
+
+func _input(event):
+	if event.is_action_pressed(\"ui_accept\"):
+		# Respawn all dead fighters
+		for team in teams.get_children():
+			for fighter in team.get_children():
+				# Only check characters, not damage numbers or other effects
+				if \"is_dead\" in fighter and fighter.is_dead:
+					fighter.respawn()
+					# Random position in arena
+					fighter.position = Vector2(randi() % 1400 + 100, randi() % 800 + 100)
+"
+
+[node name="TinyRPGTeamsArena" type="Node2D"]
+script = SubResource("GDScript_arena")
+
+[node name="Background" type="ColorRect" parent="."]
+offset_left = -500.0
+offset_top = -500.0
+offset_right = 2500.0
+offset_bottom = 2000.0
+color = Color(0.08, 0.1, 0.12, 1)
+
+[node name="ArenaFloor" type="ColorRect" parent="."]
+offset_left = 50.0
+offset_top = 50.0
+offset_right = 1950.0
+offset_bottom = 1150.0
+color = Color(0.2, 0.23, 0.27, 1)
+
+[node name="TeamZones" type="Node2D" parent="."]
+
+[node name="Team0Zone" type="ColorRect" parent="TeamZones"]
+offset_left = 100.0
+offset_top = 100.0
+offset_right = 500.0
+offset_bottom = 400.0
+color = Color(0.3, 0.2, 0.2, 0.3)
+
+[node name="Team1Zone" type="ColorRect" parent="TeamZones"]
+offset_left = 1500.0
+offset_top = 100.0
+offset_right = 1900.0
+offset_bottom = 400.0
+color = Color(0.2, 0.3, 0.2, 0.3)
+
+[node name="Team2Zone" type="ColorRect" parent="TeamZones"]
+offset_left = 100.0
+offset_top = 700.0
+offset_right = 500.0
+offset_bottom = 1000.0
+color = Color(0.2, 0.2, 0.3, 0.3)
+
+[node name="Team3Zone" type="ColorRect" parent="TeamZones"]
+offset_left = 1500.0
+offset_top = 700.0
+offset_right = 1900.0
+offset_bottom = 1000.0
+color = Color(0.3, 0.3, 0.2, 0.3)
+
+[node name="Title" type="Label" parent="."]
+offset_left = 50.0
+offset_top = 10.0
+offset_right = 1950.0
+offset_bottom = 50.0
+theme_override_font_sizes/font_size = 32
+text = "⚔️ 4-TEAM BATTLE ROYALE ⚔️"
+horizontal_alignment = 1
+
+[node name="Instructions" type="Label" parent="."]
+offset_left = 50.0
+offset_top = 1160.0
+offset_right = 1950.0
+offset_bottom = 1200.0
+theme_override_font_sizes/font_size = 16
+text = "4 teams battle for supremacy! Press SPACE to respawn fallen warriors."
+horizontal_alignment = 1
+
+[node name="TeamLabels" type="Node2D" parent="."]
+
+[node name="Team0Label" type="Label" parent="TeamLabels"]
+offset_left = 250.0
+offset_top = 60.0
+offset_right = 350.0
+offset_bottom = 90.0
+theme_override_font_sizes/font_size = 20
+text = "🔴 RED TEAM"
+horizontal_alignment = 1
+
+[node name="Team1Label" type="Label" parent="TeamLabels"]
+offset_left = 1650.0
+offset_top = 60.0
+offset_right = 1750.0
+offset_bottom = 90.0
+theme_override_font_sizes/font_size = 20
+text = "🟢 GREEN TEAM"
+horizontal_alignment = 1
+
+[node name="Team2Label" type="Label" parent="TeamLabels"]
+offset_left = 250.0
+offset_top = 1020.0
+offset_right = 350.0
+offset_bottom = 1050.0
+theme_override_font_sizes/font_size = 20
+text = "🔵 BLUE TEAM"
+horizontal_alignment = 1
+
+[node name="Team3Label" type="Label" parent="TeamLabels"]
+offset_left = 1650.0
+offset_top = 1020.0
+offset_right = 1750.0
+offset_bottom = 1050.0
+theme_override_font_sizes/font_size = 20
+text = "🟡 YELLOW TEAM"
+horizontal_alignment = 1
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(1000, 600)
+zoom = Vector2(0.55, 0.55)
+
+[node name="Teams" type="Node2D" parent="."]
+
+[node name="Team0" type="Node2D" parent="Teams"]
+
+[node name="Knight" parent="Teams/Team0" instance=ExtResource("3_knight")]
+position = Vector2(200, 200)
+team = 0
+ai_enabled = true
+
+[node name="Archer" parent="Teams/Team0" instance=ExtResource("8_archer")]
+position = Vector2(350, 280)
+team = 0
+ai_enabled = true
+
+[node name="Wizard" parent="Teams/Team0" instance=ExtResource("9_wizard")]
+position = Vector2(150, 320)
+team = 0
+ai_enabled = true
+
+[node name="Soldier" parent="Teams/Team0" instance=ExtResource("2_soldier")]
+position = Vector2(300, 150)
+team = 0
+ai_enabled = true
+
+[node name="Priest" parent="Teams/Team0" instance=ExtResource("10_priest")]
+position = Vector2(400, 220)
+team = 0
+ai_enabled = true
+
+[node name="Team1" type="Node2D" parent="Teams"]
+
+[node name="EliteOrc" parent="Teams/Team1" instance=ExtResource("7_elite_orc")]
+position = Vector2(1700, 200)
+team = 1
+ai_enabled = true
+facing = "left"
+
+[node name="OrcRider" parent="Teams/Team1" instance=ExtResource("15_orc_rider")]
+position = Vector2(1800, 280)
+team = 1
+ai_enabled = true
+facing = "left"
+
+[node name="ArmoredOrc" parent="Teams/Team1" instance=ExtResource("5_armored_orc")]
+position = Vector2(1600, 280)
+team = 1
+ai_enabled = true
+facing = "left"
+
+[node name="Orc" parent="Teams/Team1" instance=ExtResource("6_orc")]
+position = Vector2(1750, 130)
+team = 1
+ai_enabled = true
+facing = "left"
+
+[node name="Werewolf" parent="Teams/Team1" instance=ExtResource("14_werewolf")]
+position = Vector2(1550, 180)
+team = 1
+ai_enabled = true
+facing = "left"
+
+[node name="Team2" type="Node2D" parent="Teams"]
+
+[node name="GreatswordSkeleton" parent="Teams/Team2" instance=ExtResource("17_greatsword_skeleton")]
+position = Vector2(200, 850)
+team = 2
+ai_enabled = true
+
+[node name="SkeletonArcher" parent="Teams/Team2" instance=ExtResource("16_skeleton_archer")]
+position = Vector2(350, 920)
+team = 2
+ai_enabled = true
+
+[node name="ArmoredSkeleton" parent="Teams/Team2" instance=ExtResource("4_axeman")]
+position = Vector2(300, 780)
+team = 2
+ai_enabled = true
+
+[node name="Skeleton" parent="Teams/Team2" instance=ExtResource("19_skeleton")]
+position = Vector2(150, 750)
+team = 2
+ai_enabled = true
+
+[node name="Slime" parent="Teams/Team2" instance=ExtResource("12_slime")]
+position = Vector2(400, 850)
+team = 2
+ai_enabled = true
+
+[node name="Team3" type="Node2D" parent="Teams"]
+
+[node name="Werebear" parent="Teams/Team3" instance=ExtResource("13_werebear")]
+position = Vector2(1750, 850)
+team = 3
+ai_enabled = true
+facing = "left"
+
+[node name="KnightTemplar" parent="Teams/Team3" instance=ExtResource("18_templar")]
+position = Vector2(1600, 920)
+team = 3
+ai_enabled = true
+facing = "left"
+
+[node name="Lancer" parent="Teams/Team3" instance=ExtResource("11_lancer")]
+position = Vector2(1800, 750)
+team = 3
+ai_enabled = true
+facing = "left"
+
+[node name="Swordsman" parent="Teams/Team3" instance=ExtResource("1_swordsman")]
+position = Vector2(1700, 920)
+team = 3
+ai_enabled = true
+facing = "left"

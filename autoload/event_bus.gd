@@ -49,3 +49,7 @@ signal TacticalBattleCompleted(result: Dictionary)
 # Command system signals
 @warning_ignore("unused_signal")
 signal CommandSelected(command: String)
+
+# FX system signals
+@warning_ignore("unused_signal")
+signal CameraShakeRequested(strength: float, duration: float, priority: int)

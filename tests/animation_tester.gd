@@ -1,330 +1,552 @@
 extends Node2D
 
-## Universal Animation Tester - Test all units and their animations
+# Universal Animation Tester
+# Tests all units with both non-combat and combat sprites
+# Supports multiple animation sources for comparison
 
-enum UnitType { SWORDSHIELD, ARCHER, KNIGHT, HEAVY_KNIGHT, PALADIN }
+enum UnitType {
+	SWORDSHIELD, ARCHER, KNIGHT, HEAVY_KNIGHT, PALADIN, MAGE, ROGUE, ROGUE_HOODED
+}
 
-var current_unit: UnitType = UnitType.SWORDSHIELD
-var current_anim_index: int = 0
-var animation_names: Array[String] = []
-var sprite: AnimatedSprite2D = null
+enum SourceType {
+	NC,      # Non-Combat Base
+	NC_ALT,  # Non-Combat Alt (if available)
+	CO,      # Combat Base
+	CO_FX,   # Combat + Effects (if available)
+	THRUST_ND, # Thrust Non-Directional
+	THRUST_D   # Thrust Directional
+}
 
-# Unit configurations
+const UNIT_SCALE = 4.0
+const GRID_COLS = 4
+const SPACING = 180
+
 var unit_configs := {
 	UnitType.SWORDSHIELD: {
-		"name": "Sword & Shield",
+		"name": "SwordShield",
 		"nc_path": "res://assets/animations/swordshield_non_combat.tres",
 		"co_path": "res://assets/animations/swordshield_combat.tres",
-		"frame_size": "16x16 / 32x32",
-		"directions": "8-dir (s,n,se,ne,e,w,sw,nw)"
+		"sources": [SourceType.NC, SourceType.CO]
 	},
 	UnitType.ARCHER: {
 		"name": "Archer",
 		"nc_path": "res://assets/animations/archer_non_combat.tres",
 		"co_path": "res://assets/animations/archer_combat.tres",
-		"frame_size": "16x16 / 32x32",
-		"directions": "8-dir (s,n,se,ne,e,w,sw,nw)"
+		"sources": [SourceType.NC, SourceType.CO]
 	},
 	UnitType.KNIGHT: {
-		"name": "Knight (2H Sword)",
+		"name": "Knight",
 		"nc_path": "res://assets/animations/knight_non_combat.tres",
 		"co_path": "res://assets/animations/knight_combat.tres",
-		"frame_size": "16x16 / 32x32",
-		"directions": "8-dir (s,n,se,ne,e,w,sw,nw)"
+		"sources": [SourceType.NC, SourceType.CO]
 	},
 	UnitType.HEAVY_KNIGHT: {
-		"name": "Heavy Knight",
+		"name": "HeavyKnight",
 		"nc_path": "res://assets/animations/heavy_knight_non_combat.tres",
 		"co_path": "res://assets/animations/heavy_knight_combat.tres",
-		"thrust_nd": "res://assets/animations/heavy_knight_thrust_nodash.tres",
-		"thrust_d": "res://assets/animations/heavy_knight_thrust_dash.tres",
-		"frame_size": "24x24 / 32x32",
-		"directions": "4-dir (down,up,right,left) + thrust 4-dir"
+		"sources": [SourceType.NC, SourceType.CO]
 	},
 	UnitType.PALADIN: {
 		"name": "Paladin",
 		"nc_path": "res://assets/animations/paladin_non_combat.tres",
 		"co_path": "res://assets/animations/paladin_combat.tres",
-		"thrust_nd": "res://assets/animations/paladin_thrust_nodash.tres",
-		"thrust_d": "res://assets/animations/paladin_thrust_dash.tres",
-		"frame_size": "24x24 / 32x32",
-		"directions": "4-dir (down,up,right,left) + thrust 4-dir"
+		"sources": [SourceType.NC, SourceType.CO]
+	},
+	UnitType.MAGE: {
+		"name": "Mage",
+		"nc_path": "res://assets/animations/mage_red_non_combat.tres",
+		"co_path": "res://assets/animations/mage_red_combat.tres",
+		"sources": [SourceType.NC, SourceType.CO]
+	},
+	UnitType.ROGUE: {
+		"name": "Rogue",
+		"nc_path": "res://assets/animations/rogue_nc_daggers.tres",
+		"co_path": "res://assets/animations/rogue_combat_fx.tres",
+		"sources": [SourceType.NC, SourceType.CO_FX]
+	},
+	UnitType.ROGUE_HOODED: {
+		"name": "RogueHooded",
+		"nc_path": "res://assets/animations/rogue_hooded_nc_daggers.tres",
+		"co_path": "res://assets/animations/rogue_hooded_combat_fx.tres",
+		"sources": [SourceType.NC, SourceType.CO_FX]
 	}
 }
 
-@onready var info_label: Label = $UI/InfoLabel
-@onready var anim_list_label: Label = $UI/AnimListLabel
-@onready var debug_label: Label = $UI/DebugLabel
+# Current settings
+var current_source: SourceType = SourceType.CO
+var current_direction: String = "s"
+var current_action: String = "idle"
+var show_grid: bool = true
+var show_bounds: bool = true
+
+# Display units
+var display_units: Array[Dictionary] = []
+
+# UI references
+@onready var title_label: Label = $UI/TitleLabel
 @onready var controls_label: Label = $UI/ControlsLabel
+@onready var info_label: Label = $UI/InfoLabel
+@onready var camera: Camera2D = $Camera2D
 
 func _ready():
-	print("Animation Tester Ready")
-	_setup_sprite()
-	_refresh_animation_list()
+	_setup_display()
 	_update_display()
+	_update_ui()
 
-func _setup_sprite():
-	if sprite:
-		sprite.queue_free()
-	
-	sprite = AnimatedSprite2D.new()
-	sprite.name = "TestSprite"
-	sprite.scale = Vector2(4, 4)  # Scale up for visibility
-	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	sprite.position = Vector2(640, 360)
-	add_child(sprite)
-	
-	_load_unit_frames()
+func _setup_display():
+	# Create a display unit for each unit type
+	for unit_type in unit_configs.keys():
+		var config = unit_configs[unit_type]
+		_display_unit(unit_type, config)
 
-func _load_unit_frames():
-	var config = unit_configs[current_unit]
-	var nc_frames = load(config["nc_path"])
+func _display_unit(unit_type: int, config: Dictionary):
+	var idx = display_units.size()
+	var col = idx % GRID_COLS
+	var row = idx / GRID_COLS
+	var pos = Vector2(150 + col * SPACING, 150 + row * SPACING)
 	
-	if nc_frames == null:
-		push_error("Failed to load: " + config["nc_path"])
-		return
+	# Create unit container
+	var unit_node = Node2D.new()
+	unit_node.position = pos
+	unit_node.name = config.name
+	add_child(unit_node)
 	
-	sprite.sprite_frames = nc_frames
+	# Create background
+	var bg = ColorRect.new()
+	bg.size = Vector2(128, 128)
+	bg.position = Vector2(-64, -64)
+	bg.color = Color(0.15, 0.15, 0.15, 0.8)
+	unit_node.add_child(bg)
 	
-	# For Heavy Knight, we have multiple frame resources
-	# For now, just show the non-combat one
+	# Create grid
+	if show_grid:
+		var grid = _create_grid()
+		unit_node.add_child(grid)
 	
-	print("Loaded: " + config["name"])
+	# Create animated sprite
+	var sprite = AnimatedSprite2D.new()
+	sprite.name = "Sprite"
+	sprite.scale = Vector2(UNIT_SCALE, UNIT_SCALE)
+	unit_node.add_child(sprite)
+	
+	# Create bounds indicator
+	if show_bounds:
+		var bounds = _create_bounds_indicator()
+		unit_node.add_child(bounds)
+	
+	# Create label
+	var label = Label.new()
+	label.name = "Label"
+	label.text = config.name
+	label.position = Vector2(-60, 70)
+	label.add_theme_font_size_override("font_size", 14)
+	unit_node.add_child(label)
+	
+	# Store reference
+	display_units.append({
+		"type": unit_type,
+		"config": config,
+		"node": unit_node,
+		"sprite": sprite,
+		"bg": bg
+	})
 
-func _refresh_animation_list():
-	if sprite.sprite_frames == null:
-		return
+func _create_grid() -> Node2D:
+	var grid = Node2D.new()
+	grid.name = "Grid"
 	
-	animation_names.clear()
-	for anim_name in sprite.sprite_frames.get_animation_names():
-		animation_names.append(anim_name)
-	animation_names.sort()
+	# Horizontal lines
+	for i in range(9):
+		var line = Line2D.new()
+		line.width = 1
+		line.default_color = Color(0.3, 0.3, 0.3, 0.5)
+		var y = -64 + i * 16
+		line.add_point(Vector2(-64, y))
+		line.add_point(Vector2(64, y))
+		grid.add_child(line)
 	
-	# Reset index if out of bounds
-	if current_anim_index >= animation_names.size():
-		current_anim_index = 0
+	# Vertical lines
+	for i in range(9):
+		var line = Line2D.new()
+		line.width = 1
+		line.default_color = Color(0.3, 0.3, 0.3, 0.5)
+		var x = -64 + i * 16
+		line.add_point(Vector2(x, -64))
+		line.add_point(Vector2(x, 64))
+		grid.add_child(line)
+	
+	# Center crosshair
+	var cross_v = Line2D.new()
+	cross_v.width = 2
+	cross_v.default_color = Color(0.5, 0.5, 0.5, 0.8)
+	cross_v.add_point(Vector2(0, -64))
+	cross_v.add_point(Vector2(0, 64))
+	grid.add_child(cross_v)
+	
+	var cross_h = Line2D.new()
+	cross_h.width = 2
+	cross_h.default_color = Color(0.5, 0.5, 0.5, 0.8)
+	cross_h.add_point(Vector2(-64, 0))
+	cross_h.add_point(Vector2(64, 0))
+	grid.add_child(cross_h)
+	
+	return grid
+
+func _create_bounds_indicator() -> Node2D:
+	var bounds = Node2D.new()
+	bounds.name = "Bounds"
+	
+	# Frame around 16x16 sprite bounds
+	var frame = Line2D.new()
+	frame.width = 2
+	frame.default_color = Color(0, 1, 0, 0.7)
+	var s = 8 * UNIT_SCALE  # Half of 16 * scale
+	frame.add_point(Vector2(-s, -s))
+	frame.add_point(Vector2(s, -s))
+	frame.add_point(Vector2(s, s))
+	frame.add_point(Vector2(-s, s))
+	frame.add_point(Vector2(-s, -s))
+	bounds.add_child(frame)
+	
+	return bounds
 
 func _update_display():
-	if animation_names.is_empty():
+	for unit in display_units:
+		var config = unit.config
+		var sprite: AnimatedSprite2D = unit.sprite
+		
+		# Load appropriate sprite frames based on current source
+		var path = ""
+		match current_source:
+			SourceType.NC, SourceType.NC_ALT:
+				path = config.nc_path
+			_:
+				path = config.co_path
+		
+		if not FileAccess.file_exists(path):
+			unit.bg.color = Color(0.3, 0.1, 0.1, 0.8)
+			continue
+		
+		var frames = load(path)
+		sprite.sprite_frames = frames
+		
+		# Build animation name
+		var anim_name = _build_animation_name()
+		
+		# Play animation using the same logic as battle_arena
+		_play_anim(sprite, anim_name, true)
+		
+		# Update background color based on source
+		match current_source:
+			SourceType.NC, SourceType.NC_ALT:
+				unit.bg.color = Color(0.1, 0.15, 0.2, 0.8)
+			_:
+				unit.bg.color = Color(0.2, 0.1, 0.1, 0.8)
+
+func _build_animation_name() -> String:
+	# Build animation name from current action and direction
+	match current_action:
+		"idle":
+			return "idle_" + current_direction
+		"walk":
+			return "walk_" + current_direction
+		"attack":
+			# Return base attack name - _play_anim will find the right variant
+			return "attack_" + current_direction
+		"hurt":
+			return "hurt_" + current_direction
+		"death":
+			return "death_" + current_direction
+		"special":
+			return "special_" + current_direction
+		_:
+			return current_action + "_" + current_direction
+
+func _play_anim(sprite: AnimatedSprite2D, anim_name: String, loop: bool = true):
+	if not sprite or not sprite.sprite_frames:
 		return
 	
-	var config = unit_configs[current_unit]
-	var current_anim = animation_names[current_anim_index]
+	# Try exact match first
+	var actual_anim = anim_name
+	var is_fallback = false
+	var dir = current_direction
 	
-	# Main info
-	info_label.text = """UNIT: %s
-Frame Size: %s
-Directions: %s
-Animations: %d""" % [
-		config["name"],
-		config["frame_size"],
-		config["directions"],
-		animation_names.size()
+	if not sprite.sprite_frames.has_animation(actual_anim):
+		# Parse animation name
+		var parts = anim_name.rsplit("_", true, 1)
+		if parts.size() < 2:
+			return
+		
+		var base_name = parts[0]
+		dir = parts[1]
+		
+		# Try various naming patterns
+		var candidates = _build_animation_candidates(base_name, dir)
+		
+		for candidate in candidates:
+			if sprite.sprite_frames.has_animation(candidate):
+				actual_anim = candidate
+				is_fallback = true
+				break
+		
+		if not sprite.sprite_frames.has_animation(actual_anim):
+			return  # No suitable animation found
+	
+	# Apply horizontal flip based on direction
+	# Sprites default to facing left, so:
+	# Moving right (e, ne, se): flip to face right
+	# Moving left (w, nw, sw): already facing left, don't flip
+	if dir in ["e", "ne", "se"]:
+		sprite.flip_h = true
+	else:
+		sprite.flip_h = false
+	
+	# If using attack as fallback for walk/idle, pause on first frame
+	var using_attack_for_movement = is_fallback and (anim_name.begins_with("walk_") or anim_name.begins_with("idle_")) and actual_anim.begins_with("attack")
+	
+	if using_attack_for_movement:
+		# Play but pause on first frame for static pose
+		if sprite.animation != actual_anim:
+			sprite.play(actual_anim)
+			sprite.pause()
+			sprite.frame = 0
+		elif sprite.is_playing():
+			sprite.pause()
+			sprite.frame = 0
+	else:
+		_play_actual_anim(sprite, actual_anim)
+
+func _build_animation_candidates(base_name: String, dir: String) -> Array[String]:
+	var candidates: Array[String] = []
+	
+	# Map 8-way to cardinal directions
+	var card_dir = dir
+	if dir in ["ne", "nw"]:
+		card_dir = "n"
+	elif dir in ["se", "sw"]:
+		card_dir = "s"
+	
+	# Pattern 1: Standard 8-dir (attack1_n, hurt_s, etc.)
+	if base_name == "attack":
+		for num in ["1", "2", "3"]:
+			candidates.append("attack" + num + "_" + dir)
+			candidates.append("attack" + num + "_" + card_dir)
+		candidates.append("attack_" + dir)
+		candidates.append("attack_" + card_dir)
+	else:
+		candidates.append(base_name + "_" + dir)
+		candidates.append(base_name + "_" + card_dir)
+	
+	# Pattern 2: Knight's light/heavy attacks
+	if base_name == "attack":
+		for attack_type in ["light", "heavy"]:
+			candidates.append("attack_" + attack_type + "_" + dir)
+			candidates.append("attack_" + attack_type + "_" + card_dir)
+	
+	# Pattern 3: 4-dir with descriptive names
+	var left_right_map = {
+		"n": "up", "ne": "up", "nw": "up",
+		"s": "down", "se": "down", "sw": "down",
+		"e": "right",
+		"w": "left"
+	}
+	var desc_dir = left_right_map.get(dir, "down")
+	var desc_card = left_right_map.get(card_dir, "down")
+	
+	if base_name == "attack":
+		candidates.append("attack_" + desc_dir + "_left")
+		candidates.append("attack_" + desc_dir + "_right")
+		candidates.append("attack_" + desc_card + "_left")
+		candidates.append("attack_" + desc_card + "_right")
+		candidates.append("attack_horizontal_left")
+		candidates.append("attack_horizontal_right")
+		candidates.append("attack_stab_left")
+		candidates.append("attack_stab_right")
+	else:
+		candidates.append(base_name + "_" + desc_dir + "_left")
+		candidates.append(base_name + "_" + desc_dir + "_right")
+		candidates.append(base_name + "_" + desc_card + "_left")
+		candidates.append(base_name + "_" + desc_card + "_right")
+		candidates.append(base_name + "_left")
+		candidates.append(base_name + "_right")
+	
+	# Pattern 4: Fallback
+	candidates.append(base_name + "_s")
+	candidates.append(base_name + "_down")
+	candidates.append(base_name + "_down_right")
+	candidates.append(base_name)
+	
+	# Pattern 5: For walk/idle without those animations, use attack as fallback (combat sprites)
+	if base_name in ["walk", "idle"]:
+		# Try attack animations as fallback for movement
+		for num in ["1", "2", "3"]:
+			candidates.append("attack" + num + "_" + dir)
+			candidates.append("attack" + num + "_" + card_dir)
+		candidates.append("attack_" + dir)
+		candidates.append("attack_" + card_dir)
+		candidates.append("attack_" + desc_dir + "_left")
+		candidates.append("attack_" + desc_dir + "_right")
+		candidates.append("attack_" + desc_card + "_left")
+		candidates.append("attack_" + desc_card + "_right")
+		for attack_type in ["light", "heavy"]:
+			candidates.append("attack_" + attack_type + "_" + dir)
+			candidates.append("attack_" + attack_type + "_" + card_dir)
+		candidates.append("attack_horizontal_left")
+		candidates.append("attack_horizontal_right")
+		candidates.append("attack_stab_left")
+		candidates.append("attack_stab_right")
+	
+	return candidates
+
+func _play_actual_anim(sprite: AnimatedSprite2D, actual_anim: String):
+	if sprite.animation != actual_anim:
+		sprite.play(actual_anim)
+	elif not sprite.is_playing():
+		sprite.play(actual_anim)
+
+func _update_ui():
+	var source_name = SourceType.keys()[current_source]
+	var action_display = current_action.to_upper()
+	var dir_display = current_direction.to_upper()
+	
+	title_label.text = "Animation Tester - %s | %s | %s" % [source_name, action_display, dir_display]
+	
+	controls_label.text = """Controls:
+[Q/E] Source: %s
+[1-8] Unit Type | [0] All
+[ARROWS] Direction | [SPACE] Play
+[I] Idle [W] Walk [A] Attack [H] Hurt [D] Death [S] Special
+[G] Grid [%s] | [B] Bounds [%s] | [R] Reset Camera
+[Z/X] Zoom | [ESC] Exit""" % [
+		source_name, 
+		"ON" if show_grid else "OFF",
+		"ON" if show_bounds else "OFF"
 	]
 	
-	# Animation list (show context around current)
-	var list_text := "ANIMATIONS (%d/%d):\n\n" % [current_anim_index + 1, animation_names.size()]
-	
-	var start_idx = max(0, current_anim_index - 5)
-	var end_idx = min(animation_names.size(), current_anim_index + 6)
-	
-	for i in range(start_idx, end_idx):
-		var prefix := ">>> " if i == current_anim_index else "    "
-		list_text += prefix + animation_names[i] + "\n"
-	
-	anim_list_label.text = list_text
-	
-	# Debug info
-	var frame_count = sprite.sprite_frames.get_frame_count(current_anim)
-	var current_frame = sprite.frame if sprite.is_playing() else 0
-	var is_looping = sprite.sprite_frames.get_animation_loop(current_anim)
-	var speed = sprite.sprite_frames.get_animation_speed(current_anim)
-	
-	debug_label.text = """CURRENT: %s
-Frame: %d / %d
-Speed: %.1f FPS
-Loop: %s
-Playing: %s""" % [
-		current_anim,
-		current_frame,
-		frame_count,
-		speed,
-		"Yes" if is_looping else "No",
-		"Yes" if sprite.is_playing() else "No"
-	]
+	# Count available animations
+	var info = "Available: "
+	for unit in display_units:
+		if not unit.sprite.sprite_frames:
+			continue
+		var frames = unit.sprite.sprite_frames
+		var anim_name = _build_animation_name()
+		
+		# Check using same logic as _play_anim
+		var found = false
+		if frames.has_animation(anim_name):
+			found = true
+		else:
+			var parts = anim_name.rsplit("_", true, 1)
+			if parts.size() >= 2:
+				var candidates = _build_animation_candidates(parts[0], parts[1])
+				for candidate in candidates:
+					if frames.has_animation(candidate):
+						found = true
+						break
+		
+		if found:
+			info += unit.config.name + "✓ "
+		else:
+			info += unit.config.name + "✗ "
+	info_label.text = info
 
-func _process(_delta):
-	_update_display()
-
-func _unhandled_input(event: InputEvent):
+func _input(event):
 	if event is InputEventKey and event.pressed:
 		match event.keycode:
-			# Unit switching
-			KEY_1:
-				_switch_unit(UnitType.SWORDSHIELD)
-			KEY_2:
-				_switch_unit(UnitType.ARCHER)
-			KEY_3:
-				_switch_unit(UnitType.KNIGHT)
-			KEY_4:
-				_switch_unit(UnitType.HEAVY_KNIGHT)
-			KEY_5:
-				_switch_unit(UnitType.PALADIN)
-			
-			# Animation navigation
-			KEY_UP:
-				_prev_anim()
-			KEY_DOWN:
-				_next_anim()
-			KEY_PAGEUP:
-				_prev_anim_10()
-			KEY_PAGEDOWN:
-				_next_anim_10()
-			
-			# Playback
-			KEY_SPACE:
-				_play_current()
-			KEY_P:
-				_toggle_pause()
-			KEY_S:
-				_stop()
-			KEY_L:
-				_toggle_loop()
-			
-			# Speed
-			KEY_EQUAL:
-				_speed_up()
-			KEY_MINUS:
-				_speed_down()
-			KEY_0:
-				_speed_reset()
-			
-			# Frame stepping
-			KEY_RIGHT:
-				_frame_forward()
-			KEY_LEFT:
-				_frame_back()
-			
-			# Scale
-			KEY_BRACKETLEFT:
-				_scale_down()
-			KEY_BRACKETRIGHT:
-				_scale_up()
-			
-			# Background
-			KEY_B:
-				_toggle_bg()
-			
-			# Reset
-			KEY_R:
-				_reset()
-			
-			# Quit
 			KEY_ESCAPE:
 				get_tree().quit()
+			
+			# Source selection
+			KEY_Q:
+				current_source = (current_source - 1) as SourceType
+				if current_source < 0:
+					current_source = SourceType.THRUST_D
+				_update_display()
+			KEY_E:
+				current_source = (current_source + 1) as SourceType
+				if current_source > SourceType.THRUST_D:
+					current_source = SourceType.NC
+				_update_display()
+			
+			# Direction
+			KEY_UP:
+				current_direction = "n"
+				_update_display()
+			KEY_DOWN:
+				current_direction = "s"
+				_update_display()
+			KEY_LEFT:
+				current_direction = "w"
+				_update_display()
+			KEY_RIGHT:
+				current_direction = "e"
+				_update_display()
+			
+			# Diagonals
+			KEY_KP_7, KEY_HOME:
+				current_direction = "nw"
+				_update_display()
+			KEY_KP_9, KEY_PAGEUP:
+				current_direction = "ne"
+				_update_display()
+			KEY_KP_1, KEY_END:
+				current_direction = "sw"
+				_update_display()
+			KEY_KP_3, KEY_PAGEDOWN:
+				current_direction = "se"
+				_update_display()
+			
+			# Actions
+			KEY_I:
+				current_action = "idle"
+				_update_display()
+			KEY_W:
+				current_action = "walk"
+				_update_display()
+			KEY_A:
+				current_action = "attack"
+				_update_display()
+			KEY_H:
+				current_action = "hurt"
+				_update_display()
+			KEY_D:
+				current_action = "death"
+				_update_display()
+			KEY_S:
+				current_action = "special"
+				_update_display()
+			
+			# Replay
+			KEY_SPACE:
+				_update_display()
+			
+			# Toggles
+			KEY_G:
+				show_grid = not show_grid
+				for unit in display_units:
+					var grid = unit.node.get_node_or_null("Grid")
+					if grid:
+						grid.visible = show_grid
+			KEY_B:
+				show_bounds = not show_bounds
+				for unit in display_units:
+					var bounds = unit.node.get_node_or_null("Bounds")
+					if bounds:
+						bounds.visible = show_bounds
+			
+			# Camera
+			KEY_R:
+				camera.position = Vector2(640, 360)
+				camera.zoom = Vector2(1, 1)
+			KEY_Z:
+				camera.zoom *= 1.1
+			KEY_X:
+				camera.zoom *= 0.9
+	
+	_update_ui()
 
-func _switch_unit(unit_type: UnitType):
-	current_unit = unit_type
-	current_anim_index = 0
-	_setup_sprite()
-	_refresh_animation_list()
-	print("Switched to: " + unit_configs[current_unit]["name"])
-
-func _prev_anim():
-	current_anim_index = wrapi(current_anim_index - 1, 0, animation_names.size())
-	_play_current()
-
-func _next_anim():
-	current_anim_index = wrapi(current_anim_index + 1, 0, animation_names.size())
-	_play_current()
-
-func _prev_anim_10():
-	current_anim_index = wrapi(current_anim_index - 10, 0, animation_names.size())
-	_play_current()
-
-func _next_anim_10():
-	current_anim_index = wrapi(current_anim_index + 10, 0, animation_names.size())
-	_play_current()
-
-func _play_current():
-	if animation_names.is_empty():
-		return
-	var anim_name = animation_names[current_anim_index]
-	sprite.play(anim_name)
-	print("Playing: " + anim_name)
-
-func _toggle_pause():
-	if sprite.is_playing():
-		sprite.pause()
-		print("Paused")
-	else:
-		sprite.play()
-		print("Resumed")
-
-func _stop():
-	sprite.stop()
-	sprite.frame = 0
-	print("Stopped")
-
-func _toggle_loop():
-	if animation_names.is_empty():
-		return
-	var anim_name = animation_names[current_anim_index]
-	var current_loop = sprite.sprite_frames.get_animation_loop(anim_name)
-	sprite.sprite_frames.set_animation_loop(anim_name, not current_loop)
-	print("Loop: " + str(not current_loop))
-
-func _speed_up():
-	if animation_names.is_empty():
-		return
-	var anim_name = animation_names[current_anim_index]
-	var current_speed = sprite.sprite_frames.get_animation_speed(anim_name)
-	sprite.sprite_frames.set_animation_speed(anim_name, current_speed + 2.0)
-	print("Speed: " + str(current_speed + 2.0))
-
-func _speed_down():
-	if animation_names.is_empty():
-		return
-	var anim_name = animation_names[current_anim_index]
-	var current_speed = sprite.sprite_frames.get_animation_speed(anim_name)
-	sprite.sprite_frames.set_animation_speed(anim_name, max(1.0, current_speed - 2.0))
-	print("Speed: " + str(max(1.0, current_speed - 2.0)))
-
-func _speed_reset():
-	if animation_names.is_empty():
-		return
-	var anim_name = animation_names[current_anim_index]
-	sprite.sprite_frames.set_animation_speed(anim_name, 10.0)
-	print("Speed reset to 10.0")
-
-func _frame_forward():
-	sprite.pause()
-	var anim_name = animation_names[current_anim_index]
-	var frame_count = sprite.sprite_frames.get_frame_count(anim_name)
-	sprite.frame = wrapi(sprite.frame + 1, 0, frame_count)
-
-func _frame_back():
-	sprite.pause()
-	var anim_name = animation_names[current_anim_index]
-	var frame_count = sprite.sprite_frames.get_frame_count(anim_name)
-	sprite.frame = wrapi(sprite.frame - 1, 0, frame_count)
-
-func _scale_up():
-	sprite.scale *= 1.2
-	print("Scale: " + str(sprite.scale))
-
-func _scale_down():
-	sprite.scale *= 0.8
-	print("Scale: " + str(sprite.scale))
-
-func _toggle_bg():
-	var bg = $Background
-	if bg:
-		bg.visible = not bg.visible
-
-func _reset():
-	sprite.scale = Vector2(4, 4)
-	sprite.position = Vector2(640, 360)
-	current_anim_index = 0
-	_play_current()
-	print("Reset")
+func _process(delta):
+	# Camera pan with mouse drag
+	if Input.is_mouse_button_pressed(MOUSE_BUTTON_MIDDLE) or Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
+		var mouse_delta = Input.get_last_mouse_velocity()
+		camera.position -= mouse_delta * delta / camera.zoom.x

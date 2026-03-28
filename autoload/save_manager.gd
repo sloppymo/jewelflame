@@ -5,6 +5,11 @@ const SAVE_DIR = "user://saves/"
 func _ready():
 	DirAccess.make_dir_recursive_absolute(SAVE_DIR)
 
+## Check if a save file exists (for main menu compatibility)
+func has_save(slot: int = 0) -> bool:
+	var path = SAVE_DIR + "save_%d.json" % slot
+	return FileAccess.file_exists(path)
+
 func save_game(slot: int) -> bool:
 	var save_data = {
 		"version": "1.1",

@@ -37,6 +37,14 @@ func _ready():
 	_create_province_buttons()
 	_spawn_initial_armies()
 	
+	# Add to group for SaveManager access
+	add_to_group("strategic_controller")
+	
+	# Auto-save when returning from battle
+	var bt = get_node_or_null("/root/BattleTransition")
+	if bt:
+		bt.battle_complete.connect(_on_battle_complete)
+	
 	print("StrategicMapController: Phase 0 ready! Click a province, then click destination to move.")
 
 func _draw_roads():
@@ -226,3 +234,16 @@ func _show_battle_dialog(army1: Node2D, army2: Node2D):
 	
 	# Auto-close after 2 seconds
 	get_tree().create_timer(2.0).timeout.connect(dialog.queue_free)
+
+func _on_battle_complete(result: Dictionary) -> void:
+	## Auto-save after battle completes (for SaveManager integration)
+	print("StrategicMapController: Battle complete, auto-saving...")
+	SaveManager.save_game()
+	_update_ui()
+
+func _update_ui() -> void:
+	## Update the UI after state changes
+	if selected_province:
+		province_label.text = "Province: %s" % selected_province.province_name
+		owner_label.text = "Owner: %s" % selected_province.owner_faction
+	_update_selected_army_label()

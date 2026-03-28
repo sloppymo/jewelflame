@@ -41,6 +41,66 @@ var families: Dictionary = {}  # String -> FamilyData (legacy)
 var characters: Dictionary = {}  # String -> CharacterData
 var selected_lord_id: String = ""
 
+# Compatibility properties for new save system
+var province_owners: Dictionary = {}  # province_id -> faction_id
+var province_armies: Dictionary = {}  # province_id -> Array[ArmyUnit]
+var heroes: Dictionary = {}  # hero_id -> HeroData
+var current_phase: int = 0  # GamePhase enum
+var current_province: String = "dunmoor"
+
+enum Faction {
+	NEUTRAL = 0,
+	BLANCHE = 1,
+	CORYLL = 2,
+	LYLE = 3
+}
+
+enum GamePhase {
+	STRATEGIC = 0,
+	TACTICAL = 1
+}
+
+func change_phase(phase: GamePhase) -> void:
+	current_phase = phase
+
+func get_army_size(province_id: String) -> int:
+	## Get total troop count in a province
+	var total: int = 0
+	if province_armies.has(province_id):
+		for unit in province_armies[province_id]:
+			total += unit.get("count", 0)
+	return total
+
+func set_province_owner(province_id: String, faction_id: int) -> void:
+	## Set province ownership (compatibility with new save system)
+	province_owners[province_id] = faction_id
+	# Also update the typed province data if available
+	var pname := StringName(province_id.to_lower())
+	if provinces.has(pname):
+		var faction_str: StringName = &"neutral"
+		match faction_id:
+			Faction.BLANCHE: faction_str = &"blanche"
+			Faction.CORYLL: faction_str = &"coryll"
+			Faction.LYLE: faction_str = &"lyle"
+		transfer_province_ownership(pname, provinces[pname].owner_faction_id, faction_str)
+
+func add_army_to_province(province_id: String, unit) -> void:
+	## Add an army unit to a province
+	if not province_armies.has(province_id):
+		province_armies[province_id] = []
+	province_armies[province_id].append(unit)
+
+class ArmyUnit:
+	var unit_type: String
+	var count: int
+	var hero_id: String
+	var morale: float = 1.0
+	
+	func _init(type: String, num: int, hero: String = ""):
+		unit_type = type
+		count = num
+		hero_id = hero
+
 func _ready():
 	print("=== GAME STATE INITIALIZING ===")
 	initialize_new_game()
@@ -53,6 +113,10 @@ func initialize_new_game():
 	_load_factions()
 	_load_provinces()
 	_setup_initial_ownership()
+
+## Public alias for compatibility with save/load system
+func initialize_provinces() -> void:
+	initialize_new_game()
 
 func _load_factions():
 	factions.clear()

@@ -1,0 +1,104 @@
+[gd_scene load_steps=13 format=3 uid="uid://tiny_rpg_full_test_001"]
+
+[ext_resource type="Script" path="res://tests/tiny_rpg_full_test.gd" id="1_test"]
+[ext_resource type="PackedScene" path="res://scenes/characters/tiny_rpg_full/Armored_Axeman.tscn" id="2_axeman"]
+[ext_resource type="PackedScene" path="res://scenes/characters/tiny_rpg_full/Armored_Orc.tscn" id="3_armored_orc"]
+[ext_resource type="PackedScene" path="res://scenes/characters/tiny_rpg_full/Armored_Skeleton.tscn" id="4_armored_skeleton"]
+[ext_resource type="PackedScene" path="res://scenes/characters/tiny_rpg_full/Elite_Orc.tscn" id="5_elite_orc"]
+[ext_resource type="PackedScene" path="res://scenes/characters/tiny_rpg_full/Knight.tscn" id="6_knight"]
+[ext_resource type="PackedScene" path="res://scenes/characters/tiny_rpg_full/Knights_Templar.tscn" id="7_templar"]
+[ext_resource type="PackedScene" path="res://scenes/characters/tiny_rpg_full/Orc.tscn" id="8_orc"]
+[ext_resource type="PackedScene" path="res://scenes/characters/tiny_rpg_full/Skeleton.tscn" id="9_skeleton"]
+[ext_resource type="PackedScene" path="res://scenes/characters/tiny_rpg_full/Soldier.tscn" id="10_soldier"]
+[ext_resource type="PackedScene" path="res://scenes/characters/tiny_rpg_full/Swordsman.tscn" id="11_swordsman"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_bg"]
+size = Vector2(100, 100)
+
+[node name="TinyRPGFullTest" type="Node2D"]
+script = ExtResource("1_test")
+
+[node name="Background" type="Sprite2D" parent="."]
+modulate = Color(0.1, 0.15, 0.2, 1)
+z_index = -100
+scale = Vector2(50, 50)
+texture = SubResource("PlaceholderTexture2D_bg")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+
+[node name="Characters" type="Node2D" parent="."]
+
+[node name="Armored Axeman" parent="Characters" instance=ExtResource("2_axeman")]
+position = Vector2(-400, -100)
+
+[node name="Armored Orc" parent="Characters" instance=ExtResource("3_armored_orc")]
+position = Vector2(-200, -100)
+
+[node name="Armored Skeleton" parent="Characters" instance=ExtResource("4_armored_skeleton")]
+position = Vector2(0, -100)
+
+[node name="Elite Orc" parent="Characters" instance=ExtResource("5_elite_orc")]
+position = Vector2(200, -100)
+
+[node name="Knight" parent="Characters" instance=ExtResource("6_knight")]
+position = Vector2(400, -100)
+
+[node name="Knights Templar" parent="Characters" instance=ExtResource("7_templar")]
+position = Vector2(-400, 150)
+
+[node name="Orc" parent="Characters" instance=ExtResource("8_orc")]
+position = Vector2(-200, 150)
+
+[node name="Skeleton" parent="Characters" instance=ExtResource("9_skeleton")]
+position = Vector2(0, 150)
+
+[node name="Soldier" parent="Characters" instance=ExtResource("10_soldier")]
+position = Vector2(200, 150)
+
+[node name="Swordsman" parent="Characters" instance=ExtResource("11_swordsman")]
+position = Vector2(400, 150)
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="Title" type="Label" parent="UI"]
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 400.0
+offset_bottom = 50.0
+theme_override_font_sizes/font_size = 20
+text = "Tiny RPG Full Pack - 10 Characters"
+
+[node name="Controls" type="Label" parent="UI"]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -300.0
+offset_top = -200.0
+offset_right = -20.0
+offset_bottom = -20.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_font_sizes/font_size = 12
+text = "Controls:
+1-0: Select Character
+WASD: Move
+Space: Attack 1
+Q: Attack 2
+E: Attack 3
+H: Take Damage
+K: Kill / R: Respawn"
+horizontal_alignment = 2
+
+[node name="Info" type="Label" parent="UI"]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = -100.0
+offset_right = 400.0
+offset_bottom = -20.0
+grow_vertical = 0
+theme_override_font_sizes/font_size = 12
+text = ""

@@ -1,0 +1,30 @@
+[gd_scene load_steps=4 format=3 uid="uid://magic_projectile"]
+
+[ext_resource type="Script" path="res://scenes/effects/magic_projectile.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/Tiny RPG Character Asset Pack v1.03 -Full 20 Characters/Characters(100x100)/Wizard/Magic(projectile)/Wizard-Attack01_Effect.png" id="2_texture"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D"]
+radius = 25.0
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_magic"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_texture")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="MagicProjectile" type="Area2D"]
+collision_layer = 0
+collision_mask = 6
+script = ExtResource("1_script")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+scale = Vector2(0.5, 0.5)
+sprite_frames = SubResource("SpriteFrames_magic")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D")

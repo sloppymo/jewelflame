@@ -1,0 +1,196 @@
+[gd_scene load_steps=23 format=3 uid="uid://tiny_rpg_arena"]
+
+[ext_resource type="PackedScene" uid="uid://swordsman_001" path="res://scenes/characters/tiny_rpg_full/Swordsman.tscn" id="1_swordsman"]
+[ext_resource type="PackedScene" uid="uid://soldier_full_001" path="res://scenes/characters/tiny_rpg_full/Soldier.tscn" id="2_soldier"]
+[ext_resource type="PackedScene" uid="uid://knight_tiny_001" path="res://scenes/characters/tiny_rpg_full/Knight.tscn" id="3_knight"]
+[ext_resource type="PackedScene" uid="uid://knights_templar_001" path="res://scenes/characters/tiny_rpg_full/Knights_Templar.tscn" id="4_templar"]
+[ext_resource type="PackedScene" uid="uid://armored_axeman_001" path="res://scenes/characters/tiny_rpg_full/Armored_Axeman.tscn" id="5_axeman"]
+[ext_resource type="PackedScene" uid="uid://armored_orc_001" path="res://scenes/characters/tiny_rpg_full/Armored_Orc.tscn" id="6_armored_orc"]
+[ext_resource type="PackedScene" uid="uid://orc_full_001" path="res://scenes/characters/tiny_rpg_full/Orc.tscn" id="7_orc"]
+[ext_resource type="PackedScene" uid="uid://elite_orc_001" path="res://scenes/characters/tiny_rpg_full/Elite_Orc.tscn" id="8_elite_orc"]
+[ext_resource type="PackedScene" uid="uid://skeleton_full_001" path="res://scenes/characters/tiny_rpg_full/Skeleton.tscn" id="9_skeleton"]
+[ext_resource type="PackedScene" uid="uid://armored_skeleton_001" path="res://scenes/characters/tiny_rpg_full/Armored_Skeleton.tscn" id="10_armored_skeleton"]
+[ext_resource type="PackedScene" path="res://scenes/characters/tiny_rpg_full/Archer.tscn" id="11_archer"]
+[ext_resource type="PackedScene" path="res://scenes/characters/tiny_rpg_full/Wizard.tscn" id="12_wizard"]
+[ext_resource type="PackedScene" path="res://scenes/characters/tiny_rpg_full/Priest.tscn" id="13_priest"]
+[ext_resource type="PackedScene" path="res://scenes/characters/tiny_rpg_full/Lancer.tscn" id="14_lancer"]
+[ext_resource type="PackedScene" path="res://scenes/characters/tiny_rpg_full/Slime.tscn" id="15_slime"]
+[ext_resource type="PackedScene" path="res://scenes/characters/tiny_rpg_full/Werebear.tscn" id="16_werebear"]
+[ext_resource type="PackedScene" path="res://scenes/characters/tiny_rpg_full/Werewolf.tscn" id="17_werewolf"]
+[ext_resource type="PackedScene" path="res://scenes/characters/tiny_rpg_full/Orc_Rider.tscn" id="18_orc_rider"]
+[ext_resource type="PackedScene" path="res://scenes/characters/tiny_rpg_full/Skeleton_Archer.tscn" id="19_skeleton_archer"]
+[ext_resource type="PackedScene" path="res://scenes/characters/tiny_rpg_full/Greatsword_Skeleton.tscn" id="20_greatsword_skeleton"]
+
+[sub_resource type="GDScript" id="GDScript_arena"]
+script/source = "extends Node2D
+
+@onready var fighters: Node2D = $Fighters
+
+func _ready():
+	# Enable AI for all fighters
+	for fighter in fighters.get_children():
+		if fighter.has_method(\"set\"):
+			fighter.ai_enabled = true
+
+func _input(event):
+	if event.is_action_pressed(\"ui_accept\"):
+		# Respawn all dead fighters
+		for fighter in fighters.get_children():
+			# Only check characters, not damage numbers or other effects
+			if "is_dead" in fighter and fighter.is_dead:
+				fighter.respawn()
+				fighter.position = Vector2(randi() % 1000 + 100, randi() % 600 + 100)
+"
+
+[node name="TinyRPGArena" type="Node2D"]
+script = SubResource("GDScript_arena")
+
+[node name="Background" type="ColorRect" parent="."]
+offset_left = -1000.0
+offset_top = -1000.0
+offset_right = 3000.0
+offset_bottom = 2000.0
+color = Color(0.12, 0.15, 0.18, 1)
+
+[node name="ArenaFloor" type="ColorRect" parent="."]
+offset_left = 50.0
+offset_top = 50.0
+offset_right = 1950.0
+offset_bottom = 1050.0
+color = Color(0.25, 0.3, 0.35, 1)
+
+[node name="Title" type="Label" parent="."]
+offset_left = 50.0
+offset_top = 10.0
+offset_right = 1950.0
+offset_bottom = 50.0
+theme_override_font_sizes/font_size = 32
+text = "⚔️ TINY RPG CHARACTER BATTLE ARENA ⚔️"
+horizontal_alignment = 1
+
+[node name="Instructions" type="Label" parent="."]
+offset_left = 50.0
+offset_top = 1060.0
+offset_right = 1950.0
+offset_bottom = 1100.0
+theme_override_font_sizes/font_size = 16
+text = "All 20 characters battle it out! Press SPACE to respawn dead characters."
+horizontal_alignment = 1
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(1000, 550)
+zoom = Vector2(0.6, 0.6)
+
+[node name="Fighters" type="Node2D" parent="."]
+
+# Team 0 - Human Allies
+[node name="Swordsman" parent="Fighters" instance=ExtResource("1_swordsman")]
+position = Vector2(200, 200)
+team = 0
+ai_enabled = true
+
+[node name="Knight" parent="Fighters" instance=ExtResource("3_knight")]
+position = Vector2(350, 180)
+team = 0
+ai_enabled = true
+
+[node name="Soldier" parent="Fighters" instance=ExtResource("2_soldier")]
+position = Vector2(500, 220)
+team = 0
+ai_enabled = true
+
+[node name="Archer" parent="Fighters" instance=ExtResource("11_archer")]
+position = Vector2(150, 350)
+team = 0
+ai_enabled = true
+
+[node name="KnightTemplar" parent="Fighters" instance=ExtResource("4_templar")]
+position = Vector2(400, 350)
+team = 0
+ai_enabled = true
+
+[node name="Lancer" parent="Fighters" instance=ExtResource("14_lancer")]
+position = Vector2(600, 300)
+team = 0
+ai_enabled = true
+
+[node name="ArmoredAxeman" parent="Fighters" instance=ExtResource("5_axeman")]
+position = Vector2(280, 450)
+team = 0
+ai_enabled = true
+
+[node name="Wizard" parent="Fighters" instance=ExtResource("12_wizard")]
+position = Vector2(100, 500)
+team = 0
+ai_enabled = true
+
+[node name="Priest" parent="Fighters" instance=ExtResource("13_priest")]
+position = Vector2(500, 450)
+team = 0
+ai_enabled = true
+
+[node name="Slime" parent="Fighters" instance=ExtResource("15_slime")]
+position = Vector2(650, 180)
+team = 0
+ai_enabled = true
+
+# Team 1 - Enemy Monsters
+[node name="Orc" parent="Fighters" instance=ExtResource("7_orc")]
+position = Vector2(1400, 200)
+team = 1
+ai_enabled = true
+facing = "left"
+
+[node name="ArmoredOrc" parent="Fighters" instance=ExtResource("6_armored_orc")]
+position = Vector2(1600, 250)
+team = 1
+ai_enabled = true
+facing = "left"
+
+[node name="EliteOrc" parent="Fighters" instance=ExtResource("8_elite_orc")]
+position = Vector2(1750, 200)
+team = 1
+ai_enabled = true
+facing = "left"
+
+[node name="OrcRider" parent="Fighters" instance=ExtResource("18_orc_rider")]
+position = Vector2(1550, 400)
+team = 1
+ai_enabled = true
+facing = "left"
+
+[node name="Skeleton" parent="Fighters" instance=ExtResource("9_skeleton")]
+position = Vector2(1300, 350)
+team = 1
+ai_enabled = true
+facing = "left"
+
+[node name="SkeletonArcher" parent="Fighters" instance=ExtResource("19_skeleton_archer")]
+position = Vector2(1450, 500)
+team = 1
+ai_enabled = true
+facing = "left"
+
+[node name="ArmoredSkeleton" parent="Fighters" instance=ExtResource("10_armored_skeleton")]
+position = Vector2(1650, 500)
+team = 1
+ai_enabled = true
+facing = "left"
+
+[node name="GreatswordSkeleton" parent="Fighters" instance=ExtResource("20_greatsword_skeleton")]
+position = Vector2(1800, 450)
+team = 1
+ai_enabled = true
+facing = "left"
+
+[node name="Werewolf" parent="Fighters" instance=ExtResource("17_werewolf")]
+position = Vector2(1200, 500)
+team = 1
+ai_enabled = true
+facing = "left"
+
+[node name="Werebear" parent="Fighters" instance=ExtResource("16_werebear")]
+position = Vector2(1350, 650)
+team = 1
+ai_enabled = true
+facing = "left"

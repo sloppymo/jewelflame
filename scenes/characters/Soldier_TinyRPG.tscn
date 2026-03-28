@@ -1,0 +1,28 @@
+[gd_scene load_steps=4 format=3 uid="uid://soldier_tiny_001"]
+
+[ext_resource type="Script" path="res://scenes/characters/TinyRPG_Character.gd" id="1_character"]
+[ext_resource type="Texture2D" path="res://assets/Tiny RPG Character Asset Pack v1.03 -Free Soldier&Orc/Characters(100x100)/Soldier/Soldier/Soldier.png" id="2_soldier_tex"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_soldier"]
+size = Vector2(130, 130)
+
+[node name="Soldier" type="CharacterBody2D"]
+collision_layer = 2
+collision_mask = 7
+script = ExtResource("1_character")
+source_texture = ExtResource("2_soldier_tex")
+target_scale = 1.3
+facing = 0
+max_health = 120
+move_speed = 80.0
+attack_damage = 20
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_soldier")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, -62)
+
+[node name="AttackCooldown" type="Timer" parent="."]
+wait_time = 0.5
+one_shot = true

@@ -1,0 +1,59 @@
+[gd_scene load_steps=6 format=3 uid="uid://blood_splash_effect_001"]
+
+[ext_resource type="Script" path="res://scenes/effects/impact_fx.gd" id="1_impact"]
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_blood"]
+emission_shape = 1
+emission_sphere_radius = 8.0
+particle_flag_disable_z = true
+direction = Vector3(0, -1, 0)
+spread = 60.0
+gravity = Vector3(0, 400, 0)
+initial_velocity_min = 50.0
+initial_velocity_max = 150.0
+angular_velocity_min = -180.0
+angular_velocity_max = 180.0
+orbit_velocity_min = 0.0
+orbit_velocity_max = 0.0
+angle_min = -180.0
+angle_max = 180.0
+scale_min = 2.0
+scale_max = 4.0
+color = Color(0.5, 0.05, 0.05, 0.9)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_blood"]
+width = 4
+height = 4
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+
+[sub_resource type="Gradient" id="Gradient_flash"]
+colors = PackedColorArray(0.8, 0.1, 0.1, 0.8, 0.5, 0.05, 0.05, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_flash"]
+gradient = SubResource("Gradient_flash")
+width = 32
+height = 32
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+
+[node name="BloodSplash" type="Node2D"]
+script = ExtResource("1_impact")
+lifetime = 1.5
+fade_out = 0.5
+shake_strength = 0.3
+shake_duration = 0.2
+shake_priority = 2
+
+[node name="Particles" type="GPUParticles2D" parent="."]
+amount = 16
+process_material = SubResource("ParticleProcessMaterial_blood")
+texture = SubResource("GradientTexture2D_blood")
+lifetime = 0.8
+one_shot = true
+explosiveness = 0.8
+randomness = 0.5
+
+[node name="Sprite" type="Sprite2D" parent="."]
+modulate = Color(1, 1, 1, 0.8)
+texture = SubResource("GradientTexture2D_flash")
