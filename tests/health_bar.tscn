@@ -1,0 +1,41 @@
+[gd_scene format=3 uid="uid://healthbar001"]
+
+[ext_resource type="Script" path="res://tests/health_bar.gd" id="1_health_bar"]
+
+[node name="HealthBar" type="Control"]
+layout_mode = 3
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -13.0
+offset_top = -23.0
+offset_right = 13.0
+offset_bottom = -17.0
+grow_horizontal = 2
+mouse_filter = 2
+script = ExtResource("1_health_bar")
+
+[node name="Outline" type="ColorRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+offset_right = 26.0
+offset_bottom = 6.0
+color = Color(0, 0, 0, 1)
+
+[node name="Background" type="ColorRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 1.0
+offset_top = 1.0
+offset_right = 25.0
+offset_bottom = 5.0
+color = Color(0.545098, 0, 0, 1)
+
+[node name="Foreground" type="ColorRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 1.0
+offset_top = 1.0
+offset_right = 25.0
+offset_bottom = 5.0
+color = Color(0, 1, 0, 1)

@@ -1,0 +1,86 @@
+[gd_scene load_steps=8 format=3 uid="uid://arenmap001"]
+
+[ext_resource type="Script" path="res://tests/arena_map.gd" id="1_arena_map"]
+[ext_resource type="Texture2D" uid="uid://c5vyutg4v6vv" path="res://assets/Classic Dungeons - Files/classic_dungeons_stone_floor.png" id="2_stone_floor"]
+[ext_resource type="Texture2D" path="res://assets/Classic Dungeons - Files/classic_dungeons_WALLS.png" id="3_walls"]
+[ext_resource type="Texture2D" path="res://assets/Classic Dungeons - Files/classic_dungeons_stone_floor_wall_edges.png" id="4_edges"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_1"]
+texture = ExtResource("2_stone_floor")
+texture_region_size = Vector2i(32, 32)
+use_texture_padding = false
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+0:3/0 = 0
+1:3/0 = 0
+2:3/0 = 0
+0:4/0 = 0
+1:4/0 = 0
+2:4/0 = 0
+0:5/0 = 0
+1:5/0 = 0
+2:5/0 = 0
+0:6/0 = 0
+1:6/0 = 0
+2:6/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_2"]
+texture = ExtResource("3_walls")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
+1:0/0 = 0
+1:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
+2:0/0 = 0
+2:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
+3:0/0 = 0
+3:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
+0:1/0 = 0
+0:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
+1:1/0 = 0
+1:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
+2:1/0 = 0
+2:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
+3:1/0 = 0
+3:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_3"]
+texture = ExtResource("4_edges")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+0:3/0 = 0
+1:3/0 = 0
+2:3/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_1"]
+physics_layer_0/collision_layer = 1
+sources/0 = SubResource("TileSetAtlasSource_1")
+sources/1 = SubResource("TileSetAtlasSource_2")
+sources/2 = SubResource("TileSetAtlasSource_3")
+
+[node name="ArenaMap" type="Node2D"]
+script = ExtResource("1_arena_map")
+
+[node name="TileMap" type="TileMap" parent="."]
+tile_set = SubResource("TileSet_1")
+collision_animatable = true
+format = 2
+layer_0/name = "Ground"
+layer_0/tile_data = PackedInt32Array()
+layer_1/name = "Walls"
+layer_1/tile_data = PackedInt32Array()

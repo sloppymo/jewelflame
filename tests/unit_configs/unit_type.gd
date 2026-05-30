@@ -1,0 +1,45 @@
+class_name UnitType
+## Enum for all unit types in the combat lab.
+
+enum Enum {
+	SWORDSHIELD,
+	ARCHER,
+	KNIGHT,
+	HEAVY_KNIGHT,
+	PALADIN,
+	MAGE,
+	ROGUE,
+	ROGUE_HOODED,
+	MAGE_HOODED_BROWN,
+	MAGE_MASC_DKGREY,
+	GOBLIN,
+	GOBLIN_SLINGER,
+	MUMMY,
+	ORC,
+	ORC_ARCHER,
+	ORC_CHAMPION,
+	ORC_SOLDIER,
+	SKELLY,
+	SKELLY_ARCHER,
+	SKELLY_WARRIOR,
+	WRAITH,
+	ZOMBIE,
+	ZOMBIE_BURSTER,
+	SLIME,
+	FIRE_SKULL,
+	DRAGON_GREEN,
+	HAMMER_WARRIOR
+}
+
+## Returns an array of all unit type enum values.
+static func all_types() -> Array[UnitType.Enum]:
+	return [
+		Enum.SWORDSHIELD, Enum.ARCHER, Enum.KNIGHT, Enum.HEAVY_KNIGHT,
+		Enum.PALADIN, Enum.MAGE, Enum.ROGUE, Enum.ROGUE_HOODED,
+		Enum.MAGE_HOODED_BROWN, Enum.MAGE_MASC_DKGREY,
+		Enum.GOBLIN, Enum.GOBLIN_SLINGER, Enum.MUMMY, Enum.ORC,
+		Enum.ORC_ARCHER, Enum.ORC_CHAMPION, Enum.ORC_SOLDIER,
+		Enum.SKELLY, Enum.SKELLY_ARCHER, Enum.SKELLY_WARRIOR,
+		Enum.WRAITH, Enum.ZOMBIE, Enum.ZOMBIE_BURSTER, Enum.SLIME,
+		Enum.FIRE_SKULL, Enum.DRAGON_GREEN, Enum.HAMMER_WARRIOR
+	]
